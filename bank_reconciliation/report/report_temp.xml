@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report id="action_report_bank_reconcillation"
+                string="Bank Reconciliation Report"
+                model="bank.statement"
+                name="bank_reconciliation.report_bank_reconcillation_st"
+                file="bank_reconciliation.report_bank_reconcillation_st"
+                print_report_name="'Bank Statement'"
+                report_type="qweb-pdf"/>
+    </data>
+</odoo>

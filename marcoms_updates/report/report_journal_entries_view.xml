@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+	<data>
+
+		<template id="marcoms_updates.journal_entry_template_report_view_mar">
+			<t t-call="web.external_layout">
+                <t t-set="o" t-value="o.with_context({'lang':o.partner_id.lang})"/>
+                <div class="page" style="font-size:17px;color:Black;">
+                    <div class="oe_structure"/>
+                        <div>
+                            <h3 class="text-center mb32">
+                                <strong>JOURNAL VOUCHER</strong>
+                            </h3>
+                        </div>
+                    <br/>
+
+                <div class="row" id="journal_information" style="font-size:15px;">
+                    <div class="col-8">
+                        <div style="font-size:17px;">
+                            <strong>Journal Entry :       </strong>
+                            <span t-field="o.name"/>
+                        </div>
+
+                        <div class="text-left" style="font-size:17px;">
+                            <strong>Date :                      </strong>
+                            <span t-field="o.date"/>
+                        </div>
+                    </div>  
+               
+                    <div class="col-8" style="font-size:17px;">
+                        <div>
+                            <strong>Journal :       </strong>
+                            <span t-field="o.journal_id"/>
+                        </div>
+                        <div class="text-left">
+                            <strong>Reference :   </strong>
+                            <span t-field="o.ref"/>
+                        </div>
+                    </div>  
+                </div>
+               
+
+               <br/><br/>
+                <table style="border-collapse: collapse;width: 100%;font-size:16px;" class="table table-condensed">
+                    <thead>
+                        <tr style="color:black;">
+                            <th class="text-left" style="width:20%;white-space: nowrap;">Partner</th>
+                            <th class="text-left" style="width:20%">Account</th>
+                            <th class="text-left" style="width:10%">Label</th>
+                            <th class="text-left" style="width:15%">Due Date</th>
+                            <th class="text-left" style="width:15%">project</th>
+                            <!--<th class="text-left">VAT(%)</th>-->
+                            <th class="text-left" style="width:10%">Debit</th>
+                            <th class="text-left" style="width:10%">Credit</th>
+                        </tr>
+                    </thead>  
+                    <tbody class="consumed_tbody">
+                        <t t-set="total" t-value="0.0"/>
+                        <t t-set="total1" t-value="0.0"/>
+                        <t t-foreach="o.line_ids" t-as="line">    
+                        <tr style="color:black;">
+                            <td class="text-left" style="width:20%;">
+                                <span t-field="line.partner_id"/>
+                            </td>
+                            <td class="text-left" style="width:20%;">
+                                <span t-field="line.account_id"/>
+                            </td>
+                            <td class="text-left" style="width:10%;">
+                                <span t-field="line.name"/>
+                            </td>
+                            <td class="text-left" style="width:15%;">
+                                <span t-field="line.date_maturity"/>
+                            </td>
+                            <td style="width:15%;">
+                                <span t-field="line.analytic_account_id"/>
+                            </td>
+                            <!--<td class="text-left">-->
+                            <!--    <span t-field="line.tax_ids"/>-->
+                            <!--</td>-->
+                            <td class="text-right" style="width:10%;">
+                                <t t-if="line.debit">
+                                    <span t-field="line.debit" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
+                                </t>
+                                <t t-else="">
+                                    <span> </span>
+                                </t>
+                            </td>
+                            <td class="text-right" style="width:10%;">
+                                <t t-if="line.credit">
+                                    <span t-field="line.credit" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
+                                </t>
+                                <t t-else="">
+                                    <span> </span>
+                                </t>
+                            </td>
+                        </tr>
+                        <t t-set="total" t-value="total + line.debit"/>
+                        <t t-set="total1" t-value="total1 + line.credit"/>
+                        </t>
+                        <tr style="border: 1px solid black;color:Black;">
+                            <td style="width:20%;"/>
+                            <td style="width:20%;"/>
+                            <td style="width:10%;"/>
+                            <!--<td/>-->
+                            <td style="width:15%;"/>
+                            <td style="width:15%;"><strong>Total:</strong></td>
+                            <td width="10%" class="text-right"><strong>
+                                <span><t t-esc="total" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></span>
+                            </strong></td>
+                             <td width="10%" class="text-right"><strong>
+                                <span><t t-esc="total1" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></span>
+                            </strong></td>
+                      </tr>
+                    </tbody>
+                </table>
+              
+            <br/><br/>
+            <div class="row" id="journal_information2" style="font-size:17px;">
+                    <div class="col-5" style="font-size:17px;">
+                        <div style="font-size:17px;">
+                            <strong>Prepared by :</strong>
+                            <p t-field="o.prepare"/>
+                        </div>
+
+                        <div class="text-left" style="margin-top:250px;font-size:17px;">
+                            <strong>Checked by:</strong>
+                            <p t-field="o.checked"/>
+                        </div>
+                        <!--<div class="text-left" style="margin-top:250px;">-->
+                        <!--    <strong>Verified by:</strong>-->
+                        <!--    <p t-field="o.verified"/>-->
+                        <!--</div>-->
+                    </div>  
+               
+                    <div class="col-5" style="font-size:17px;">
+                        <div style="font-size:17px;">
+                            <strong>Approved by :</strong>
+                            <p t-field="o.approved"/>
+                        </div>
+                        <div class="text-left" style="margin-top:250px;font-size:17px;">
+                            <strong>Received by :</strong>
+                            <p t-field="o.received"/>
+                        </div>
+                    </div>  
+                    <div class="col-5">
+                        <div class="text-left" style="margin-top:250px;font-size:17px;">
+                            <strong>Verified by:</strong>
+                            <p t-field="o.verified"/>
+                        </div>
+                    </div> 
+                </div>
+                
+               
+                </div>
+            </t>
+		</template>
+
+		<template id="marcoms_updates.journal_entry_report_template_id_mar">
+			<t t-call="web.html_container">
+				<t t-foreach="docs" t-as="o">
+					<t t-call="marcoms_updates.journal_entry_template_report_view_mar"  t-lang="o.partner_id.lang"/>
+				</t>
+			</t>
+		</template>
+
+	</data>
+</odoo>

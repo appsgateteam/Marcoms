@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="job_estimate" model="ir.sequence">
+            <field name="name">Job Estimate</field>
+            <field name="code">job.sequence</field>
+            <field name="prefix">JOB/EST/00</field>
+            <field name="padding">3</field>
+        </record>
+
+    </data>
+</odoo>

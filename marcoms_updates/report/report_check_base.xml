@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="account_check_printing_report_base.report_check_base">
+        <t t-call="web.html_container">
+            <div class="header"/>
+            <div class="article">
+                <t t-foreach="docs" t-as="o">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        <div style="padding-top: 17mm;">
+                        <b><span style="border-bottom: 1px solid black;border-top: 1px solid black;margin-left:50%;">A/c Payee</span></b><b><span style="margin-left:17%;" t-field="o.payment_date" t-options="{&quot;format&quot;: &quot;dd-MMM-yyyy&quot;}"/></b>
+                            <br/>
+                        </div>
+                        <div style="padding-top: 14mm;">
+                            
+                            <div class="">
+                                <b><span t-field="o.partner_id.name" style="margin-left:20%;"/></b>
+
+                                
+                                <br/><br/>
+                                <b><span><span t-esc="o.check_amount_in_words" style="margin-left:6%;"/>   Only</span></b>
+                                <br/>
+                                <b><span style="margin-left:75%;">**<span t-field="o.amount" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></span></b>
+                                <!--<br/>-->
+                                <!--<span><span t-esc="o.currency_id.currency_subunit_label" style="margin-left:20%;"/> Only</span>-->
+                            </div>
+                        </div>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <!--<div class="row">-->
+                        <!--    <div class="col-8">-->
+                        <!--        <strong t-field="o.partner_id.name"/>-->
+                        <!--    </div>-->
+                        <!--    <div class="col-4">-->
+                        <!--        <strong t-field="o.payment_date"/>-->
+                        <!--    </div>-->
+                        <!--</div>-->
+                        <!--<t t-foreach="range(2)" t-as="i">-->
+                        <!--    <table class="table table-sm table-borderless">-->
+                        <!--        <thead>-->
+                        <!--            <tr>-->
+                        <!--                <th>Due Date</th>-->
+                        <!--                <th>Description</th>-->
+                        <!--                <th>Original Amount</th>-->
+                        <!--                <th>Balance Due</th>-->
+                        <!--                <th>Payment</th>-->
+                        <!--            </tr>-->
+                        <!--        </thead>-->
+                        <!--        <tbody>-->
+                        <!--            <t t-foreach="paid_lines[o.id]" t-as="line">-->
+                        <!--                <tr>-->
+                        <!--                    <td>-->
+                        <!--                        <span t-esc="line['date_due']"/>-->
+                        <!--                    </td>-->
+                        <!--                    <td>-->
+                        <!--                        <span t-esc="line['reference'] or line['number']"/>-->
+                        <!--                    </td>-->
+                        <!--                    <td>-->
+                        <!--                        <span t-esc="line['amount_total']" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>-->
+                        <!--                    </td>-->
+                        <!--                    <td>-->
+                        <!--                        <span t-esc="line['residual']" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>-->
+                        <!--                    </td>-->
+                        <!--                    <td>-->
+                        <!--                        <span t-esc="line['paid_amount']" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>-->
+                        <!--                    </td>-->
+                        <!--                </tr>-->
+                        <!--            </t>-->
+                        <!--        </tbody>-->
+                        <!--    </table>-->
+                        <!--    <div style="padding-right: 20mm; padding-top: 45mm; padding-bottom: 15mm;" align="right">-->
+                        <!--        <b>Check Amount:</b>-->
+                        <!--        <span t-field="o.amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>-->
+                        <!--    </div>-->
+                        <!--</t>-->
+                    </div>
+                    <p style="page-break-before:always;"/>
+                </t>
+            </div>
+        </t>
+    </template>
+
+</odoo>

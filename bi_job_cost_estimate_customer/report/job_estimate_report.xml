@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report 
+            string="Job Estimate" 
+            id="action_report_job_estimate" 
+            model="job.estimate" 
+            name="bi_job_cost_estimate_customer.job_estimate_report"
+            file="bi_job_cost_estimate_customer.job_estimate_report" 
+            report_type="qweb-pdf"
+            print_report_name="'Job Estimate - %s' % (object.number or '')"
+        />
+
+    </data>
+</odoo>
+

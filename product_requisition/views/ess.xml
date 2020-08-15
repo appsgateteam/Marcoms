@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_requisition_form_view" model="ir.ui.view">
+        <field name="name">product.requisition.form.view</field>
+        <field name="model">product.requisition</field>
+        <field name="arch" type="xml">
+            <form string="Material Requisition">
+            <header>
+                <!-- <button name="create_purchase_requisition" type="object" string="Create Purchase Tender" attrs="{'invisible': ['|',('state', 'not in', 'po_created'),('flag','=',True)]}" groups="product_requisition.group_Purchasing_Manager"/> -->
+                <button name="action_to_po" type="object" string="Confirm" attrs="{'invisible': [('state', 'not in', 'new')]}" />
+                <!-- attrs="{'invisible': ['|',('test_requester', '!=',True),('state', 'not in', 'new')]}" groups="product_requisition.group_Requester_id" -->
+                <!-- <button name="action_pricing" type="object" string="Send to Accounts" attrs="{'invisible': [('state', 'not in', 'po_created')]}" groups="product_requisition.group_Purchasing_Manager"/> -->
+                <!-- <button name="action_return_requester" type="object" string="Send to requester approve" attrs="{'invisible': [('state', 'not in', 'account')]}" groups="product_requisition.group_Accounts"/> -->
+                <!-- <button name="action_requester_app" type="object" string="Approve" attrs="{'invisible': ['|',('test_requester', '!=',True),('state', 'not in', 'back')]}" groups="product_requisition.group_Requester_id"/> -->
+                <!-- <button name="action_requester_rej" type="object" string="Reject" class="btn-danger" attrs="{'invisible': ['|',('test_requester', '!=',True),('state', 'not in', 'back')]}" groups="product_requisition.group_Requester_id"/> -->
+                <!-- <button name="action_management_app" type="object" string="Approve" attrs="{'invisible': [('state', 'not in', 'top')]}" groups="product_requisition.group_top_management"/> -->
+                <!-- <button name="action_management_rej" type="object" string="Reject" class="btn-danger" attrs="{'invisible': [('state', 'not in', 'top')]}" groups="product_requisition.group_top_management"/> -->
+                <button name="set_to_draft" type="object" string="Set to Draft" attrs="{'invisible': [('state', 'not in', ['cancel'])]}" groups="base.group_user"/>
+                <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': [('state', 'in', ['cancel'])]}" groups="base.group_user"/>
+                <field name="state" widget="statusbar" statusbar_visible="new,po_created,account,back,top"/>
+            </header>
+            <sheet>
+                <div class="oe_button_box" name="button_box">
+                    <button class="oe_stat_button" type="object" name="req_view" icon="fa-pencil-square-o" attrs="{'invisible': [('state', 'in', ['new'])]}">
+                        <div class="o_stat_info">
+                            <field name="req_number" class="o_stat_value"/>
+                            <span class="o_stat_text">Tender Requisitions </span>
+                        </div>
+                    </button>
+                    <button class="oe_stat_button" type="object" name="po_view" icon="fa-pencil-square-o" attrs="{'invisible': [('state', 'in', ['new'])]}">
+                        <div class="o_stat_info">
+                            <field name="po_number" class="o_stat_value"/>
+                            <span class="o_stat_text">PO's </span>
+                        </div>
+                    </button>
+                </div>
+                
+                <div class="oe_title oe_left">
+                    <h1>
+                        <field name="sequence"/>
+                    </h1>
+                </div>
+                <group>
+                    <group>
+                        <!-- <field name="partner_id" attrs="{'readonly': [('state', 'in', ['cancel'])]}" domain="[('customer','=',True),('parent_id','=',False)]"/> -->
+                        <field name="req_name" attrs="{'readonly': ['|',('test_requester', '!=',True),('state', 'not in', ['new'])]}" />
+                        <field name="creator_name" />
+                        <field name="oppor_id" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
+                        <field name="task_id" attrs="{'readonly': [('state', 'in', ['cancel'])]}" domain="[('project_id.analytic_account_id','=',oppor_id)]"/>
+                        <field name="show_name" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
+                        <field name="flag" invisible="1" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
+                        <field name="test_requester" invisible="1" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
+                        <!-- <field name="task_id" attrs="{'readonly': [('state', 'in', ['cancel'])]}" domain="[('project_id.analytic_account_id','=',analytic_id)]"/> -->
+                    </group>
+                    <group>
+                        <field name="requisition_date" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
+                        <field name="pro_requi" invisible="1" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
+                        <field name="requisition_dead" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
+                        <field name="co_box" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
+                        <!-- <field name="requisition_deadline_date" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
+                        <field name="company_id" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/> -->
+                    </group>
+                </group>
+                <notebook>
+                    <page string="Requisitions Lines">
+                        <field name="requisition_line_ids" widget="one2many_list" attrs="{'readonly': [('state', 'not in', ['new','po_created'])]}">
+                            <tree string="Requisitions Lines" editable="bottom">
+                                <field name="product_id" />
+                                <field name="description" />
+                                <field name="qty" />
+                                <field name="available_qty" invisible="1" />
+                                <field name="uom_id" />
+                                <field name="price" invisible="1"/>
+                                <field name="total_price" invisible="1"/>
+                                <field name="remarks" invisible="1"/>
+                            </tree>
+                        </field>
+                        <!-- <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+                            <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                                <label for="total_price"/>
+                            </div>
+                            <field name="total_price" nolabel="1" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </group> -->
+                    </page>
+                </notebook>
+                <label for="reason_for_requisition"/>
+                <field name="reason_for_requisition"/>
+            </sheet>
+            <div class="oe_chatter">
+                <field name="message_follower_ids" widget="mail_followers"/>
+                <field name="message_ids" widget="mail_thread"/>
+            </div>
+            </form>    
+        </field>
+    </record>
+
+    <record id="product_requisition_tree_view" model="ir.ui.view">
+        <field name="name">product.requisition.tree.view</field>
+        <field name="model">product.requisition</field>
+        <field name="arch" type="xml">
+            <tree string="Material Requisition" default_order="id desc">
+                <field name="sequence" string="Number"/>
+                <field name="req_name"/>
+                <field name="creator_name"/>
+                <field name="co_box"/>
+                <field name="requisition_date"/>
+                <field name="requisition_dead"/>
+                <!-- <field name="sales_id"/> -->
+                <field name="oppor_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    <record id="product_requisition_action" model="ir.actions.act_window">
+        <field name="name">Product Requisition</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.requisition</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
+
+    <menuitem
+            id="product_requisition_action_root"
+            name="Product Requisition"
+            web_icon="product_requisition,static/src/img/ESS.png"
+            groups="group_channel_access"/>
+    <menuitem
+            id="product_requisition_action_menuitem"
+            name="Product Requisition"
+            sequence="1"
+            parent="product_requisition_action_root"
+            action="product_requisition_action"/>
+
+    <record id="purchase_order2_form_cus2" model="ir.ui.view">
+        <field name="name">purchase.order2.form.cus2</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_rfq_send']" position="after">
+                <button name="action_return_requester" type="object" string="Accounts Approve" attrs="{'invisible': [('state', 'not in', 'account')]}" groups="product_requisition.group_Accounts"/>
+                <button name="action_requester_approve" type="object" string="Requester Approve" attrs="{'invisible': ['|',('test_requester', '!=',True),('state', 'not in', 'req'),'|',('co_box', '!=',False)]}" groups="product_requisition.group_Requester_id"/>
+                <button name="action_mana_approve" type="object" string="Management Approve" attrs="{'invisible': ['|',('co_box', '=',True),('state', 'not in', 'top')]}" groups="product_requisition.group_top_management"/>
+                <button name="action_requester_approve" type="object" string="Requester Approve" attrs="{'invisible': ['|',('co_box', '!=',True),'|',('test_requester', '=',True),('state', 'not in', 'req')]}" groups="product_requisition.group_Requester_id,product_requisition.group_coordinator"/>
+                <button name="action_mana_approve" type="object" string="Management Approve" attrs="{'invisible': ['|',('co_box', '!=',True),('state', 'not in', 'top')]}" groups="product_requisition.group_top_management,product_requisition.group_coordinator"/>
+                <button name="action_reject" type="object" string="Reject" class="btn-danger" attrs="{'invisible': ['|',('co_box', '=',True),('state', 'not in', 'top')]}" groups="product_requisition.group_top_management"/>
+                <button name="action_reject" type="object" string="Reject" class="btn-danger" attrs="{'invisible': ['|',('test_requester', '!=',True),('state', 'not in', 'req'),'|',('co_box', '!=',False)]}" groups="product_requisition.group_Requester_id"/>
+                <button name="action_reject" type="object" string="Reject" class="btn-danger" attrs="{'invisible': ['|',('co_box', '!=',True),('state', 'not in', 'top')]}" groups="product_requisition.group_top_management,product_requisition.group_coordinator"/>
+                <button name="action_reject" type="object" string="Reject" class="btn-danger" attrs="{'invisible': ['|',('co_box', '!=',True),'|',('test_requester', '=',True),('state', 'not in', 'req')]}" groups="product_requisition.group_Requester_id,product_requisition.group_coordinator"/>
+                <button name="action_reject" type="object" string="Reject" class="btn-danger" attrs="{'invisible': [('state', 'not in', 'account')]}" groups="product_requisition.group_Accounts"/>
+                
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="pro_requi" invisible="1"/>
+                <field name="pr_sequence" invisible="1"/>
+                <field name="creator_name" invisible="1"/>
+                <field name="pr_sequence_id" invisible="1"/>
+                <field name="creator_name_id" invisible="1"/>
+                <field name="test_requester" invisible="1"/>
+                <field name="co_box" invisible="1"/>
+                <field name="req_name" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="purchase_requisition_form_cus2" model="ir.ui.view">
+        <field name="name">purchase.requisition.form.cus2</field>
+        <field name="model">purchase.requisition</field>
+        <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_form"/>
+        <field name="arch" type="xml">
+            <field name="vendor_id" position="after">
+                <field name="requisition_pr_id"/>
+                <field name="pro_requi" invisible="1"/>
+                <field name="pr_sequence" invisible="1"/>
+                <field name="creator_name" invisible="1"/>
+                <field name="pr_sequence_id" invisible="1"/>
+                <field name="creator_name_id" invisible="1"/>
+                <!-- <field name="requisition_mat_po_id"/> 
+                <field name="analytic_id" invisible="1"/>
+                <field name="task_id" invisible="1"/>-->
+                <field name="co_box" invisible="1"/>
+                <field name="req_name" invisible="1"/>
+            </field>
+            <!-- <field name="vendor_id" position="after">
+                
+            </field> -->
+            <!-- <xpath expr="//form/header/button[2]" position="replace"> 
+                <button name="%(purchase_requisition.action_purchase_requisition_to_so)d" type="action" string="New Quotation" class="btn-primary"
+                attrs="{'invisible': [('state', 'not in', ('in_progress', 'ongoing'))]}" context="{'default_analytic_id': analytic_id, 'default_task_id': task_id, 'default_requisition_mat_po_id': requisition_mat_po_id}"/>
+            </xpath> -->
+            <xpath expr="//field[@name='description']" position="after">
+                <separator string="Reason For Requisition"/>
+                <field name="reason_for_requisition"/>
+                
+            </xpath>
+            <xpath expr="//field[@name='product_id'][1]" position="after">
+                <field name="name"/>
+                
+            </xpath>
+            <!-- <xpath expr="//field[@name='product_id'][1]" position="after">
+                <field name="description"/>
+                
+            </xpath> -->
+            <xpath expr="//button[1]" position="replace">
+                
+            </xpath>
+            <xpath expr="//button[1]" position="replace">
+                
+            </xpath>
+            <xpath expr="//button[@name='%(purchase_requisition.action_purchase_requisition_list)d']" position="replace">
+                <button name="%(purchase_requisition.action_purchase_requisition_list)d" type="action" class="oe_stat_button" icon="fa-list-alt"
+                        attrs="{'invisible': [('state', '=', 'draft')]}"
+                        context="{'default_pro_requi': pro_requi,'default_pr_sequence_id': pr_sequence_id,'default_pr_sequence': pr_sequence,'default_creator_name_id':creator_name_id,'default_req_name':req_name,'default_co_box':co_box}">
+                        <field name="order_count" widget="statinfo" string="RFQs/Orders"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    
+
+
+    
+</odoo>

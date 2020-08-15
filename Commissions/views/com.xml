@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+<template id="assets_frontend" inherit_id="web.assets_frontend">
+    <xpath expr="." position="inside">
+        <link rel="stylesheet" href="/Commissions/static/src/css/sheet.css"/>
+    </xpath>
+</template>
+    <record id="team_commission_form_view" model="ir.ui.view">
+        <field name="name">team.commission.form.view</field>
+        <field name="model">team.commission</field>
+        <field name="arch" type="xml">
+            <form string="Commissions">
+                <header>
+                    <button name="action_confirm" states="draft" string="Submit" type="object" class="oe_highlight"/>
+                    
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submit"/>
+                </header>
+                <sheet>
+                    <h2 class="o_row row no-gutters d-flex">
+                        <div class="col">
+                            <label for="name" class="oe_edit_only"/>
+                            <div class="o_row">
+                                <field name="name" readonly="1" class="oe_inline"/>
+                            </div>
+                        </div>
+                    </h2>
+                    <h2 class="o_row row no-gutters d-flex">
+                        <div class="col">
+                            <label for="department" class="oe_edit_only"/>
+                            <div class="o_row">
+                                <field name="department" required="1" class="oe_inline" attrs="{'readonly': [('state', '=', 'submit')]}"/>
+                            </div>
+                        </div>
+                    </h2>
+                    <group>
+                        <group>
+                            <field name="date_from" required="1" attrs="{'readonly': [('state', '=', 'submit')]}"/>
+                        </group>
+                        <group>
+                            <field name="date_to" required="1" attrs="{'readonly': [('state', '=', 'submit')]}"/>
+                        </group>
+                    </group>
+                    <!-- <notebook>
+                        <page string="Requisitions Lines"> -->
+                    <field name="commission_id" widget="one2many_list" attrs="{'readonly': [('state', '=', 'submit')]}">
+                        <tree string="Employee Lines" class="my_class" editable="bottom" create="0">
+                            <field name="employee" />
+                            <field name="team_id" invisible="1"/>
+                            <field name="first_range_amount_from" />
+                            <field name="first_range_amount_to" />
+                            <field name="first_range_commission" />
+                            <field name="second_range_amount_from" />
+                            <field name="second_range_amount_to" />
+                            <field name="second_range_commission" />
+                            <field name="third_range_amount_from" />
+                            <field name="third_range_amount_to" />
+                            <field name="third_range_commission" />
+                        </tree>
+                        <form string="Employee Lines">
+                            <group>
+                                <group>
+                                    <field name="employee" />
+                                    <field name="team_id" invisible="1"/>
+                                    <field name="first_range_amount_from" />
+                                    <field name="first_range_amount_to" />
+                                    <field name="first_range_commission" />
+                                </group>
+                                <group>
+                                    
+                                    <field name="second_range_amount_from" />
+                                    <field name="second_range_amount_to" />
+                                    <field name="second_range_commission" />
+                                    <field name="third_range_amount_from" />
+                                    <field name="third_range_amount_to" />
+                                    <field name="third_range_commission" />
+                                </group>
+                            </group>
+                        </form>
+                    </field>
+                        <!-- </page>
+                    </notebook> -->
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>    
+        </field>
+    </record>
+
+    <record id="team_commission_tree_view" model="ir.ui.view">
+        <field name="name">team.commission.tree.view</field>
+        <field name="model">team.commission</field>
+        <field name="arch" type="xml">
+            <tree string="Commissions">
+                <field name="name"/>
+                <field name="department"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    <record id="team_commission_action" model="ir.actions.act_window">
+        <field name="name">Commissions</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">team.commission</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
+    <menuitem
+            id="commission_action_root"
+            name="Commissions"
+            parent="account.menu_finance"
+            />
+
+    <!-- <menuitem
+            id="team_commission_action_root"
+            name="Commissions Teams"
+            action="team_commission_action"
+            parent="commission_action_root"
+            invisible="1"
+            /> -->
+
+    <!-- Commission Evaluation Part -->
+
+    <record id="commission_evaluation_form_view" model="ir.ui.view">
+        <field name="name">commission.evaluation.form.view</field>
+        <field name="model">commission.evaluation</field>
+        <field name="arch" type="xml">
+            <form string="Commission Evaluation">
+                <header>
+                    <button name="action_confirm" states="draft" string="Confirm" type="object" class="oe_highlight"/>
+                    
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm"/>
+                </header>
+                <sheet>
+                    <h2 class="o_row row no-gutters d-flex">
+                        <div class="col">
+                            <label for="name" class="oe_edit_only"/>
+                            <div class="o_row">
+                                <field name="name" readonly="1" class="oe_inline"/>
+                            </div>
+                        </div>
+                    </h2>
+                    <group>
+                        <group>
+                            <field name="date_from" required="1" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                            <field name="sales_commission" style="white-space: nowrap;"  attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                            <field name="designer_commission"  style="white-space: nowrap;" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                        </group>
+                        <group>
+                            <field name="date_to" required="1" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                            <field name="purchase_commission"  style="white-space: nowrap;" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                            <field name="operation_commission"  style="white-space: nowrap;" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                        </group>
+                    </group>
+                    <button name="get_data" states="draft" string="Get Data" type="object" class="oe_highlight"/>
+                    <!-- <notebook>
+                        <page string="Requisitions Lines"> -->
+                    <field name="commission_id" widget="one2many_list" attrs="{'readonly': [('state', '=', 'confirm')]}">
+                        <tree string="Commission Lines" editable="bottom" create="0">
+                            <field name="so_number" />
+                            <field name="comm_id" invisible="1"/>
+                            <field name="so_date" readonly="1"/>
+                            <field name="client" readonly="1"/>
+                            <field name="account_manager" readonly="1"/>
+                            <field name="designer_name" readonly="1"/>
+                            <field name="event" readonly="1"/>
+                            <field name="contract_type" readonly="1"/>
+                            <field name="contract_value" readonly="1"/>
+                            <field name="net_value_vat" readonly="1"/>
+                            <field name="received" readonly="1"/>
+                            <field name="balance" readonly="1"/>
+                            <field name="organizer_charge" readonly="1"/>
+                            <field name="early_access_charge" readonly="1"/>
+                            <field name="storage" readonly="1"/>
+                            <field name="others1" readonly="1"/>
+                            <field name="contract_net_value" readonly="1"/>
+                            <field name="sales_commission" />
+                            <field name="designer_commission" />
+                            <field name="operation_commission" />
+                            <field name="purchase_commission" />
+                            <field name="total_commission" readonly="1"/>
+                            <field name="remarks" />
+                        </tree>
+                        <form string="Commission Lines">
+                            <group>
+                                <group>
+                                    <field name="so_number" />
+                                    <field name="comm_id" invisible="1"/>
+                                    <field name="so_date" readonly="1"/>
+                                    <field name="client" readonly="1"/>
+                                    <field name="account_manager" readonly="1"/>
+                                    <field name="designer_name" readonly="1"/>
+                                    <field name="event" readonly="1"/>
+                                    <field name="contract_type" readonly="1"/>
+                                    <field name="contract_value" readonly="1"/>
+                                    <field name="net_value_vat" readonly="1"/>
+                                    <field name="received" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="balance" readonly="1"/>
+                                    <field name="organizer_charge" readonly="1"/>
+                                    <field name="early_access_charge" readonly="1"/>
+                                    <field name="storage" readonly="1"/>
+                                    <field name="others1" readonly="1"/>
+                                    <field name="contract_net_value" readonly="1"/>
+                                    <field name="sales_commission" />
+                                    <field name="designer_commission" />
+                                    <field name="operation_commission" />
+                                    <field name="purchase_commission" />
+                                    <field name="total_commission" readonly="1"/>
+                                    
+                                </group>
+                            </group>
+                            <field name="remarks" />
+                        </form>
+                    </field>
+                        <!-- </page>
+                    </notebook> -->
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>    
+        </field>
+    </record>
+
+    <record id="commission_evaluation_tree_view" model="ir.ui.view">
+        <field name="name">commission.evaluation.tree.view</field>
+        <field name="model">commission.evaluation</field>
+        <field name="arch" type="xml">
+            <tree string="Commission Evaluation">
+                <field name="name"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="sales_commission"/>
+                <field name="designer_commission"/>
+                <field name="operation_commission"/>
+                <field name="purchase_commission"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    <record id="commission_evaluation_action" model="ir.actions.act_window">
+        <field name="name">Commission Evaluation</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">commission.evaluation</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
+
+    <record id="commission_lines_form_view" model="ir.ui.view">
+        <field name="name">commission.lines.form.view</field>
+        <field name="model">commission.lines</field>
+        <field name="arch" type="xml">
+            <form string="Commission Lines">
+                <group>
+                    <group>
+                        <field name="so_number" />
+                        <field name="comm_id" invisible="1"/>
+                        <field name="so_date" readonly="1"/>
+                        <field name="client" readonly="1"/>
+                        <field name="account_manager" readonly="1"/>
+                        <field name="designer_name" readonly="1"/>
+                        <field name="event" readonly="1"/>
+                        <field name="contract_type" readonly="1"/>
+                        <field name="contract_value" readonly="1"/>
+                        <field name="net_value_vat" readonly="1"/>
+                        <field name="received" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="balance" readonly="1"/>
+                        <field name="organizer_charge" readonly="1"/>
+                        <field name="early_access_charge" readonly="1"/>
+                        <field name="storage" readonly="1"/>
+                        <field name="others1" readonly="1"/>
+                        <field name="contract_net_value" readonly="1"/>
+                        <field name="sales_commission" />
+                        <field name="designer_commission" />
+                        <field name="operation_commission" />
+                        <field name="purchase_commission" />
+                        <field name="total_commission" readonly="1"/>
+                        
+                    </group>
+                </group>
+                <field name="remarks" />
+            </form>    
+        </field>
+    </record>
+
+    <record id="commission_lines_tree_view" model="ir.ui.view">
+        <field name="name">commission.lines.tree.view</field>
+        <field name="model">commission.lines</field>
+        <field name="arch" type="xml">
+            <tree string="Commission Lines">
+                <field name="so_number" />
+                <field name="comm_id" invisible="1"/>
+                <field name="so_date" readonly="1"/>
+                <field name="client" readonly="1"/>
+                <field name="account_manager" readonly="1"/>
+                <field name="designer_name" readonly="1"/>
+                <field name="event" readonly="1"/>
+                <field name="contract_type" readonly="1"/>
+                <field name="contract_value" readonly="1"/>
+                <field name="net_value_vat" readonly="1"/>
+                <field name="received" readonly="1"/>
+                <field name="balance" readonly="1"/>
+                <field name="organizer_charge" readonly="1"/>
+                <field name="early_access_charge" readonly="1"/>
+                <field name="storage" readonly="1"/>
+                <field name="others1" readonly="1"/>
+                <field name="contract_net_value" readonly="1"/>
+                <field name="sales_commission" />
+                <field name="designer_commission" />
+                <field name="operation_commission" />
+                <field name="purchase_commission" />
+                <field name="total_commission" readonly="1"/>
+                <field name="remarks" />
+            </tree>
+        </field>
+    </record>
+    <record id="commission_lines_action" model="ir.actions.act_window">
+        <field name="name">Commission lines</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">commission.lines</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
+
+    <menuitem
+            id="commission_evaluation_action_root"
+            name="Commission Evaluation"
+            action="commission_evaluation_action"
+            parent="commission_action_root"
+            />
+
+
+    <!-- Commission Evaluation Part -->
+    
+
+    
+
+
+    
+</odoo>

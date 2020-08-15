@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+<template id="job_estimate_custom">
+    <t t-call="web.external_layout">
+        <div class="page">
+        	<div class="oe_structure"/>
+            <t t-foreach="docs" t-as="o">
+                <div class="row">
+                    <h2 style="text-align : center;">Job Estimate # - <span t-field="o.number"/> </h2><br/>
+                </div> 
+                
+                <div class="row">
+                    <h3><span t-field="o.partner_id.name"/></h3><br/>
+                </div>
+                
+                <table style="border-collapse: collapse;width: 100%;" class="table table-condensed">
+                    <tr style="padding: 8px;text-align: left;border-top: 1px solid #ddd;height:50%;">
+                        <td><strong >Your Reference : </strong> </td>
+                        <td><span t-field="o.customer_ref" /></td>
+                        
+                        <td><strong >Payment Terms : </strong> </td>
+                        <td><span t-field="o.payment_term_id.name" /></td>
+                    </tr>
+                    
+                    <tr style="padding: 8px;text-align: left;border-top: 1px solid #ddd;">
+                        <td><strong >Sales Person : </strong> </td>
+                        <td><span t-field="o.sales_person_id.name" /></td>
+                        
+                        <td><strong >Sales Team : </strong> </td>
+                        <td><span t-field="o.sales_team_id.name" /></td>
+                    </tr>
+                    
+                    <t foreach="o.job_type_id" t-as="job">
+                    <tr style="padding: 8px;text-align: left;border-top: 1px solid #ddd;">
+                        <td><strong >Date Of Estimate : </strong> </td>
+                        <td><span t-field="o.date" /></td>
+                    </tr>
+                    </t> 
+                </table>
+                
+                <h2>Material Estimate</h2><br/>
+                <table style="border-collapse: collapse;width: 100%;" class="table table-condensed">
+                    <thead>
+					    <tr>
+						    <th>Product</th>
+						    <th>Description</th>
+						    <th>Quantity</th>
+						    <th>Unit Of Measure</th>
+						    <th>Unit Price</th>
+						    <th>Discount</th>
+						    <th>Sub Total</th>
+					    </tr>
+			        </thead>  
+					<tbody class="components_tbody">
+					    <t t-foreach="o.material_estimation_ids" t-as="material_line">	 
+                        <tr>
+					        <td>
+						        <span t-field="material_line.product_id.name" />
+					        </td>
+			                <td>
+						        <span t-field="material_line.description" />
+					        </td>
+					        <td>
+						        <span t-field="material_line.quantity" />
+					        </td>
+			                <td>
+						        <span t-field="material_line.uom_id.name" />
+					        </td>
+					        <td>
+						        <span t-field="material_line.unit_price" />
+					        </td>
+					        <td>
+						        <span t-field="material_line.discount" />
+					        </td>
+					        <td>
+						        <span t-field="material_line.subtotal" />
+					        </td>
+				        </tr>
+				        </t>
+					</tbody>
+                </table>
+
+                <h2>Labour Estimate</h2><br/>
+                <table style="border-collapse: collapse;width: 100%;" class="table table-condensed">
+                    <thead>
+					    <tr>
+						    <th>Product</th>
+						    <th>Description</th>
+						    <th>Quantity</th>
+						    <th>Unit Of Measure</th>
+						    <th>Unit Price</th>
+						    <th>Discount</th>
+						    <th>Sub Total</th>
+					    </tr>
+			        </thead>  
+					<tbody class="components_tbody">
+					    <t t-foreach="o.labour_estimation_ids" t-as="labour_line">	 
+                        <tr>
+					        <td>
+						        <span t-field="labour_line.product_id.name" />
+					        </td>
+			                <td>
+						        <span t-field="labour_line.description" />
+					        </td>
+					        <td>
+						        <span t-field="labour_line.quantity" />
+					        </td>
+			                <td>
+						        <span t-field="labour_line.uom_id.name" />
+					        </td>
+					        <td>
+						        <span t-field="labour_line.unit_price" />
+					        </td>
+					        <td>
+						        <span t-field="labour_line.discount" />
+					        </td>
+					        <td>
+						        <span t-field="labour_line.subtotal" />
+					        </td>
+				        </tr>
+				        </t>
+					</tbody>
+                </table>    
+                
+                <h2>Overhead Estimate</h2><br/>
+                <table style="border-collapse: collapse;width: 100%;" class="table table-condensed">
+                    <thead>
+					    <tr>
+						    <th>Product</th>
+						    <th>Description</th>
+						    <th>Quantity</th>
+						    <th>Unit Of Measure</th>
+						    <th>Unit Price</th>
+						    <th>Discount</th>
+						    <th>Sub Total</th>
+					    </tr>
+			        </thead>  
+					<tbody class="components_tbody">
+					    <t t-foreach="o.overhead_estimation_ids" t-as="overhead_line">	 
+                        <tr>
+					        <td>
+						        <span t-field="overhead_line.product_id.name" />
+					        </td>
+			                <td>
+						        <span t-field="overhead_line.description" />
+					        </td>
+					        <td>
+						        <span t-field="overhead_line.quantity" />
+					        </td>
+			                <td>
+						        <span t-field="overhead_line.uom_id.name" />
+					        </td>
+					        <td>
+						        <span t-field="overhead_line.unit_price" />
+					        </td>
+					        <td>
+						        <span t-field="overhead_line.discount" />
+					        </td>
+					        <td>
+						        <span t-field="overhead_line.subtotal" />
+					        </td>
+				        </tr>
+				        </t>
+					</tbody>
+                </table>    
+                
+                <div class="clearfix">
+                <div class="row pull-right" name="total">
+                    <div>
+                        <table class="table-condensed" style="min-width: 200px;max-width: 350px;">
+                            <tr class="border-black" style="border-bottom:1px solid #dddddd;">
+                                <td><strong>Total Material Estimate</strong></td>
+                                <td class="text-right">
+                                    <span t-field="o.total_material_estimate"/>
+                                </td>
+                            </tr>
+                            <tr class="border-black">
+                                <td><strong>Total Labour Estimate</strong></td>
+                                <td class="text-right">
+                                    <span t-field="o.total_labour_estimate"/>
+                                </td>
+                            </tr>
+                            <tr class="border-black">
+                                <td><strong>Total Overhead Estimate</strong></td>
+                                <td class="text-right">
+                                    <span t-field="o.total_overhead_estimate"/>
+                                </td>
+                            </tr>
+                            <tr class="border-black">
+                                <td><strong>Total Job Estimate</strong></td>
+                                <td class="text-right">
+                                    <span t-field="o.total_job_estimate"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <strong>Description Of Job Estimate</strong><br/>
+                <span t-field="o.description"/>
+            </div>
+            </t>
+        </div>
+    </t>
+</template>
+
+<template id="job_estimate_report">
+    <t t-call="web.html_container">
+        <t t-foreach="doc_ids" t-as="o">
+            <t t-call="bi_job_cost_estimate_customer.job_estimate_custom" />
+        </t>
+    </t>
+</template>
+
+
+</data>
+</odoo>
+

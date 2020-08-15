@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="food_expense_refuse_wizard_view_form" model="ir.ui.view">
+        <field name="name">food.expense.refuse.wizard.form</field>
+        <field name="model">food.expense.refuse.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Expense refuse reason">
+                <separator string="Reason to refuse Expense"/>
+                <field name="hr_expense_ids" invisible="1"/>
+                <field name="hr_expense_sheet_id" invisible="1"/>
+                <field name="reason"/>
+                <footer>
+                    <button string='Refuse' name="expense_refuse_reason" type="object" class="oe_highlight"/>
+                    <button string="Cancel" class="oe_link" special="cancel"/>
+                </footer>
+           </form>
+        </field>
+    </record>
+
+    <record id="food_expense_refuse_wizard_action" model="ir.actions.act_window">
+        <field name="name">Refuse Expense</field>
+        <field name="res_model">food.expense.refuse.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="food_expense_refuse_wizard_view_form"/>
+        <field name="target">new</field>
+    </record>
+
+<!-- transportaion start -->
+
+        <record id="transportaion_expense_refuse_wizard_view_form" model="ir.ui.view">
+        <field name="name">transportaion.expense.refuse.wizard.form</field>
+        <field name="model">transportaion.expense.refuse.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Expense refuse reason">
+                <separator string="Reason to refuse Expense"/>
+                <field name="hr_expense_ids" invisible="1"/>
+                <field name="hr_expense_sheet_id" invisible="1"/>
+                <field name="reason"/>
+                <footer>
+                    <button string='Refuse' name="expense_refuse_reason" type="object" class="oe_highlight"/>
+                    <button string="Cancel" class="oe_link" special="cancel"/>
+                </footer>
+           </form>
+        </field>
+    </record>
+
+    <record id="transportaion_expense_refuse_wizard_action" model="ir.actions.act_window">
+        <field name="name">Refuse Expense</field>
+        <field name="res_model">transportaion.expense.refuse.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="transportaion_expense_refuse_wizard_view_form"/>
+        <field name="target">new</field>
+    </record>
+<!-- transportaion end -->
+
+
+<!-- petty cash start -->
+
+    <record id="petty_cash_expense_refuse_wizard_view_form" model="ir.ui.view">
+    <field name="name">petty.cash.expense.refuse.wizard.view.form</field>
+    <field name="model">petty.cash.expense.refuse.wizard</field>
+    <field name="arch" type="xml">
+        <form string="Expense refuse reason">
+            <separator string="Reason to refuse Expense"/>
+            <field name="hr_expense_ids" invisible="1"/>
+            <field name="hr_expense_sheet_id" invisible="1"/>
+            <field name="reason"/>
+            <footer>
+                <button string='Refuse' name="expense_refuse_reason" type="object" class="oe_highlight"/>
+                <button string="Cancel" class="oe_link" special="cancel"/>
+            </footer>
+        </form>
+    </field>
+    </record>
+
+    <record id="petty_cash_expense_refuse_wizard_action" model="ir.actions.act_window">
+        <field name="name">Refuse Expense</field>
+        <field name="res_model">petty.cash.expense.refuse.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="petty_cash_expense_refuse_wizard_view_form"/>
+        <field name="target">new</field>
+    </record>
+<!-- petty cash end -->
+
+
+<!-- Labour start -->
+
+    <record id="labour_expense_refuse_wizard_view_form" model="ir.ui.view">
+    <field name="name">labour.expense.refuse.wizard.view.form</field>
+    <field name="model">labour.expense.refuse.wizard</field>
+    <field name="arch" type="xml">
+        <form string="Expense refuse reason">
+            <separator string="Reason to refuse Expense"/>
+            <field name="hr_expense_ids" invisible="1"/>
+            <field name="hr_expense_sheet_id" invisible="1"/>
+            <field name="reason"/>
+            <footer>
+                <button string='Refuse' name="expense_refuse_reason" type="object" class="oe_highlight"/>
+                <button string="Cancel" class="oe_link" special="cancel"/>
+            </footer>
+        </form>
+    </field>
+    </record>
+
+    <record id="labour_expense_refuse_wizard_action" model="ir.actions.act_window">
+        <field name="name">Refuse Expense</field>
+        <field name="res_model">labour.expense.refuse.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="labour_expense_refuse_wizard_view_form"/>
+        <field name="target">new</field>
+    </record>
+<!-- Labour end -->
+
+
+</odoo>

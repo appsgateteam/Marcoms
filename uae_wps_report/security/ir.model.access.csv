@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_report_uae_wps_report_xlsx_report_manager,report.uae_wps_report.xlsx_report,model_report_uae_wps_report_xlsx_report,base.group_user,1,1,1,1
+access_wps_wizard_manager,wps.wizard,model_wps_wizard,base.group_user,1,1,1,1

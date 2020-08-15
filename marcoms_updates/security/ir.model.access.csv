@@ -1,0 +1,67 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_evaluation_sheet_manager,evaluation.sheet,model_evaluation_sheet,base.group_user,1,1,0,1
+access_details_sheet_manager,details.sheet,model_details_sheet,base.group_user,1,1,1,1
+access_hr_allowance_line_manager,hr.allowance.line,model_hr_allowance_line,base.group_user,1,1,1,1
+access_hr_payroll_transactions_manager,hr.payroll.transactions,model_hr_payroll_transactions,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_payroll_transactions_line_manager,hr.payroll.transactions.line,model_hr_payroll_transactions_line,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_variance_line_manager,hr.variance.line,model_hr_variance_line,base.group_user,1,1,1,1
+access_crm_lead_document_manager,crm.lead.document,model_crm_lead_document,base.group_user,1,1,1,1
+access_sale_order_document_manager,sale.order.document,model_sale_order_document,base.group_user,1,1,1,1
+access_account_move_document_manager,account.move.document,model_account_move_document,base.group_user,1,1,1,1
+access_account_invoice_document_manager,account.invoice.document,model_account_invoice_document,base.group_user,1,1,1,1
+access_hr_payroll_tran_sheet_view_manager,hr.payroll.tran.sheet.view,model_hr_payroll_tran_sheet_view,hr_payroll.group_hr_payroll_manager,1,1,0,1
+access_hr_salary_sheet_view_manager,hr.salary.sheet.view,model_hr_salary_sheet_view,hr_payroll.group_hr_payroll_manager,1,1,0,1
+access_crm_lead_service_manager,crm.lead.service,model_crm_lead_service,base.group_user,1,1,1,1
+access_sale_order_venue_manager,sale.order.venue,model_sale_order_venue,base.group_user,1,1,1,1
+access_hr_airticket_manager,hr.airticket,model_hr_airticket,base.group_user,1,1,1,1
+access_bank_details_manager,bank.details,model_bank_details,base.group_user,1,1,1,1
+access_asset_tracking_manager,asset.tracking,model_asset_tracking,base.group_user,1,1,1,1
+access_cost_center_manager,cost.center,model_cost_center,base.group_user,1,1,1,1
+access_document_type_manager,document.type,model_document_type,base.group_user,1,1,1,1
+access_source_master_manager,source.master,model_source_master,base.group_user,1,1,1,1
+access_leave_analysis_manager,leave.analysis,model_leave_analysis,base.group_user,1,1,1,1
+access_payment_invoice_line_outstand_manager,payment.invoice.line.outstand,model_payment_invoice_line_outstand,base.group_user,1,1,1,1
+access_material_requisition_sales_manager,material.requisition.sales,model_material_requisition_sales,base.group_user,1,1,1,1
+access_material_requisition_sales_line_manager,material.requisition.sales.line,model_material_requisition_sales_line,base.group_user,1,1,1,1
+access_crm_lead,crm.lead,crm.model_crm_lead,sales_team.group_sale_salesman_all_leads,1,1,1,0
+access_res_partner,res.partner.crm.user,base.model_res_partner,sales_team.group_sale_salesman_all_leads,1,1,1,0
+access_res_partner_category,res.partner.category.crm.user,base.model_res_partner_category,sales_team.group_sale_salesman_all_leads,1,1,1,0
+access_crm_lead_tag_salesman,crm_lead_tag salesman,crm.model_crm_lead_tag,sales_team.group_sale_salesman_all_leads,1,1,1,0
+access_crm_lost_reason_salesman,crm.lost.reason.salesman,crm.model_crm_lost_reason,sales_team.group_sale_salesman_all_leads,1,0,0,0
+access_calendar_event,calendar.event,calendar.model_calendar_event,sales_team.group_sale_salesman_all_leads,1,1,1,0
+access_calendar_event_type_sale_salesman,calendar.event.type.salesman,calendar.model_calendar_event_type,sales_team.group_sale_salesman_all_leads,1,0,0,0
+access_sale_order,sale.order,sale.model_sale_order,sales_team.group_sale_salesman_all_leads,1,1,1,0
+access_sale_order_line,sale.order.line,sale.model_sale_order_line,sales_team.group_sale_salesman_all_leads,1,1,1,1
+access_account_invoice_tax_salesman,account_invoice_tax salesman,account.model_account_invoice_tax,sales_team.group_sale_salesman_all_leads,1,1,1,0
+access_account_invoice_salesman,account_invoice salesman,account.model_account_invoice,sales_team.group_sale_salesman_all_leads,1,1,1,0
+access_account_invoice_line_salesman,account_invoice.line salesman,account.model_account_invoice_line,sales_team.group_sale_salesman_all_leads,1,1,1,0
+access_sale_report_salesman,sale.report,sale.model_sale_report,sales_team.group_sale_salesman_all_leads,1,1,1,0
+access_ir_property_sales,ir.property.sales,base.model_ir_property,sales_team.group_sale_salesman_all_leads,1,1,1,1
+access_sale_account_journal,account.journal sale order.user,account.model_account_journal,sales_team.group_sale_salesman_all_leads,1,0,0,0
+access_res_partner_sale_user,res.partner.sale.user,base.model_res_partner,sales_team.group_sale_salesman_all_leads,1,0,0,0
+access_product_template_sale_user,product.template sale use,product.model_product_template,sales_team.group_sale_salesman_all_leads,1,0,0,0
+access_product_product_sale_user,product.product sale use,product.model_product_product,sales_team.group_sale_salesman_all_leads,1,0,0,0
+access_account_tax_user,account.tax.user,account.model_account_tax,sales_team.group_sale_salesman_all_leads,1,0,0,0
+access_uom_uom_user,uom.uom.user,uom.model_uom_uom,sales_team.group_sale_salesman_all_leads,1,0,0,0
+access_product_pricelist_sale_user,product.pricelist.sale.user,product.model_product_pricelist,sales_team.group_sale_salesman_all_leads,1,0,0,0
+access_account_account_salesman,account_account salesman,account.model_account_account,sales_team.group_sale_salesman_all_leads,1,0,0,0
+access_product_supplierinfo_user,product.supplierinfo.user,product.model_product_supplierinfo,sales_team.group_sale_salesman_all_leads,1,0,0,0
+access_account_move_line_salesman,account.move.line invoice,account.model_account_move_line,sales_team.group_sale_salesman_all_leads,1,0,0,0
+access_account_tax_sale_manager,account.tax sale manager,account.model_account_tax,sales_team.group_sale_salesman_all_leads,1,0,0,0
+access_account_journal_sale_manager,account.journal sale manager,account.model_account_journal,sales_team.group_sale_salesman_all_leads,1,0,0,0
+access_account_invoice_tax_sale_manager,account.invoice.tax  sale manager,account.model_account_invoice_tax,sales_team.group_sale_salesman_all_leads,1,0,0,0
+access_account_tax_group_sale_manager,account.tax.group sale manager,account.model_account_tax_group,sales_team.group_sale_salesman_all_leads,1,0,0,0
+access_crm_lead,crm.lead,crm.model_crm_lead,group_creative_designer,1,1,0,0
+access_res_partner,res.partner.crm.user,base.model_res_partner,group_creative_designer,1,1,0,0
+access_res_partner_category,res.partner.category.crm.user,base.model_res_partner_category,group_creative_designer,1,1,0,0
+access_crm_lead_tag_salesman,crm_lead_tag salesman,crm.model_crm_lead_tag,group_creative_designer,1,1,0,0
+access_crm_lost_reason_salesman,crm.lost.reason.salesman,crm.model_crm_lost_reason,group_creative_designer,1,0,0,0
+access_calendar_event,calendar.event,calendar.model_calendar_event,group_creative_designer,1,1,0,0
+access_calendar_event_type_sale_salesman,calendar.event.type.salesman,calendar.model_calendar_event_type,group_creative_designer,1,0,0,0
+access_crm_lead,crm.lead,crm.model_crm_lead,group_creative_coordinator,1,1,0,0
+access_res_partner,res.partner.crm.user,base.model_res_partner,group_creative_coordinator,1,1,0,0
+access_res_partner_category,res.partner.category.crm.user,base.model_res_partner_category,group_creative_coordinator,1,1,0,0
+access_crm_lead_tag_salesman,crm_lead_tag salesman,crm.model_crm_lead_tag,group_creative_coordinator,1,1,0,0
+access_crm_lost_reason_salesman,crm.lost.reason.salesman,crm.model_crm_lost_reason,group_creative_coordinator,1,0,0,0
+access_calendar_event,calendar.event,calendar.model_calendar_event,group_creative_coordinator,1,1,0,0
+access_calendar_event_type_sale_salesman,calendar.event.type.salesman,calendar.model_calendar_event_type,group_creative_coordinator,1,0,0,0

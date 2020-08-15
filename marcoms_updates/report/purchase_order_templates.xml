@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="purchase.report_purchaseorder_document">
+    <t t-call="web.external_layout_boxed">
+        <t t-set="o" t-value="o.with_context(lang=o.partner_id.lang)"/>
+        <t t-set="address">
+            <!-- <div t-field="o.partner_id"
+            t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'/>
+            <p t-if="o.partner_id.vat"><t t-esc="o.company_id.country_id.vat_label or 'Tax ID'"/>: <span t-field="o.partner_id.vat"/></p> -->
+        </t>
+        <t t-if="o.dest_address_id">
+        </t>
+        <div class="page" style="font-size:17px;">
+            <div class="oe_structure"/>
+
+            <h2 t-if="o.state == 'draft'" class="text-center">REQUEST FOR QUOTATION</h2>
+            <h2 t-if="o.state not in ['draft', 'purchase', 'done', 'cancel']" class="text-center">LOCAL PURCHASE ORDER</h2>
+            <h2 t-if="o.state in ['purchase', 'done']" class="text-center">LOCAL PURCHASE ORDER CONFIRMATION</h2>
+            <h2 t-if="o.state == 'cancel'" class="text-center">CANCELLED LOCAL PURCHASE ORDER</h2>
+            <br/>
+            <div>
+                <div style="float:left;">
+                    <!--<t t-set="address">-->
+                        <div t-field="o.partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}"/>
+                        <p t-if="o.partner_id.vat">TRN No: <span t-field="o.partner_id.vat"/></p>
+                    <!--</t>-->
+                </div>
+                <div style="margin-left:60%;" class="col-5">
+                    <table class="table table-sm" style="border-collapse: collapse;border: 1px solid black;">
+                        <tr>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:15px;width: 40%;"><span>Date</span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:15px;width: 60%;"><b><span t-field="o.date_order" t-options-widget="&quot;date&quot;"/></b></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:15px;width: 40%;"><span>PO #</span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:15px;width: 60%;"><b><span t-field="o.name"/></b></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:15px;width: 40%;"><span>Quote #</span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:15px;width: 60%;"><span t-field="o.partner_ref"/></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:15px;width: 40%;"><span>Order by </span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:15px;width: 60%;"><span t-field="o.user_id.name"/></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:15px;width: 40%;"><span>PRF #</span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:15px;width: 60%;"><span t-field="o.rfq_name"/></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:15px;width: 40%;"><span>Delivery Date</span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:15px;width: 60%;"><span t-field="o.date_planned" t-options-widget="&quot;date&quot;"/></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:15px;width: 40%;"><span>Delivery Location</span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:15px;width: 60%;"><span t-field="o.delivery_location"/></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+
+            <!-- <div id="informations" class="row mt32 mb32">
+                <div t-if="o.name" class="col-3 bm-2">
+                    <strong>Our Order Reference:</strong>
+                    <p t-field="o.name" class="m-0"/>
+                </div>
+                <div t-if="o.partner_ref" class="col-3 bm-2">
+                    <strong>Your Order Reference:</strong>
+                    <p t-field="o.partner_ref" class="m-0"/>
+                </div>
+                <div t-if="o.date_order" class="col-3 bm-2">
+                    <strong>Order Date:</strong>
+                    <p t-field="o.date_order" class="m-0"/>
+                </div>
+            </div> -->
+            <t t-set="i" t-value="1"/>
+            <table class="table table-sm o_main_table" style="font-size:12px;">
+              
+                <thead>
+                    <tr>
+                      <td class="text-left" colspan="2" style="border: 1px solid black;"><b><span><strong>Project</strong></span></b></td>
+                      <td class="text-left" style="border: 1px solid black;" colspan="99"><span><span t-field="o.analytic_id.name"/>   </span></td>
+                    </tr>
+                    <tr>
+                      <td class="text-left" colspan="2" style="border: 1px solid black;"><b><span><strong>Payment terms</strong></span></b></td>
+                      <td class="text-left" style="border: 1px solid black;" colspan="99"><span t-field="o.payment_term_id.name"/></td>
+                    </tr>
+                    <tr>
+                        <th class="text-center" style="width:5%"><strong>Sr No.</strong></th>
+                        <th class="text-center" style="width:10%"><strong>Type</strong></th>
+                        <th class="text-center" style="width:10%"><strong>Item Code</strong></th>
+                        <th class="text-center" style="width:25%"><strong>Description</strong></th>
+                        <th class="text-center" style="width:5%"><strong>Unit</strong></th>
+                        <th class="text-center" style="width:5%"><strong>Qty</strong></th>
+                        <th class="text-center" style="width:10%"><strong>Unit Price</strong></th>
+                        <th class="text-center" style="width:10%"><strong>VAT</strong></th>
+                        <th class="text-center" style="width:10%"><strong>VAT Amount</strong></th>
+                        <th class="text-center" style="width:10%"><strong>Total (AED)</strong></th>
+                    </tr>
+                </thead>
+                <tbody>
+                  
+                    <tr t-foreach="o.order_line" t-as="line">
+                        <td style="width:5%">
+                            <span t-esc="i"/>
+                        </td>
+                        <td style="width:10%">
+                            <span t-field="line.product_id.name"/>
+                        </td>
+                        <td style="width:10%">
+                            <span t-field="line.product_id.default_code"/>
+                        </td>
+                        <td style="width:25%">
+                            <span t-field="line.name"/>
+                        </td>
+                        <td style="width:5%">
+                            <span t-field="line.product_uom.name" groups="uom.group_uom"/>
+                        </td>
+                        <td class="text-right" style="width:5%">
+                            <span t-esc="int(line.product_qty)"/>
+                            
+                        </td>
+                        <td class="text-right" style="width:10%">
+                            <span t-field="line.price_unit"/>
+                        </td>
+                        <td class="text-right" style="width:10%">
+                            <span t-field="line.taxes_id.name"/>
+                        </td>
+                        <td class="text-right" style="width:10%">
+                            <span t-field="line.price_tax"/>
+                        </td>
+                        <td class="text-right" style="width:10%">
+                            <span t-field="line.price_subtotal" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
+                        </td>
+                        <t t-set="i" t-value="i+1"/>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- <div id="total" class="row justify-content-end"> -->
+                <div class="clearfix">
+                    <div id="total" class="row justify-content-end" style="float:right;margin-right:5px;">
+                <div class="">
+                    <table class="table table-sm">
+                        <tr class="border-black">
+                            <td><strong>Subtotal</strong></td>
+                            <td class="text-right">
+                                <span t-field="o.amount_untaxed" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>VAT</td>
+                            <td class="text-right">
+                                <span t-field="o.amount_tax" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
+                            </td>
+                        </tr>
+                        <tr class="border-black o_total">
+                            <td><strong>Net Total</strong></td>
+                            <td class="text-right">
+                                <span t-field="o.amount_total" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div>
+                <b><span>Amount in Words :-</span></b><br/><br/>
+            <pre><span t-field="o.text" style="font-family: Calibri;text-transform:uppercase;"/> ONLY</pre><br/>
+            
+            </div>
+        </div>
+            <!-- <span>Amount in Words :-</span><br/><br/>
+            <pre><span t-field="o.text" style="font-family: Calibri;text-transform:uppercase;"/> ONLY</pre><br/> -->
+            <b><span style="margin-left:40px;">General Conditions and Special Instructions</span></b><br/>
+            <p t-field="o.notes" style="margin-left:40px;"/><br/> <br/> <br/> <br/>
+            <div>
+                <div style="float:left;margin-left:40px;">
+                    <span>Prepared By</span><br/>
+                    <span t-field="o.user_id.name"/>
+                </div>
+                <div style="margin-left:70%;">
+                    <span>Received By</span>
+                </div>
+            </div>
+            
+            <div class="oe_structure"/>
+        </div>
+    </t>
+</template>
+
+<template id="purchase.report_purchaseorder">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="purchase.report_purchaseorder_document" t-lang="o.partner_id.lang"/>
+        </t>
+    </t>
+</template>
+</odoo>

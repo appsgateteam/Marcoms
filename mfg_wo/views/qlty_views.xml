@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="quality_point_view_form_inherit_mrp" model="ir.ui.view">
+        <field name="name">quality.point.view.form.inherit.mrp</field>
+        <field name="model">quality.point</field>
+        <field name="inherit_id" ref="qlty_core.quality_point_view_form"/>
+        <field name="arch" type="xml">
+            <field name="picking_type_id" position="after">
+                <field string="Work Order Operation" name="operation_id" attrs="{'invisible': [('code', '!=', 'mrp_operation')]}" groups="mrp.group_mrp_routings" options="{'no_create': True}"/>
+                <field name="code" invisible="1"/>
+            </field>
+            <field name="user_id" position="after">
+                <field name="worksheet" widget="radio" attrs="{'invisible': ['|', ('code', '!=', 'mrp_operation'), ('operation_id', '=', False)]}"/>
+                <field name="worksheet_page" attrs="{'invisible': ['|', '|', ('code', '!=', 'mrp_operation'), ('operation_id', '=', False), ('worksheet', '!=', 'scroll')]}"/>
+                <field name="component_id" attrs="{'required': [('test_type', '=', 'register_consumed_materials')], 'invisible': ['|', '|', ('code', '!=', 'mrp_operation'), ('operation_id', '=', False), ('test_type', '!=', 'register_consumed_materials')]}"/>
+            </field>
+        </field>
+    </record>
+    <record id="step_view_form" model="ir.ui.view">
+        <field name="name">quality.point.view.form.inherit.mrp</field>
+        <field name="model">quality.point</field>
+        <field name="inherit_id" ref="mfg_wo.quality_point_view_form_inherit_mrp"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <field name="picking_type_id" position="replace">
+                <field name="picking_type_id" domain="[('code', '=', 'mrp_operation')]"/>
+            </field>
+        </field>
+    </record>
+</odoo>

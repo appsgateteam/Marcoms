@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data> 
+    
+    <record id="inherit_bi_product_template_form" model="ir.ui.view">
+            <field name="name">inherit.bi.product.template.form</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='categ_id']" position="after">
+                        <field name="boq_type"/>
+                </xpath>
+            </field>
+        </record>
+        
+    <record id="inherit_bi_stock_picking_form" model="ir.ui.view">
+            <field name="name">inherit.bi.stock.picking.form</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form" />
+            <field name="arch" type="xml">
+                <field name="partner_id" position="after">
+                        <field name="material_requisition_id"/>
+                        <field name="job_order_user_id"/>
+                        <field name="construction_project_id"/>
+                        <field name="analytic_account_id"/>
+                </field>
+            </field>
+        </record>
+        
+        <menuitem name="Materials / BOQ"
+            id="sub_menu_materials_boq"
+            parent = "main_menu_job_estimates"
+            sequence = '5'
+            />
+        
+        <menuitem name="Materials"
+            id="sub_menu_materials"
+            action = "product.product_template_action"
+            parent = "sub_menu_materials_boq"
+            sequence = '1'
+            />  
+	
+		<menuitem name="Material Requisitions/ BOQ"
+            id="sub_menu_materials_requisitions"
+            action = "bi_material_purchase_requisitions.action_material_purchase_requisition"
+            parent = "sub_menu_materials_boq"
+            sequence = '2'
+            />
+
+        <menuitem id="bi_material_purchase_requisitions.menu_requisition"
+                  name="Requisitions"
+                  groups="requisition_menu_invisible"/>
+            
+    </data>
+</odoo>

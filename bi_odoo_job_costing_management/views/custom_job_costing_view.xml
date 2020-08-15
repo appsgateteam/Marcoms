@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data> 
+    
+        <menuitem id="main_menu_job_estimates"
+          name="Job Costing"
+          web_icon="bi_odoo_job_costing_management,static/description/icon.png"
+          />
+            
+        <menuitem name="Job Costing"
+            id="sub_menu_job_costing"
+            parent = "main_menu_job_estimates"
+            sequence = '1'
+            />
+        
+        <menuitem name="Projects"
+            id="sub_menu_projects"
+            parent = "main_menu_job_estimates"
+            sequence = '2'
+            />
+            
+        <menuitem name="Sub Contractors"
+            id="sub_menu_sub_contractors"
+            parent = "main_menu_job_estimates"
+            sequence = '4'
+            />
+            
+        <menuitem name="Configuration"
+            id="sub_menu_configuration"
+            parent = "main_menu_job_estimates"
+            sequence = '6'
+            />
+            
+        <menuitem id="menu_projects"
+          name="Projects"
+          parent="sub_menu_projects"
+          action="project.open_view_project_all_config"
+          sequence="1"/>
+          
+       <menuitem id="menu_project_notes"
+          name="Project Notes"
+          parent="sub_menu_projects"
+          action="note.action_note_note"
+          sequence="2"/>
+          
+    </data>
+</odoo>

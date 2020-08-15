@@ -1,0 +1,43 @@
+<openerp>
+	<data> 
+		<!--supplier/customer payment-->
+    	<record model="ir.ui.view" id="account_payment_form_inherit_imp">
+            <field name="name">account.payment.imp.form</field>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="account.view_account_payment_form"/>
+            <field name="arch" type="xml">
+				 <xpath expr="//group" position="after">
+					<notebook> 
+						<page string="Invoice Lines" attrs="{'invisible': [('invoice_lines', '=', False)]}">
+							<button name="update_invoice_lines" string="Update Invoice" type="object" class="btn-primary" attrs="{'invisible':[('state', '=', 'posted')]}"/>  
+							<field name="invoice_lines" attrs="{'readonly':[('state', '!=', 'draft')]}">
+								<tree create="false" editable="bottom">
+									<field name="invoice_id" invisible="1"/>
+									<field name="account_id" invisible="1"/>
+									<field name="invoice" readonly="1"/> 
+									<field name="date" readonly="True"/> 
+									<field name="due_date" readonly="True"/>
+									<field name="total_amount" readonly="True" sum="Total Amount"/> 
+									<field name="open_amount" readonly="True" sum="Due Amount"/> 
+									<field name="allocation" sum="Allocated Amount"/>
+								</tree>
+								<form string="Invoice" create="false">
+									<group>
+										<field name="invoice_id" invisible="1"/>
+										<field name="invoice"/> 
+										<field name="date" readonly="True"/>  
+										<field name="due_date" readonly="True"/>
+										<field name="total_amount" readonly="True"/> 
+										<field name="open_amount" readonly="True"/> 
+										<field name="allocation" />
+									</group>
+								</form>
+							</field>
+							 	
+						</page> 
+					</notebook> 
+				</xpath> 
+			</field>
+    	</record>  
+	</data>
+</openerp>

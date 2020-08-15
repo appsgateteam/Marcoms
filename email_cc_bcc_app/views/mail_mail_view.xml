@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="inherit_view_mail_form" model="ir.ui.view">
+        <field name="name">inherit.mail.mail.form</field>
+        <field name="model">mail.mail</field>
+        <field name="inherit_id" ref="mail.view_mail_form"/>
+        <field name="arch" type="xml">
+            <field name="email_cc" position="after">
+                <field name="recipient_cc_ids" widget="many2many_tags" invisible="0"/>
+                <field name="recipient_bcc_ids" widget="many2many_tags" invisible="0"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- CC Fields ADD Mail Message -->
+    <record id="inherit_view_message_form" model="ir.ui.view">
+        <field name="name">inherit.mail.message.form</field>
+        <field name="model">mail.message</field>
+        <field name="inherit_id" ref="mail.view_message_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[3]/group/group[1]/field[@name='partner_ids']" position="after">
+                <field name="partner_cc_ids" widget="many2many_tags" invisible="0"/>
+                <field name="partner_bcc_ids" widget="many2many_tags" invisible="0"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

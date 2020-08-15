@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="account.report_payment_receipt_document">
+        <t t-call="web.external_layout_boxed">
+            <t t-set="o" t-value="o.with_context({'lang': lang})"/>
+            <div class="page" style="font-size:15px;">
+                <t t-if="o.partner_type == 'customer'">
+                  <h3><strong>RECEIPT VOUCHER: <span t-field="o.name"/></strong></h3>
+                </t>
+                <t t-if="o.partner_type == 'supplier'">
+                  <h3><strong>PAYMENT VOUCHER: <span t-field="o.name"/></strong></h3>
+                </t>
+                <div class="row mt64">
+                    <div class="col-6" t-if="o.payment_date">
+                        <strong>Date: </strong> <span t-field="o.payment_date"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6" t-if="o.partner_type">
+                        <t t-if="o.partner_type == 'customer'">
+                            <strong>Customer: </strong>
+                        </t>
+                        <t t-if="o.partner_type == 'supplier'">
+                            <strong>Vendor: </strong>
+                        </t><span t-field="o.partner_id"/>
+                    </div>
+                    <div class="col-6" t-if="o.payment_method_id">
+                        <strong>Payment Method: </strong><span t-field="o.payment_method_id.name"/>
+                    </div>
+                </div>
+                <div class="row mb64">
+                    <div class="col-6" t-if="o.amount">
+                        <strong>Payment Amount: </strong><span t-field="o.amount" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                     </div>
+                    <!--<div class="col-6" t-if="o.communication">-->
+                    <!--    <strong>Memo: </strong><span t-field="o.communication"/>-->
+                    <!-- </div>-->
+                </div>
+                <t t-if="o.reconciled_invoice_ids">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th><span>Invoice Date</span></th>
+                                <th><span>Invoice Number</span></th>
+                                <th><span>Project</span></th>
+                                <th class="text-right"><span>Original Amount</span></th>
+                                <th class="text-right"><span>Amount Paid</span></th>
+                                <!-- <th class="text-right"><span>Balance</span></th> -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="o.reconciled_invoice_ids" t-as="inv">
+                                <td><span t-field="inv.date_invoice"/></td>
+                                <td><span t-field="inv.number"/></td>
+                                <td><span t-field="inv.project_name"/></td>
+                                <td class="text-right"><span t-field="inv.amount_total" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></td>
+                                <!-- <t t-foreach="inv.invoice_line_ids" t-as="invs">
+                                    <t t-if="invs.analytic_tag_ids">
+                                    <td class="text-right"><span t-field="invs.analytic_tag_ids.name"/></td>
+                                    <div style="page-break-before:always;"></div>
+                                    </t>
+                                </t> -->
+                                <td class="text-right"><span t-esc="o._get_invoice_payment_amount(inv)" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></td>
+                                <!-- <td class="text-right"><span t-field="inv.residual"/></td> -->
+                            </tr>
+                        </tbody>
+                    </table>
+                </t>
+                <div>
+                    <t t-if="o.partner_type == 'customer'">
+                        <b><span>To:</span></b><br/>
+                    </t>
+                    <t t-if="o.partner_type == 'supplier'">
+                        <b><span>Through:</span></b><br/>
+                    </t>
+                    <span style="margin-left:15px;"><span t-field="o.journal_id.name"/> (<span t-field="res_company.name"/>)</span><br/>
+                    <t t-if="o.var_amount">
+                        <b><span>On Account of:</span></b><br/>
+                        <t t-if="o.partner_type == 'supplier'">
+                        <span style="margin-left:15px;"><span t-field="o.var_amount"/></span><br/>
+                        </t>
+                        <t t-if="o.partner_type == 'customer'">
+                            <span style="margin-left:15px;"><span t-field="o.var_amount"/></span><br/>
+                        </t>
+                    </t>
+                    <b><span>Bank Transaction Details:</span></b><br/>
+                    <span style="margin-left:15px;">cheque      <span t-field="o.cheque_reference"/>      <span t-field="o.effective_date"/>      <span t-field="o.amount" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>      <span t-field="o.communication"/></span><br/>
+                    <b><span>Amount in Words: </span></b><br/>
+                    <span style="margin-left:15px;">Dirhams <span t-field="o.text"/> Only</span><br/>
+                    <br/>
+                    <b><span>Note: </span></b><br/>
+                    <span style="margin-left:15px;"><span t-field="o.remarks"/></span><br/>
+                </div>
+                <br/><br/><br/>
+                <div class="row" id="journal_information2">
+                    <div class="col-6">
+                      <t t-if="o.partner_type == 'supplier'">
+                        <div>
+                            <strong>Receiver's Signature:</strong>
+                        </div>
+                      
+                        <br/><br/>
+                        <div class="text-left">
+                            <strong>Checked by</strong>
+                        </div>
+                      </t>
+                    </div> 
+                    <div class="col-6">
+                      
+                        <div class="text-left">
+                            <strong>Authorised Signatory</strong>
+                        </div>
+                        <br/><br/>
+                        <t t-if="o.partner_type == 'supplier'">
+                        <div class="text-left">
+                            <strong>Verified by</strong>
+                        </div>
+                        </t>
+                    </div> 
+                     
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="account.report_payment_receipt">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="lang" t-value="o.partner_id.lang"/>
+                <t t-call="account.report_payment_receipt_document" t-lang="lang"/>
+            </t>
+        </t>
+    </template>
+</odoo>

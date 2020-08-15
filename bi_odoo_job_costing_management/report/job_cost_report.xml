@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+	
+	<!--<report id="project_job_cost_report_id"
+				string="Projet Job"
+				model="project.project"
+				report_type="qweb-pdf"
+				file="bi_odoo_job_costing_management.project_job_temp_id"
+				name="bi_odoo_job_costing_management.project_job_temp_id"/>-->
+				
+	<record id="paperformat_progress_job" model="report.paperformat">
+        <field name="name">Job A4 low margin</field>
+        <field name="default" eval="True"/>
+        <field name="format">A4</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">45.00</field>
+        <field name="margin_bottom">20.00</field>
+        <field name="margin_left">5</field>
+        <field name="margin_right">5</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">45</field>
+        <field name="dpi">80</field>
+    </record>
+
+	<report id="job_order_report_id"
+				string="Job Order"
+				model="job.order"
+				report_type="qweb-pdf"
+				file="bi_odoo_job_costing_management.job_order_temp_id"
+				name="bi_odoo_job_costing_management.job_order_temp_id"
+				paperformat="bi_odoo_job_costing_management.paperformat_progress_job"/>	
+							
+	<report id="job_cost_sheet_report_id"
+				string="Job Cost Sheets"
+				model="job.cost.sheet"
+				report_type="qweb-pdf"
+				file="bi_odoo_job_costing_management.job_cost_sheet_temp_id"
+				name="bi_odoo_job_costing_management.job_cost_sheet_temp_id"/>								
+				
+	</data>
+</odoo>

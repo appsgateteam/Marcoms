@@ -1,0 +1,19 @@
+<odoo>
+    <record id="mrp_workcenter_view_kanban_inherit_workorder" model="ir.ui.view">
+        <field name="name">mrp.workcenter.view.kanban.inherit.mrp.workorder</field>
+        <field name="model">mrp.workcenter</field>
+        <field name="inherit_id" ref="mrp.mrp_workcenter_kanban"/>
+        <field name="arch" type="xml">
+
+            <!-- Tablet view -->
+            <xpath expr="//button[hasclass('btn', 'btn-primary')]" position="attributes">
+                <attribute name="name">%(mfg_wo.mrp_workorder_action_tablet)d</attribute>
+            </xpath>
+
+            <!-- Desktop view -->
+            <xpath expr="//div[@name='o_wo']" position="inside">
+                <button class="btn btn-secondary fa fa-desktop" name="%(mrp.action_work_orders)d" type="action" context="{'search_default_ready': 1, 'search_default_progress': 1, 'search_default_pending': 1}" title="Work orders" aria-label="Work orders"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+
+		<record id="job_order_form_view" model="ir.ui.view">
+			<field name="name">job_order.form.view</field>
+			<field name="model">job.order</field>
+			<field name="arch" type="xml">
+				<form string="Job Order">
+					<sheet>
+						<div class="oe_button_box" name="button_box">
+							<button name="toggle_active" type="object" class="oe_stat_button"
+								icon="fa-archive">
+								<field name="active" widget="boolean_button"
+									options="{&quot;terminology&quot;: &quot;archive&quot;}" />
+							</button>
+							<button class="oe_stat_button" name="project_job_cost_button"
+								type="object" icon="fa-address-book" attrs="{'invisible': [('job_cost_count', '=', 0)]}"> 
+								<field name="job_cost_count" widget="statinfo" string="Job Cost" />
+							</button>
+							<button class="oe_stat_button" name="stock_move_button"
+								type="object" icon="fa-bars" attrs="{'invisible': [('stock_move_count', '=', 0)]}"> 
+								<field name="stock_move_count" widget="statinfo" string="Stock" />
+							</button>
+							<button class="oe_stat_button" name="job_note_button"
+								type="object" icon="fa-list" attrs="{'invisible': [('job_note_count', '=', 0)]}"> 
+								<field name="job_note_count" widget="statinfo" string="Job Notes" />
+							</button>
+
+						</div>
+
+						<div class="oe_title">
+							<h1 class="o_row">
+								<field name="priority" widget="priority" />
+								<field name="name" />
+							</h1>
+						</div>
+						<group>
+							<group>
+								<field name="project_id" />
+								<field name="user_id" />
+								<field name="start_date" />
+								<field name="end_date" />
+							</group>
+							<group>
+								<field name="deadline_date" />
+								<field name="tag_ids" widget="many2many_tags" />
+								<field name="planned_hours" />
+							</group>
+						</group>
+						<notebook>
+							<page string="Description">
+								<field name="description" />
+							</page>
+							<page string="Timesheets">
+								<field name="timesheet_ids" widget="one2many_list" />
+							</page>
+							<page string="Material Plannings">
+								<field name="material_planning_ids" widget="one2many_list" context="{'default_product_type':'material_planning'}">
+									<tree string="Material Plannings" editable="bottom">
+										<field name="product_id" />
+										<field name="description" />
+										<field name="quantity" />
+										<field name="uom_id" />
+										<field name="product_type" invisible="1"/>
+									</tree>
+								</field>
+							</page>
+							<page string="Consumed Materials">
+								<field name="consumed_material_ids" widget="one2many_list" context="{'default_product_type':'consumed_material'}">
+									<tree string="Consumed Materials" editable="bottom">
+										<field name="product_id" />
+										<field name="description" />
+										<field name="quantity" />
+										<field name="uom_id" />
+										<field name="product_type" invisible="1"/>
+									</tree>
+								</field>
+							</page>
+							<page string="Material Requisition">
+								<field name="material_requisitions_ids" widget="one2many_list">
+									<tree string="Material Requisition" editable="bottom">
+										<field name="name" />
+										<field name="location_dest_id" />
+										<field name="partner_id" />
+										<field name="origin" />
+										<field name="backorder_id" />
+										<field name="state" />
+									</tree>
+								</field>
+							</page>
+							<page string="Stock Move">
+								<field name="stock_move_ids" widget="one2many_list">
+									<tree string="Stock Move" editable="bottom">
+										<field name="date_expected" />
+										<field name="name"/>
+										<field name="date" />
+										<field name="origin" />
+										<field name="product_id" />
+										<field name="product_uom"/>
+										<field name="location_id"/>
+										<field name="location_dest_id"/>
+										<field name="product_uom_qty" />
+										<field name="state" />
+									</tree>
+								</field>
+							</page>
+						</notebook>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="job_order_tree_view" model="ir.ui.view">
+			<field name="name">job.order.tree.view</field>
+			<field name="model">job.order</field>
+			<field name="arch" type="xml">
+				<tree string="Job Order">
+					<field name="name" />
+					<field name="project_id" />
+					<field name="user_id" />
+					<field name="start_date" />
+					<field name="end_date" />
+					<field name="priority" />
+				</tree>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="job_order_kanban_view">
+			<field name="name">job_order_kanban</field>
+			<field name="model">job.order</field>
+			<field name="arch" type="xml">
+				<kanban class="o_job_order_kanban">
+					<field name="name" />
+					<field name="project_id" />
+					<field name="priority" />
+					<field name="start_date" />
+					<templates>
+						<t t-name="kanban-box">
+							<div t-attf-class="oe_kanban_card oe_kanban_global_click">
+								<div class="o_kanban_record_top">
+									<div class="o_kanban_record_headings">
+										<field name="priority" widget="priority" />
+										<strong class="o_kanban_record_title">
+											<span>
+												<t t-esc="record.name.value" />
+											</span>
+										</strong>
+									</div>
+								</div>
+								<div class="o_kanban_record_bottom">
+									<div class="oe_kanban_bottom_left text-muted">
+										<strong>
+											<field name="project_id" />
+										</strong>
+									</div>
+									<div class="oe_kanban_bottom_left text-muted">
+										<span>
+											<t t-esc="record.start_date.value" />
+										</span>
+									</div>
+								</div>
+							</div>
+						</t>
+					</templates>
+				</kanban>
+			</field>
+		</record>
+
+		<record id="action_job_order" model="ir.actions.act_window">
+			<field name="name">Job Orders</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">job.order</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">kanban,tree,form</field>
+		</record>
+
+		<!-- New note Kanban View -->
+    <record id="view_job_note_note_kanban" model="ir.ui.view">
+      <field name="name">job.note.note.kanban</field>
+      <field name="model">job.note</field>
+      <field name="arch" type="xml">
+        <kanban default_group_by="stage_id" class="oe_background_grey o_kanban_dashboard o_project_kanban o_emphasize_colors">
+          <field name="color"/>
+          <field name="sequence"/>
+          <field name="name"/>
+          <field name="stage_id"/>
+          <field name="open"/>
+          <field name="memo"/>
+          <field name="date_done"/>
+          <field name="message_partner_ids"/>
+          <field name="activity_ids" />
+          <field name="activity_state" />
+          <templates>
+            <t t-name="kanban-box">
+
+              <div t-attf-class="#{kanban_color(record.color.raw_value)} oe_kanban_global_click_edit oe_semantic_html_override oe_kanban_card">
+
+                <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+
+                <div class="o_dropdown_kanban dropdown">
+                    <a role="button" class="dropdown-toggle o-no-caret btn" data-toggle="dropdown" href="#" aria-label="Dropdown menu" title="Dropdown menu">
+                        <span class="fa fa-ellipsis-v"/>
+                    </a>
+                    <div class="dropdown-menu" role="menu">
+                        <a role="menuitem" type="delete" class="dropdown-item">Delete</a>
+                        <ul class="oe_kanban_colorpicker" data-field="color"/>
+                    </div>
+                </div>
+                  <span>
+                    <a name="action_close" type="object" t-if="record.open.raw_value"><i class="fa fa-check"/></a>
+                    <a name="action_open" type="object" t-if="!record.open.raw_value"><i class="fa fa-undo"/></a>
+                  </span>
+                <span t-attf-class="oe_kanban_content #{record.open.raw_value ? '' : 'note_text_line_through'}">
+                  <!-- title -->
+                  <field name="name"/>
+                  <div class="oe_kanban_bottom_right">
+                    <div class="o_kanban_inline_block mr4">
+                        <field name="activity_ids" widget="kanban_activity"/>
+                    </div>
+                  </div>
+                </span>
+                <t t-if="record.message_partner_ids.raw_value.length &gt; 1">
+                    <div class="clearfix"/>
+                      <t t-foreach="record.message_partner_ids.raw_value" t-as="follower">
+                        <img t-att-src="kanban_image('res.partner', 'image_small', follower)" width="24" height="24" class="oe_kanban_avatar float-right" t-att-data-member_id="follower" alt="Follower"/>
+                      </t>
+                    <div class="clearfix"/>
+                </t>
+              </div>
+            </t>
+          </templates>
+        </kanban>
+      </field>
+    </record>
+
+    <!-- New note Tree View -->
+    <record id="view_job_note_tree" model="ir.ui.view">
+      <field name="name">job.note.tree</field>
+      <field name="model">job.note</field>
+      <field name="arch" type="xml">
+        <tree string="Stages">
+          <field name="name"/>
+          <field name="open"/>
+          <field name="stage_id"/>
+          <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+        </tree>
+      </field>
+    </record>
+
+    <!-- New note Form View -->
+    <record id="view_job_note_form" model="ir.ui.view">
+        <field name="name">job.note.form</field>
+        <field name="model">job.note</field>
+        <field name="arch" type="xml">
+            <form string="Note" class="oe_form_nomargin o_note_form_view">
+                <header>
+                    <field name="stage_id" domain="[('user_id','=',uid)]" widget="statusbar" clickable="1"/>
+                </header>
+                <sheet>
+                    <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}" placeholder="Tags"/>
+                    <group>
+                    <field name="job_order_id"/>
+	            	<field name="responsible_user"/>
+	            	</group>
+                    <field name="memo" widget="html" class="oe_memo" editor_height="450px" />
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search note  -->
+    <record id="view_job_note_filter" model="ir.ui.view">
+      <field name="name">job.note.search</field>
+      <field name="model">job.note</field>
+      <field name="arch" type="xml">
+        <search string="Notes">
+          <field name="memo" string="Note"/>
+          <field name="tag_ids"/>
+          <filter name="open_true" string="Active" domain="[('open', '=', True)]"/>
+          <filter name="open_false" string="Archive" domain="[('open', '=', False)]"/>
+          <separator/>
+          <filter string="Late Activities" name="activities_overdue"
+                  domain="[('activity_ids.date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"
+                  help="Show all records which has next action date is before today"/>
+          <filter string="Today Activities" name="activities_today"
+                  domain="[('activity_ids.date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
+          <filter string="Future Activities" name="activities_upcoming_all"
+                        domain="[('activity_ids.date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))
+                        ]"/>
+          <group expand="0" string="Group By">
+            <filter string="Stage" name="stage" help="By sticky note Category" context="{'group_by':'stage_id'}"/>
+          </group>
+        </search>
+      </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_job_note" model="ir.actions.act_window">
+      <field name="name">Job Notes</field>
+      <field name="res_model">job.note</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">kanban,tree,form</field>
+      <field name="search_view_id" ref="view_job_note_filter"/>
+      <field name="context">{}</field>
+      <field name="help" type="html">
+          <p class="oe_view_nocontent_create">
+            Click to add a personal note.
+          </p><p>
+            Use notes to organize personal tasks or notes. All
+            notes are private; no one else will be able to see them. However
+            you can share some notes with other people by inviting followers
+            on the note. (Useful for meeting minutes, especially if
+            you activate the pad feature for collaborative writings).
+          </p><p>
+            You can customize how you process your notes/tasks by adding,
+            removing or modifying columns.
+          </p>
+        </field>
+    </record>
+	
+		<menuitem name="Job Orders" id="sub_menu_job_orders" parent="main_menu_job_estimates"
+			sequence='3' />
+
+		<menuitem id="menu_job_order" name="Job Orders" parent="sub_menu_job_orders"
+			action="action_job_order" sequence="1" />
+			
+        <menuitem id="menu_job_note" name="Job Notes" parent="sub_menu_job_orders"
+			action="action_job_note" sequence="2" />			
+
+        <menuitem id="menu_project_issue"
+              name="Project Issue"
+              parent="sub_menu_job_orders"
+              action="action_project_issue"
+              sequence="3"/>			
+
+		<record id="job_cost_sheet_form_view" model="ir.ui.view">
+			<field name="name">job.cost.sheet.form.view</field>
+			<field name="model">job.cost.sheet</field>
+			<field name="arch" type="xml">
+				<form string="Job Cost Sheets">
+					<header>
+						<button name="action_confirm" string="Confirm" type="object" class="oe_highlight" attrs="{'invisible': [('stage', 'in',['confirm','approve','done'])]}"/>
+						<button name="action_approve" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('stage', 'in',['draft','approve','done'])]}"/>
+						<button name="action_done" string="Done" type="object" class="oe_highlight" attrs="{'invisible': [('stage', '=', 'done')]}"/>
+                        <field name="stage" widget="statusbar"/>
+                    </header>
+					<sheet>
+					    <div class="oe_button_box" name="button_box">
+							<button class="oe_stat_button" name="purchase_order_line_button"
+								type="object" icon="fa-pencil-square-o" attrs="{'invisible': ['|',('stage', 'in',['draft']),('purchase_order_line_count', '=', 0)]}"> 
+								<field name="purchase_order_line_count" widget="statinfo" string="Purchase Order Line" />
+							</button>
+							
+							<button class="oe_stat_button" name="invoice_line_button"
+								type="object" icon="fa-bars" attrs="{'invisible': ['|',('stage', 'in',['draft']),('invoice_line_count', '=', 0)]}"> 
+								<field name="invoice_line_count" widget="statinfo" string="Vendor Bill" />
+							</button>
+							
+						</div>
+						<div class="oe_title">
+							<h1>
+								<field name="sequence" />
+							</h1>
+						</div>
+						<group>
+							<group>
+								<field name="name"/>
+								<field name="project_id" />
+								<field name="analytic_ids" />
+								<field name="job_issue_customer_id" />
+							</group>
+							<group>
+								<field name="create_date" />
+								<field name="close_date" />
+								<field name="create_by_id" />
+								<field name="job_order_id" />
+								<field name="company_id" />
+								<field name="sale_reference" />
+								<field name="currency_id" invisible="1" />
+							</group>
+						</group>
+
+						<notebook>
+							<page string="Material">
+								<field name="material_job_cost_line_ids" widget="one2many_list"   context="{'default_job_type':'material'}">
+									<tree string="Material" editable="bottom">
+										<field name="date" />
+										<field name="job_type_id" />
+										<field name="product_id" />
+										<field name="description" />
+										<field name="reference"/>
+										<field name="quantity" sum="quantity"/>
+										<field name="uom_id" />
+										<field name="unit_price"/>
+										<field name="actual_purchase_qty" sum="actual_purchase_qty"/>
+										<field name="actual_invoice_qty" sum="actual_invoice_qty"/>
+										<field name="subtotal" widget="monetary" sum="subtotal"/>
+										<field name="currency_id" invisible="1" />
+										<field name="job_type" invisible="1"/>
+									</tree>
+								</field>
+								<group class="oe_subtotal_footer oe_right" colspan="2"
+									name="total_material_cost">
+									<field name="total_material_cost" widget="monetary" />
+									<field name="total_labour_cost" widget="monetary" />
+									<field name="total_overhead_cost" widget="monetary" />
+									<field name="total_cost" widget="monetary" />
+								</group>
+								<separator string="Job Cost Description" />
+								<field name="job_cost_description" class="oe_inline" />
+							</page>
+							<page string="Labour">
+								<field name="labour_job_cost_line_ids" widget="one2many_list" context="{'default_job_type':'labour'}">
+									<tree string="Labour" editable="bottom">
+										<field name="date" />
+										<field name="job_type_id" />
+										<field name="product_id" />
+										<field name="description" />
+										<field name="reference" />
+										<field name="hours"  sum="hours"/>
+										<field name="unit_price"  sum="cost"/>
+										<field name="actual_timesheet_hours"  sum="actual_timesheet_hours"/>
+										<field name="subtotal" widget="monetary"  sum="subtotal"/>
+										<field name="currency_id" invisible="1" />
+										<field name="job_type" invisible="1"/>
+									</tree>
+								</field>
+							</page>
+							<page string="Overhead">
+								<field name="overhead_job_cost_line_ids" widget="one2many_list" context="{'default_job_type':'overhead'}">
+									<tree string="Overhead" editable="bottom">
+										<field name="date" />
+										<field name="job_type_id" />
+										<field name="product_id" />
+										<field name="description" />
+										<field name="reference" />
+										<field name="basis" />
+										<field name="quantity" sum="quantity"/>
+										<field name="uom_id" />
+										<field name="unit_price" />
+										<field name="actual_purchase_qty" sum="actual_purchase_qty"/>
+										<field name="actual_invoice_qty" sum="actual_invoice_qty"/>
+										<field name="subtotal" widget="monetary" sum="subtotal"/>
+										<field name="currency_id" invisible="1" />
+										<field name="job_type" invisible="1"/>
+									</tree>
+								</field>
+							</page>
+						</notebook>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+        <record id="view_bi_invoice_line_form" model="ir.ui.view">
+            <field name="name">account.bi.invoice.line.form</field>
+            <field name="model">account.invoice.line</field>
+            <field name="arch" type="xml">
+                <form string="Invoice Line">
+                    <group>
+                        <group>
+                            <field name="product_id"/>
+                            <label for="quantity"/>
+                            <div>
+                                <field name="quantity" class="oe_inline"/>
+                                <field name="uom_id" class="oe_inline" groups="product.group_uom"/>
+                            </div>
+                            <field name="price_unit"/>
+                            <field name="discount" groups="base.group_no_one"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="account_id" groups="account.group_account_user"/>
+                            <field name="invoice_line_tax_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                            <field name="account_analytic_id" groups="analytic.group_analytic_accounting"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                    </group>
+                    <label for="name"/>
+                    <field name="name"/>
+                </form>
+            </field>
+        </record>
+        
+        <record id="action_bi_invoice_tree" model="ir.actions.act_window">
+            <field name="name">Invoices Lines</field>
+            <field name="res_model">account.invoice.line</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        
+		<record id="job_cost_sheet_tree_view" model="ir.ui.view">
+			<field name="name">job.cost.sheet.tree.view</field>
+			<field name="model">job.cost.sheet</field>
+			<field name="arch" type="xml">
+				<tree string="Job Cost Sheets">
+					<field name="name" />
+					<field name="project_id" />
+					<field name="job_order_id" />
+					<field name="create_date" />
+					<field name="close_date" />
+				</tree>
+			</field>
+		</record>
+
+		<record id="action_job_cost_sheet" model="ir.actions.act_window">
+			<field name="name">Job Cost Sheets</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">job.cost.sheet</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+
+		<menuitem name="Job Cost Sheets" id="sub_menu_job_cost_sheet"
+			parent="sub_menu_job_costing" action="action_job_cost_sheet"
+			sequence='1' />
+		
+		<record id="seq_job_cost_sheet" model="ir.sequence">
+            <field name="name">Job Cost Sheet</field>
+            <field name="code">job.cost.sheet</field>
+            <field name="prefix">COST-SHEET/00</field>
+            <field name="padding">2</field>
+        </record>
+        
+	</data>
+</odoo>        

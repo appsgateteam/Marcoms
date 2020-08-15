@@ -1,0 +1,828 @@
+from odoo import api, fields, models,_
+from odoo.exceptions import UserError, ValidationError
+import datetime
+from num2words import num2words
+from odoo.tools import float_utils, float_compare
+
+
+
+class quality_inherit(models.Model):
+    _inherit = "quality.point"
+
+    quality_attach = fields.Binary("Upload Quality Attachment", attachment=True,help="This field for Upload Attachment for Quality Check")
+
+class quality_check_inherit(models.Model):
+    _inherit = "quality.check"
+
+    quality_att = fields.Binary(String="Quality Attachment", attachment=True,compute="_compute_attach",help="This field for Upload Attachment for Quality Check")
+    quality_attac = fields.Binary("Upload Quality Attachment", attachment=True,help="This field for Upload Attachment for Quality Check")
+
+    @api.depends('point_id')
+    def _compute_attach(self):
+        periods = self.env['quality.point'].search([('id','=',self.point_id.id)])
+        self.quality_att = periods.quality_attach
+
+
+class hr_employee_inherit(models.Model):
+    _inherit = "hr.employee"
+
+    user_ref = fields.Char('User ID Internal')
+
+    _sql_constraints = [
+        ('user_ref_uniq', 'unique(user_ref)', "A User ID Internal must be unique !"),
+    ]
+
+class stock_picking_inherit(models.Model):
+    _inherit = "stock.picking"
+
+    order = fields.Char('MO Actual State',readonly="1",compute="_com_mo")
+    hide = fields.Boolean(string='Hide', compute="_compute_hide")
+
+
+    @api.multi
+    def action_draft(self):
+        return self.write({'state': 'waiting'})
+
+    @api.depends('partner_id')
+    def _compute_hide(self):
+        if self.partner_id.customer == True:
+            self.hide = True
+        else:
+            self.hide = False
+
+    @api.multi
+    @api.depends('origin')
+    def _com_mo(self):
+        for rec in self:
+            mo = self.env['mrp.production'].search([('origin','=',rec.origin)])
+            for n in mo:
+                rec.order = n.state
+            
+   
+
+# Product data part
+
+# class sale_wf_inherit(models.Model):
+#     _inherit = "sale.order"
+
+#     dtoday = fields.Date('current Date' , default=datetime.date.today())
+class mrp_bom_inherit(models.Model):
+    _inherit = "mrp.bom"
+
+    the_code = fields.Char(
+    related='product_tmpl_id.default_code',
+    readonly=True,
+    store=True
+    )
+    bom_nam = fields.Char('BOM Name appears in Quotation')
+    # BOM Approve
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('approve','To Approve'),
+        ('done', 'Approved')], string='Status', default='draft', index=True)
+
+    @api.onchange('product_tmpl_id')
+    def _const_name(self):
+        for l in self:
+            com = self.env['mrp.bom'].search([('product_tmpl_id','=',l.product_tmpl_id.default_code)])
+            if com:
+                raise ValidationError(_('this Product already use in BOM and it must be unique!'))
+            else:
+                continue
+
+    @api.multi
+    def action_validate(self):
+        return self.write({'state': 'approve'})
+
+    @api.multi
+    def action_draft(self):
+        return self.write({'state': 'draft'})
+
+    @api.multi
+    def button_approve(self, force=False):
+        return self.write({'state': 'done'})
+
+
+class sale_wf_inherit(models.Model):
+    _inherit = "sale.order"
+
+
+    sale_order_option_ids = fields.One2many(
+        'sale.order.option', 'order_id', 'Optional Products Lines',
+        copy=True, readonly=True,
+        states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},compute="_com_items")
+    # sale_order_options_ids = fields.One2many(
+    #     'sale.order.option', 'order_id', 'Optional Products Lines',
+    #     copy=True, readonly=True,
+    #     states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},compute="_com_sub_items")
+    text = fields.Char('Price in Text',compute="_com_price")
+    version = fields.Char('Version Number')
+    dtoday = fields.Date('current Date' , default=datetime.date.today())
+    contact_person = fields.Char('Contact Person Name')
+    project_name = fields.Char('Project Name')
+    project_loc = fields.Char('Project Location')
+    pro_nam = fields.Char('Product Name appear in Quotation')
+    cus_date = fields.Date('Ref Date')
+    sign_sale = fields.Char('Salesman Signature',compute="_sales_sign")
+    sign_man = fields.Char('Manager Signature')
+    old = fields.Char('Old Reference')
+    state = fields.Selection([
+        ('draft', 'Quotation'),
+        ('sent', 'Quotation Sent'),
+        ('approve', 'To Approve'),
+        ('approved', 'Approved'),
+        ('final', 'In Final Approve'),
+        ('finalapp', 'Final Approved Done'),
+        ('sale', 'Sales Order'),
+        ('done', 'Locked'),
+        ('cancel', 'Cancelled'),
+        ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', track_sequence=3, default='draft')
+    # current_user = fields.Many2one('res.users','Current User', default=lambda self: self.env.user)
+    test = fields.Boolean('Test',compute='_com_user')
+
+    @api.multi
+    def _com_user(self):
+        if self.user_id.id == self.env.uid :
+            self.test = True
+        else:
+            self.test = False
+
+
+    @api.depends('user_id')
+    def _sales_sign(self):
+        self.sign_sale = self.user_id.name
+
+    @api.multi
+    def action_to_approve(self):
+        return self.write({'state': 'approve'})
+
+    @api.multi
+    def send_to_draft(self):
+        return self.write({'state': 'draft'})
+
+    @api.multi
+    def action_approve(self):
+        return self.write({'state': 'approved'})
+
+    @api.multi
+    def action_to_final(self):
+        return self.write({'state': 'final'})
+
+    @api.multi
+    def action_to_finalapp(self):
+        return self.write({'state': 'finalapp'})
+
+    # @api.multi
+    # def button_approve(self, force=False):
+    #     if self._get_forbidden_state_confirm() & set(self.mapped('state')):
+    #         raise UserError(_(
+    #             'It is not allowed to confirm an order in the following states: %s'
+    #         ) % (', '.join(self._get_forbidden_state_confirm())))
+
+    #     for order in self.filtered(lambda order: order.partner_id not in order.message_partner_ids):
+    #         order.message_subscribe([order.partner_id.id])
+    #     self.write({
+    #         'state': 'sale',
+    #         'confirmation_date': fields.Datetime.now(),
+    #         'approve_date': fields.Date.context_today(self)
+    #     })
+    #     self._action_confirm()
+    #     if self.env['ir.config_parameter'].sudo().get_param('sale.auto_done_setting'):
+    #         self.action_done()
+    #     return True
+
+    @api.multi
+    def _com_price(self):
+        self.text = num2words(self.amount_total, lang='en')
+
+    @api.multi
+    @api.depends('order_line')
+    def _com_items(self):
+        vals = {}
+        invoice_line = []
+        for rec in self:
+            for l in rec.order_line:
+                com = self.env['mrp.bom'].search([('product_tmpl_id','=',l.product_id.code)])
+                # com = com.read([])
+                if not com:
+                    break
+                for n in com.bom_line_ids:
+                    coz = self.env['mrp.bom'].search([('product_tmpl_id','=',n.product_id.code)])
+                    if coz:
+                        invoice_line_vals = {'product_id': n.product_id,
+                                            'name':n.product_id.name,
+                                            'uom_id':n.product_uom_id,
+                                            'quantity':n.product_qty * l.product_uom_qty,
+                                            'bom_nam':coz.bom_nam,
+                                            'check': 1,
+                                            'flow': n.product_id.flow,
+                                            'flow_uom_id': n.product_id.flow_uom_id,
+                                            'head': n.product_id.head,
+                                            'Type': n.product_id.Type,
+                                            'Type_dr': n.product_id.Type_dr,
+                                            'Type_con': n.product_id.Type_con,
+                                            'manu': n.product_id.manu,
+                                            'manu_dr': n.product_id.manu_dr,
+                                            'manu_con': n.product_id.manu_con,
+                                            'model': n.product_id.model,
+                                            'model_dr': n.product_id.model_dr,
+                                            'listing': n.product_id.listing,
+                                            'listing_dr': n.product_id.listing_dr,
+                                            'listing_con': n.product_id.listing_con,
+                                            'con': n.product_id.con,
+                                            'supply_dr': n.product_id.supply_dr,
+                                            'supply_con': n.product_id.supply_con,
+                                            'enc_dr': n.product_id.enc_dr,
+                                            'enc_con': n.product_id.enc_con,
+                                            'frame': n.product_id.frame,
+                                            'acc': n.product_id.acc,
+                                            'speed': n.product_id.speed,
+                                            'speed_uom_id': n.product_id.speed_uom_id,
+                                            'speed_dr': n.product_id.speed_dr,
+                                            'speed_uom_id_dr': n.product_id.speed_uom_id_dr,
+                                            'rate_dr': n.product_id.rate_dr,
+                                            'rate_uom_id_dr': n.product_id.rate_uom_id_dr,
+                                            'rate_con': n.product_id.rate_con,
+                                            'rate_uom_id_con': n.product_id.rate_uom_id_con,
+                                            'Pro_type': n.product_id.Pro_type,
+                                            'Pro_type_dr': n.product_id.Pro_type_dr,
+                                            'Pro_type_con': n.product_id.Pro_type_con,
+                                            'bom_ok':n.product_id.bom_ok,
+                                            }
+                        invoice_line.append((0, 0, invoice_line_vals))
+                        vals = ({'sale_order_option_ids': invoice_line})
+                    else:
+                        invoice_line_vals = {'product_id': n.product_id,
+                                            'name':n.product_id.name,
+                                            'uom_id':n.product_uom_id,
+                                            'quantity':n.product_qty,
+                                            'bom_nam':coz.bom_nam,
+                                            'check': 1,
+                                            'flow': n.product_id.flow,
+                                            'flow_uom_id': n.product_id.flow_uom_id,
+                                            'head': n.product_id.head,
+                                            'Type': n.product_id.Type,
+                                            'Type_dr': n.product_id.Type_dr,
+                                            'Type_con': n.product_id.Type_con,
+                                            'manu': n.product_id.manu,
+                                            'manu_dr': n.product_id.manu_dr,
+                                            'manu_con': n.product_id.manu_con,
+                                            'model': n.product_id.model,
+                                            'model_dr': n.product_id.model_dr,
+                                            'listing': n.product_id.listing,
+                                            'listing_dr': n.product_id.listing_dr,
+                                            'listing_con': n.product_id.listing_con,
+                                            'con': n.product_id.con,
+                                            'supply_dr': n.product_id.supply_dr,
+                                            'supply_con': n.product_id.supply_con,
+                                            'enc_dr': n.product_id.enc_dr,
+                                            'enc_con': n.product_id.enc_con,
+                                            'frame': n.product_id.frame,
+                                            'acc': n.product_id.acc,
+                                            'speed': n.product_id.speed,
+                                            'speed_uom_id': n.product_id.speed_uom_id,
+                                            'speed_dr': n.product_id.speed_dr,
+                                            'speed_uom_id_dr': n.product_id.speed_uom_id_dr,
+                                            'rate_dr': n.product_id.rate_dr,
+                                            'rate_uom_id_dr': n.product_id.rate_uom_id_dr,
+                                            'rate_con': n.product_id.rate_con,
+                                            'rate_uom_id_con': n.product_id.rate_uom_id_con,
+                                            'Pro_type': n.product_id.Pro_type,
+                                            'Pro_type_dr': n.product_id.Pro_type_dr,
+                                            'Pro_type_con': n.product_id.Pro_type_con,
+                                            'bom_ok':n.product_id.bom_ok,
+                                            }
+                        invoice_line.append((0, 0, invoice_line_vals))
+                        vals = ({'sale_order_option_ids': invoice_line})
+        super(sale_wf_inherit, self).update(vals)
+
+    # @api.multi
+    # @api.depends('sale_order_option_ids')
+    # def _com_sub_items(self):
+    #     vals = {}
+    #     invoice_line = []
+    #     i = 0
+    #     for rec in self:
+    #         for l in rec.sale_order_option_ids:
+    #             i = i + 1
+    #             # raise ValidationError(_(l.product_id.code))
+    #             com = self.env['mrp.bom'].search([('product_tmpl_id','=',l.product_id.code)])
+    #             # com = com.read([])
+    #             if not com:
+    #                 break
+    #             if not com.bom_line_ids:
+    #                 continue
+    #             else:
+    #                 for n in com.bom_line_ids:
+    #                     invoice_line_vals = {'product_id': n.product_id,
+    #                                         'name':n.product_id.name,
+    #                                         'uom_id':n.product_uom_id,
+    #                                         'quantity':n.product_qty,
+    #                                         'num': i,
+    #                                         'check': 0,
+    #                                         'flow': n.product_id.flow,
+    #                                         'flow_uom_id': n.product_id.flow_uom_id,
+    #                                         'head': n.product_id.head,
+    #                                         'Type': n.product_id.Type,
+    #                                         'manu': n.product_id.manu,
+    #                                         'model': n.product_id.model,
+    #                                         'listing': n.product_id.listing,
+    #                                         'con': n.product_id.con,
+    #                                         'supply': n.product_id.supply,
+    #                                         'enc': n.product_id.enc,
+    #                                         'frame': n.product_id.frame,
+    #                                         'acc': n.product_id.acc,
+    #                                         'speed': n.product_id.speed,
+    #                                         'speed_uom_id': n.product_id.speed_uom_id,
+    #                                         'rate': n.product_id.rate,
+    #                                         'rate_uom_id': n.product_id.rate_uom_id,
+    #                                         'Pro_type': n.product_id.Pro_type,
+    #                                         }
+    #                     invoice_line.append((0, 0, invoice_line_vals))
+    #                     vals = ({'sale_order_options_ids': invoice_line})
+    #         super(sale_wf_inherit, self).update(vals)
+
+
+class product_inh(models.Model):
+    _inherit = 'product.template'
+
+    bom_ok = fields.Boolean('Is BOM Item')
+    flow = fields.Float('Flow')
+    flow_uom_id = fields.Many2one('uom.uom')
+    head = fields.Char('Head')
+    Pro_type = fields.Char('Product Type')
+    Pro_type_dr = fields.Char('Product Type')
+    Pro_type_con = fields.Char('Product Type')
+    Type = fields.Char('Type')
+    Type_dr = fields.Char('Type')
+    Type_con = fields.Char('Type')
+    manu = fields.Char('Manufacture')
+    manu_dr = fields.Char('Manufacture')
+    manu_con = fields.Char('Manufacture')
+    model = fields.Char('Model')
+    model_dr = fields.Char('Model')
+    listing = fields.Char('Listing')
+    listing_dr = fields.Char('Listing')
+    listing_con = fields.Char('Listing')
+    con = fields.Char('Construction')
+    supply_dr = fields.Char('Supply')
+    supply_con = fields.Char('Supply')
+    enc_dr = fields.Char('Enclosure')
+    enc_con = fields.Char('Enclosure')
+    frame = fields.Char('Frame Size')
+    acc = fields.Char('Accessories')
+    speed = fields.Float('Speed')
+    speed_uom_id = fields.Many2one('uom.uom',string="Speed UOM")
+    speed_dr = fields.Float('Speed')
+    speed_uom_id_dr = fields.Many2one('uom.uom',string="Speed UOM")
+    rate_dr = fields.Float('Rating')
+    rate_uom_id_dr = fields.Many2one('uom.uom',string="Rating UOM")
+    rate_con = fields.Float('Rating')
+    rate_uom_id_con = fields.Many2one('uom.uom',string="Rating UOM")
+
+    po_noo = fields.Float('Reserved',compute='_compute_field')
+    poo_ref = fields.Char('PO Referance',compute='_compute_field')
+    po_num = fields.Float('Qty In Open POs',compute='_compute_field')
+    po_name = fields.Char('Name Of Open POs',default=' - ',compute='_compute_field' )
+    so_num = fields.Float('Qty In Open SOs',compute='_compute_fieldso')
+    so_name = fields.Char('Name Of Open SOs',default=' - ',compute='_compute_fieldso')
+    mo_num = fields.Float('Qty In Open MOs',compute='_compute_fieldmo')
+    mo_name = fields.Char('Name Of Open MOs',default=' - ',compute='_compute_fieldmo')
+    mo_no = fields.Float('Reserved',compute='_compute_fieldmo_pro')
+    mo_no_total = fields.Float('Reserved',compute='_compute_fieldmo_pro')
+    mo_ref = fields.Char('MO Referance',compute='_compute_fieldmo_pro')
+    poo_name = fields.Char('Name Of Done POs',default=' - ',compute='_compute_field' )
+    op_po_no = fields.Float('Reserved',compute='_compute_field')
+    op_po_ref = fields.Char('PO Referance',compute='_compute_field')
+    moo_name = fields.Char('Name Of Done POs',default=' - ',compute='_compute_fieldmo_pro' )
+
+    @api.onchange('name')
+    # @api.onchange('default_code','name')
+    def _name_con(self):
+        for l in self:
+            com = self.env['product.template'].search([('name','=',l.name)])
+            if com:
+                raise ValidationError(_('This Name already used, The product name should be unique!'))
+            else:
+                continue
+
+    @api.onchange('default_code')
+    def _code_con(self):
+        for l in self:
+            com = self.env['product.template'].search([('default_code','=',l.default_code)])
+            if com:
+                raise ValidationError(_('This Reference already used, The Internal reference should be unique'))
+            else:
+                continue
+
+    _sql_constraints = [
+    ('default_code_unique', 'unique(default_code)', 'Internal reference already exists! Choose anthor one')
+    ]
+
+    
+    # virtual_available = fields.Float('Forecast Quantity', compute='_compute_quantities', search='_search_virtual_available',digits=dp.get_precision('Product Unit of Measure'),
+    #     help="Forecast quantity (computed as Quantity On Hand "
+    #          "- Outgoing + Incoming)\n"
+    #          "In a context with a single Stock Location, this includes "
+    #          "goods stored in this location, or any of its children.\n"
+    #          "In a context with a single Warehouse, this includes "
+    #          "goods stored in the Stock Location of this Warehouse, or any "
+    #          "of its children.\n"
+    #          "Otherwise, this includes goods stored in any Stock Location "
+    #          "with 'internal' type.")
+
+    @api.multi
+    @api.depends('default_code')
+    def _compute_field(self):
+        for rec in self:
+            inv_obj = self.env['purchase.report.one']
+            po = ''
+            com = self.env['purchase.order'].search([('state','=',['draft','send'])])
+            rec.po_num = 0
+            rec.op_po_no = 0
+            for l in com:
+                for line in l.order_line:
+                    if rec.default_code == line.product_id.code:
+                        rec.po_num = rec.po_num + line.product_qty
+                        po = po + '   ' +  str(l.name)
+                        rec.op_po_no = line.product_qty
+                        rec.op_po_ref = l.name
+                        cod = self.env['purchase.report.one'].search([('op_po_ref','=',rec.op_po_ref)])
+                        # if cod:
+                        #     raise UserError(_(cod))
+                        if not cod:
+                            # raise UserError(_('empty'))
+                            inv_obj.create({'op_po_no': rec.op_po_no,'op_po_ref':rec.op_po_ref})
+            rec.po_name = po
+
+            inv_obj = self.env['purchase.report.tw']
+            # po = ''
+            com = self.env['purchase.order'].search([('state','=',['done','purchase'])])
+
+            # rec.po_num = 0
+            rec.po_noo = 0
+            pos = ''
+            for l in com:
+                for line in l.order_line:
+                    if rec.default_code == line.product_id.code:
+                        # rec.po_num = rec.po_num + line.product_qty
+                        pos = pos + '   ' +  str(l.name)
+                        rec.po_noo = line.product_qty
+                        rec.poo_ref = l.name
+                        cod = self.env['purchase.report.tw'].search([('poo_ref','=',rec.poo_ref)])
+                        # if cod:
+                        #     raise UserError(_(cod))
+                        if not cod:
+                            # raise UserError(_('empty'))
+                            inv_obj.create({'po_noo': rec.po_noo,'poo_ref':rec.poo_ref})
+            rec.poo_name = pos
+
+    # @api.multi
+    # @api.depends('default_code')
+    # def _compute_field_po(self):
+    #     raise UserError(_('empty'))
+    #     for rec in self:
+    #         inv_obj = self.env['purchase.report.tw']
+    #         po = ''
+    #         com = self.env['purchase.order'].search([('state','=',['done','purchase'])])
+
+    #         # rec.po_num = 0
+    #         rec.po_no = 0
+    #         for l in com:
+    #             for line in l.order_line:
+    #                 if rec.default_code == line.product_id.code:
+    #                     # rec.po_num = rec.po_num + line.product_qty
+    #                     # po = po + '   ' +  str(l.name)
+    #                     rec.po_no = line.product_qty
+    #                     rec.po_ref = l.name
+    #                     cod = self.env['purchase.report.tw'].search([('po_ref','=',rec.po_ref)])
+    #                     # if cod:
+    #                     #     raise UserError(_(cod))
+    #                     if not cod:
+    #                         # raise UserError(_('empty'))
+    #                         inv_obj.create({'po_no': rec.po_no,'po_ref':rec.po_ref})
+            # rec.po_name = po
+
+    # @api.multi
+    # @api.depends('default_code')
+    # def _compute_field_pro(self):
+    #     inv_obj = self.env['purchase.report.tw']
+    #     for rec in self:
+    #         com = self.env['purchase.order'].search([('state','=','purchase')])
+    #         rec.po_noo = 0
+    #         for l in com:
+    #             for line in l.order_line:
+    #                 if rec.default_code == line.product_id.code:
+    #                     rec.po_noo = line.qty_received
+    #                     rec.poo_ref = l.name
+    #                     cod = self.env['purchase.report.tw'].search([('poo_ref','=',rec.poo_ref)])
+    #                     # if cod:
+    #                     #     raise UserError(_(cod))
+    #                     if not cod:
+    #                         inv_obj.create({'po_noo': rec.po_noo,'poo_ref':rec.poo_ref})
+
+
+    @api.multi
+    @api.depends('default_code')
+    def _compute_fieldso(self):
+        for rec in self:
+            po = ''
+            com = self.env['sale.order'].search([('state','=',['sale','draft','send','approve'])])
+            rec.so_num = 0
+            for l in com:
+                for line in l.order_line:
+                    if rec.default_code == line.product_id.code:
+                        rec.so_num = rec.so_num + line.product_uom_qty
+                        po = po + '   ' +  str(l.name)
+            rec.so_name = po
+
+    @api.multi
+    @api.depends('default_code')
+    def _compute_fieldmo(self):
+        for rec in self:
+            po = ''
+            com = self.env['mrp.production'].search([('state','=',['confirmed','planned','progress'])])
+            rec.mo_num = 0
+            for l in com:
+                if rec.default_code == l.product_id.code:
+                    rec.mo_num = rec.mo_num + 1
+                    po = po + '   ' +  str(l.name)
+            rec.mo_name = po
+
+    @api.multi
+    @api.depends('default_code')
+    def _compute_fieldmo_pro(self):
+        inv_obj = self.env['report.stock.forecast.two']
+        for rec in self:
+            po = ''
+            com = self.env['mrp.production'].search([('state','=','done')])
+            rec.mo_no = 0
+            rec.mo_no_total = 0
+            for n in com:
+                for l in n.move_raw_ids:
+                    if rec.default_code == l.product_id.code:
+                        # rec.mo_no_total = rec.mo_no_total + l.quantity_done
+                        rec.mo_no = l.quantity_done
+            num2wordsnum2words            rec.mo_ref = n.name
+			po = po + '   ' + str(rec.mo_ref)
+                        cod = self.env['report.stock.forecast.two'].search([('mo_ref','=',rec.mo_ref)])
+                        if not cod:
+                            inv_obj.create({'mo_no': rec.mo_no,'mo_ref':rec.mo_ref})
+                            # raise UserError(_('empty'))
+                        coz = self.env['report.stock.forecast.two'].search([('mo_ref','=',rec.mo_ref)])
+                        for m in coz :
+                            rec.mo_no_total = float(m.mo_no) + rec.mo_no_total
+	    rec.moo_name = po
+
+    def action_open_mos(self):
+        action = self.env.ref('wf_updates.action_stock_level_forecast_report_template_two').read()[0]
+        return action
+
+    def action_open_pos(self):
+        action = self.env.ref('wf_updates.action_view_purchase_report_tree0').read()[0]
+        return action
+
+    def action_open_oppos(self):
+        action = self.env.ref('wf_updates.action_view_purchase_report_tree2').read()[0]
+        return action
+            
+    
+class report_stock_forecast_inherit(models.Model):
+    _name = "report.stock.forecast.two"
+
+    mo_no = fields.Char('Reserved')
+    mo_ref = fields.Char('MO Referance')
+
+class purchase_report_tw_inherit(models.Model):
+    _name = "purchase.report.tw"
+
+    po_noo = fields.Char('Done Qty')
+    poo_ref = fields.Char('PO Refeance')
+
+class purchase_report_one_inherit(models.Model):
+    _name = "purchase.report.one"
+
+    op_po_no = fields.Char('Qty')
+    op_po_ref = fields.Char('Open PO Referance')
+
+
+class crm_wf_inherit(models.Model):
+    _inherit = "crm.lead"
+
+    project_name = fields.Char('Project Name')
+    consultant_name = fields.Char('Consultant Name')
+
+class pur_order_inherit(models.Model):
+    _inherit = "purchase.order"
+
+    des = fields.Char('Destination')
+    delivery_term = fields.Char('Delivery Terms')
+    old = fields.Char('Old Reference')
+    text = fields.Char('Price in Text',compute="_com_price")
+    state = fields.Selection([
+        ('draft', 'RFQ'),
+        ('sent', 'RFQ Sent'),
+        ('to approve', 'To Approve'),
+        ('purchase', 'Purchase Order'),
+        ('receive', 'Receive'),
+        ('done', 'Locked'),
+        ('cancel', 'Cancelled')
+    ], string='Status', readonly=True, index=True, copy=False, default='draft', track_visibility='onchange')
+
+    @api.multi
+    def action_view_picking(self):
+        """ This function returns an action that display existing picking orders of given purchase order ids. When only one found, show the picking immediately.
+        """
+        action = self.env.ref('stock.action_picking_tree_all')
+        result = action.read()[0]
+        # override the context to get rid of the default filtering on operation type
+        result['context'] = {}
+        pick_ids = self.mapped('picking_ids')
+        # choose the view_mode accordingly
+        if not pick_ids or len(pick_ids) > 1:
+            result['domain'] = "[('id','in',%s)]" % (pick_ids.ids)
+        elif len(pick_ids) == 1:
+            res = self.env.ref('stock.view_picking_form', False)
+            result['views'] = [(res and res.id or False, 'form')]
+            result['res_id'] = pick_ids.id
+
+        self.write({'state': 'receive'})
+        return result
+
+    @api.multi
+    def _com_price(self):
+        self.text = num2words(self.amount_total, lang='en')
+
+class mrp_production_inherit(models.Model):
+    _inherit = "mrp.production"
+
+    old = fields.Char('Old Reference')
+
+
+class stock_line_inherit(models.Model):
+    _inherit = "stock.move.line"
+
+    onhand = fields.Float('Onhand',compute="_com_hand")
+
+    @api.multi
+    @api.depends('product_id')
+    def _com_hand(self):
+        for rec in self:
+            com = self.env['product.template'].search([('default_code','=',rec.product_id.code)])
+            rec.onhand = com.qty_available
+
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# Inventory Adjustment approval
+
+class stock_inventory_inherit(models.Model):
+    _inherit = "stock.inventory"
+
+    state = fields.Selection(string='Status', selection=[
+        ('draft', 'Draft'),
+        ('cancel', 'Cancelled'),
+        ('approve','To Approve'),
+        ('confirm', 'In Progress'),
+        ('done', 'Validated')],
+        copy=False, index=True, readonly=True,
+        default='draft')
+
+    @api.multi
+    def action_validate(self):
+        return self.write({'state': 'approve'})
+
+    @api.multi
+    def button_approve(self, force=False):
+        inventory_lines = self.line_ids.filtered(lambda l: l.product_id.tracking in ['lot', 'serial'] and not l.prod_lot_id and l.theoretical_qty != l.product_qty)
+        lines = self.line_ids.filtered(lambda l: float_compare(l.product_qty, 1, precision_rounding=l.product_uom_id.rounding) > 0 and l.product_id.tracking == 'serial' and l.prod_lot_id)
+        if inventory_lines and not lines:
+            wiz_lines = [(0, 0, {'product_id': product.id, 'tracking': product.tracking}) for product in inventory_lines.mapped('product_id')]
+            wiz = self.env['stock.track.confirmation'].create({'inventory_id': self.id, 'tracking_line_ids': wiz_lines})
+            return {
+                    'name': _('Tracked Products in Inventory Adjustment'),
+                    'type': 'ir.actions.act_window',
+                    'view_mode': 'form',
+                    'res_model': 'stock.track.confirmation',
+                    'target': 'new',
+                    'res_id': wiz.id,
+                }
+        else:
+            self._action_done()
+
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# PLM approval
+
+class mrp_eco_inherit(models.Model):
+    _inherit = "mrp.eco"
+
+    state = fields.Selection([
+        ('approve','To Approve'),
+        ('confirmed', 'To Do'),
+        ('progress', 'In Progress'),
+        ('rebase', 'Rebase'),
+        ('conflict', 'Conflict'),
+        ('done', 'Done')], string='Status',
+        copy=False, default='confirmed', readonly=True, required=True)
+
+    @api.multi
+    def action_new_revision(self):
+        return self.write({'state': 'approve'})
+
+    @api.multi
+    def button_approve(self, force=False):
+        IrAttachment = self.env['ir.attachment']  # FORWARDPORT UP TO SAAS-15
+        for eco in self:
+            if eco.type in ('bom', 'both'):
+                eco.new_bom_id = eco.bom_id.copy(default={
+                    'version': eco.bom_id.version + 1,
+                    'active': False,
+                    'previous_bom_id': eco.bom_id.id,
+                })
+                attachments = IrAttachment.search([('res_model', '=', 'mrp.bom'),
+                                                   ('res_id', '=', eco.bom_id.id)])
+                for attachment in attachments:
+                    attachment.copy(default={'res_id':eco.new_bom_id.id})
+            if eco.type in ('routing', 'both'):
+                eco.new_routing_id = eco.routing_id.copy(default={
+                    'version': eco.routing_id.version + 1,
+                    'active': False,
+                    'previous_routing_id': eco.routing_id.id
+                }).id
+                attachments = IrAttachment.search([('res_model', '=', 'mrp.routing'),
+                                                   ('res_id', '=', eco.routing_id.id)])
+                for attachment in attachments:
+                    attachment.copy(default={'res_id':eco.new_routing_id.id})
+            if eco.type == 'both':
+                eco.new_bom_id.routing_id = eco.new_routing_id.id
+                for line in eco.new_bom_id.bom_line_ids:
+                    line.operation_id = eco.new_routing_id.operation_ids.filtered(lambda x: x.name == line.operation_id.name).id
+            # duplicate all attachment on the product
+            if eco.type in ('bom', 'both', 'product'):
+                attachments = self.env['mrp.document'].search([('res_model', '=', 'product.template'), ('res_id', '=', eco.product_tmpl_id.id)])
+                for attach in attachments:
+                    attach.copy({'res_model': 'mrp.eco', 'res_id': eco.id})
+        # super(mrp_eco_inherit, self).write({'stage_id':'1'})
+        self.write({'state': 'progress'})
+
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# Manufacture approval
+
+class mrp_unbuild_inherit(models.Model):
+    _inherit = "mrp.unbuild"
+
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('approve','To Approve'),
+        ('done', 'Done')], string='Status', default='draft', index=True)
+
+    @api.multi
+    def action_validate(self):
+        return self.write({'state': 'approve'})
+
+    @api.multi
+    def button_approve(self, force=False):
+        self.ensure_one()
+        precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+        available_qty = self.env['stock.quant']._get_available_quantity(self.product_id, self.location_id, self.lot_id, strict=True)
+        if float_compare(available_qty, self.product_qty, precision_digits=precision) >= 0:
+            return self.action_unbuild()
+        else:
+            return {
+                'name': _('Insufficient Quantity'),
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_model': 'stock.warn.insufficient.qty.unbuild',
+                'view_id': self.env.ref('mrp.stock_warn_insufficient_qty_unbuild_form_view').id,
+                'type': 'ir.actions.act_window',
+                'context': {
+                    'default_product_id': self.product_id.id,
+                    'default_location_id': self.location_id.id,
+                    'default_unbuild_id': self.id
+                },
+                'target': 'new'
+            }
+
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# Manufacture approval
+
+class mrp_routing_inherit(models.Model):
+    _inherit = "mrp.routing"
+
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('approve','To Approve'),
+        ('done', 'Approved')], string='Status', default='draft', index=True)
+
+    @api.multi
+    def action_validate(self):
+        return self.write({'state': 'approve'})
+
+    @api.multi
+    def button_approve(self, force=False):
+        return self.write({'state': 'done'})
+
+
+class maintenance_request_inherit(models.Model):
+    _inherit = "maintenance.request"
+
+    order_ids = field.Many2one('sale.order',string='Sale Order')
+

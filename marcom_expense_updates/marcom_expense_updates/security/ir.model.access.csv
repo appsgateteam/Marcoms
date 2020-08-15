@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_food_expense_manager,food.expense,model_food_expense,base.group_user,1,1,1,1
+access_food_expense_sheet_manager,food.expense.sheet,model_food_expense_sheet,base.group_user,1,1,1,1
+access_transportaion_expense_manager,transportaion.expense,model_transportaion_expense,base.group_user,1,1,1,1
+access_transportaion_expense_sheet_manager,transportaion.expense.sheet,model_transportaion_expense_sheet,base.group_user,1,1,1,1
+access_transportaion_type_manager,transportaion.type,model_transportaion_type,base.group_user,1,1,1,1
+access_transportaion_vehicle_type_manager,transportaion.vehicle.type,model_transportaion_vehicle_type,base.group_user,1,1,1,1
+access_meal_type_manager,meal.type,model_meal_type,base.group_user,1,1,1,1
+access_petty_cash_manager,petty.cash.expense,model_petty_cash_expense,base.group_user,1,1,1,1
+access_petty_cash_sheet_manager,petty.cash.sheet,model_petty_cash_sheet,base.group_user,1,1,1,1
+access_labour_manager,labour.expense,model_labour_expense,base.group_user,1,1,1,1
+access_labour_sheet_manager,labour.sheet,model_labour_sheet,base.group_user,1,1,1,1
+access_labour_type_manager,labour.type,model_labour_type,base.group_user,1,1,1,1

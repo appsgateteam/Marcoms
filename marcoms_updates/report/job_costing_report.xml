@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <template id="job_costing_report_view">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+            <!-- <t t-call="web.html_container"> -->
+                <div class="page" style="font-size:13px;">
+                            
+                    <h3 class="text-center">Job Work Analysis </h3>
+                    <span>Event Name: <span t-esc="event"/></span>
+                    <!-- <t t-foreach="project" t-as="pro">
+                        <span t-esc="pro['name']"/>
+                    </t> -->
+                                
+                    <div>
+                        <table class="table table-condensed table-bordered" style="font-size:13px;">
+                            
+                            <thead>
+                                <th class="text-center" style="width: 15%;color:black;" colspan="1">  </th>
+                                <t t-foreach="project" t-as="pro">
+                                    <th class="text-center"  style="background-color:#e6e6e6;color:black;width: 20%;"><span t-esc="pro['name']"/></th>
+                                </t>
+                                <!--<th colspan="99"/>-->
+                                
+                            </thead>
+                            <tbody>
+                                <tr>
+                                  <td style="width: 15%;">A. Revenue (Income) :</td>
+                                  <t t-foreach="total" t-as="doc">
+                                    <td class="text-right"><span>  </span></td>
+                                </t>
+                                  </tr>
+                                  <tr>
+                                  <td style="width: 15%;">Sales Accounts</td>
+                                  <t t-foreach="total" t-as="doc">
+                                    <td class="text-right"><t t-if="doc['balance_sal']"><b><span t-esc="doc['balance_sal']" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></b></t><t t-else=""><span>  </span></t></td>
+                                </t>
+                                  <!--<td colspan="99"/>-->
+                                </tr>
+                                <t t-foreach="docs" t-as="doc">
+                                    <t t-if="doc['acc_type'] == 14">
+                                    <tr>
+                                        <td style="width: 15%;"><span t-esc="doc['account']"/></td>
+                                        <t t-foreach="doc['vals']" t-as="val">
+                                          <td style="width: 15%;" class="text-right"><t t-if="val['balance']"><span t-esc="val['balance']" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></t><t t-else=""><span>  </span></t></td>
+                                          <!-- <td style="width: 15%;"><t t-if="val['credit']"><span t-esc="val['credit']"/></t><t t-else=""><span>  </span></t></td> -->
+                                        </t>
+                                    </tr>
+                                    </t>
+                                </t>
+                                <tr>
+                                  <td style="width: 15%;">B. Cost (Expenses) :</td>
+                                  <t t-foreach="total" t-as="doc">
+                                    <td class="text-right"><span>  </span></td>
+                                </t>
+                                </tr>
+                                <tr>
+                                  <td style="width: 15%;">Direct Expenses</td>
+                                  <t t-foreach="total" t-as="doc">
+                                    <td class="text-right"><t t-if="doc['balance_ex']"><b><span t-esc="doc['balance_ex']" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></b></t><t t-else=""><span>  </span></t></td>
+                                </t>
+                                </tr>
+                                <t t-foreach="docs" t-as="doc">
+                                    <t t-if="doc['acc_type'] == 16">
+                                    <tr>
+                                        <td style="width: 15%;"><span t-esc="doc['account']"/></td>
+                                        <t t-foreach="doc['vals']" t-as="val">
+                                          <td style="width: 15%;" class="text-right"><t t-if="val['balance']"><span t-esc="val['balance']" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></t><t t-else=""><span>  </span></t></td>
+                                          <!-- <td style="width: 15%;"><t t-if="val['credit']"><span t-esc="val['credit']"/></t><t t-else=""><span>  </span></t></td> -->
+                                        </t>
+                                    </tr>
+                                    </t>
+                                </t>
+                                <tr>
+                                  <td style="width: 15%;">Total Variable Cost</td>
+                                  <t t-foreach="total" t-as="doc">
+                                    <td class="text-right"><t t-if="doc['grand_total']"><b><span t-esc="doc['grand_total']" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></b></t><t t-else=""><span>  </span></t></td>
+                                  </t>
+                                </tr>
+                                <tr>
+                                  <td style="width: 15%;">Contribution Margin before fixed costs</td>
+                                  <t t-foreach="total" t-as="doc">
+                                    <td class="text-right"><t t-if="doc['Contribution']"><b><span t-esc="doc['Contribution']" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></b></t><t t-else=""><span>  </span></t></td>
+                                  </t>
+                                </tr>
+                                <tr>
+                                  <td style="width: 15%;">Contribution Margin before fixed costs %</td>
+                                  <t t-foreach="total" t-as="doc">
+                                    <td class="text-right"><t t-if="doc['Contribution_per']"><b><span t-esc="doc['Contribution_per']" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>%</b></t><t t-else=""><span>  </span></t></td>
+                                  </t>
+                                </tr>
+                                <!--<tr>-->
+                                <!--  <td style="width: 15%;">A. Revenue (Income) :</td>-->
+                                <!--  <td style="width: 15%;">Sales Accounts</td>-->
+                                <!--</tr>-->
+                                <!--<t t-foreach="docs" t-as="doc">-->
+                                <!--    <t t-if="doc['acc_type'] == 14">-->
+                                <!--    <tr>-->
+                                <!--        <td style="width: 15%;"><span t-esc="doc['account']"/></td>-->
+                                <!--        <t t-foreach="doc['vals']" t-as="val">-->
+                                <!--          <td style="width: 15%;"><t t-if="val['debit']"><span t-esc="val['debit']"/></t><t t-else=""><span>  </span></t></td>-->
+                                <!--          <td style="width: 15%;"><t t-if="val['credit']"><span t-esc="val['credit']"/></t><t t-else=""><span>  </span></t></td>-->
+                                <!--        </t>-->
+                                <!--    </tr>-->
+                                <!--    </t>-->
+                                <!--</t>-->
+                            </tbody>
+                        </table>
+                    </div>
+            
+                </div>
+            </t>
+            </t>
+    </template>
+
+    <!-- <template id="job_costing_report_view">
+        <t t-call="web.html_container">
+            
+                <t t-call="marcoms_updates.job_costing_report_view_document" />
+            
+        </t>
+    </template> -->
+</odoo>

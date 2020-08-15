@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data> 
+    
+        <record id="job_estimate_form_view" model="ir.ui.view">
+            <field name="name">job.estimate.form.view</field>
+            <field name="model">job.estimate</field>
+            <field name="arch" type="xml">
+                <form string="Job Estimates">
+                <header>
+                    <button name="job_confirm" string="Confirm" type="object" class="btn-primary" attrs="{'invisible': [('state', 'in', ['confirmed','sent','approved','done','cancel','sent'])]}"/>
+                    <button name="action_quotation_send" string="Send by Email" type="object" attrs="{'invisible': [('state', 'in', ['sent','approved','done','cancel'])]}" class="btn-primary"/>
+                    <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': [('state', 'in', ['confirmed','approved','done','cancel'])]}"/>
+                    <button name="create_quotation" type="object" string="Create Quotation" class="btn-primary" attrs="{'invisible': [('state', 'in', ['draft','confirmed','sent','done','cancel'])]}"/>
+                    <button name="reset_draft" type="object" string="Reset To Draft" attrs="{'invisible': [('state', 'in', ['draft','confirmed','done','cancel','sent'])]}" class="btn-primary"/>
+                    <button name="approve_job_estimate" type="object" string="Approve" attrs="{'invisible': [('state', 'in', ['draft','approved','done','cancel'])]}" class="btn-primary"/>
+                    <button name="reject_job_estimate" type="object" string="Reject" attrs="{'invisible': [('state', 'in', ['approved','draft','done','cancel','sent'])]}" class="btn-primary"/>
+				    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,approved,done"/>
+                </header>
+                <sheet>
+
+                     <div class="oe_button_box" name="button_box">
+                        <button type="object" name="quotation_button" class="oe_stat_button" icon="fa-truck"
+                                attrs="{'invisible': [('internal_quotation_count', '=', 0)]}">
+                            <field name="internal_quotation_count" widget="statinfo" string="Quotation" />
+                        </button>
+                     </div>
+
+                    <div class="oe_title oe_left">
+                        <h1>
+                            <field name="number"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="payment_term_id"/>
+                            <field name="customer_ref" />
+                            <field name="user_id" invisible='1'/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                            <field name="company_id"/>
+                            <field name="currency_id"/>
+                            <field name="project_id"/>
+                            <field name="analytic_id"/>
+                            <field name="job_type_id" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <notebook>
+                    	<page string="Material Estimation">
+                    		<field name="material_estimation_ids" widget="one2many_list">
+                    			<tree string="Material Estimation" editable="bottom">
+                    				<field name="type" />
+                    				<field name="product_id" />
+                    				<field name="description" />
+                    				<field name="quantity" />
+                    				<field name="uom_id" />
+                    				<field name="unit_price" />
+                    				<field name="discount" />
+                    				<field name="subtotal"  widget="monetary"/>
+                    			</tree>
+                    		</field>
+                    		<group class="oe_subtotal_footer oe_right" colspan="2" name="total_material_estimate">
+                                <field name="total_material_estimate" widget="monetary"/>
+                                <field name="total_labour_estimate" widget="monetary"/>
+                                <field name="total_overhead_estimate" widget="monetary"/>
+                                <field name="total_job_estimate" widget="monetary"/>
+                            </group>
+                            <separator string="Description of Jobs Estimate"/>
+                            <field name="description" class="oe_inline"/>
+                    	</page>
+                    	<page string="Labour Estimation">
+                    		<field name="labour_estimation_ids" widget="one2many_list">
+                    			<tree string="Labour Estimation" editable="bottom">
+                    				<field name="type" />
+                    				<field name="product_id" />
+                    				<field name="description" />
+                    				<field name="quantity" />
+                    				<field name="uom_id" />
+                    				<field name="unit_price" />
+                                    <field name="hours" widget="float_time" invisible="1"/>
+                    				<field name="discount" />
+                    				<field name="subtotal" widget="monetary"/>
+                    			</tree>
+                    		</field>
+                    		<group class="oe_subtotal_footer oe_right" colspan="2" name="total_material_estimate">
+                                <field name="total_material_estimate" widget="monetary"/>
+                                <field name="total_labour_estimate" widget="monetary"/>
+                                <field name="total_overhead_estimate" widget="monetary"/>
+                                <field name="total_job_estimate" widget="monetary"/>
+                            </group>
+                            <separator string="Description of Jobs Estimate"/>
+                            <field name="description" class="oe_inline"/>
+                    	</page>
+                    	<page string="Overhead Estimation">
+                    		<field name="overhead_estimation_ids" widget="one2many_list">
+                    			<tree string="Overhead Estimation" editable="bottom">
+                    				<field name="type" />
+                    				<field name="product_id" />
+                    				<field name="description" />
+                    				<field name="quantity" />
+                    				<field name="uom_id" />
+                    				<field name="unit_price" />
+                    				<field name="discount" />
+                    				<field name="subtotal" widget="monetary"/>
+                    			</tree>
+                    		</field>
+                    		<group class="oe_subtotal_footer oe_right" colspan="2" name="total_material_estimate">
+                                <field name="total_material_estimate" widget="monetary"/>
+                                <field name="total_labour_estimate" widget="monetary"/>
+                                <field name="total_overhead_estimate" widget="monetary"/>
+                                <field name="total_job_estimate" widget="monetary"/>
+                            </group>
+                            <separator string="Description of Jobs Estimate"/>
+                            <field name="description" class="oe_inline"/>
+                            
+                    	</page>
+                    	<page string="Other Info">
+                    		<group name="container_row_2">
+                                <group>
+                                    <field name="sales_person_id"/>
+                                </group>
+                                <group>
+                                    <field name="sales_team_id"/>
+                                    <field name="sale_quotation_id" invisible="1"/>
+                                </group>
+                            </group>
+                    	</page>
+                    </notebook>
+                </sheet>
+                </form>    
+            </field>
+    	</record>
+    
+    	<record id="job_estimate_tree_view" model="ir.ui.view">
+            <field name="name">job.estimate.tree.view</field>
+            <field name="model">job.estimate</field>
+            <field name="arch" type="xml">
+                <tree string="Job Estimates">
+                    <field name="number"/>
+                    <field name="partner_id"/>
+                    <field name="date"/>
+                    <field name="total_material_estimate"/>
+                    <field name="total_labour_estimate"/>
+                    <field name="total_overhead_estimate"/>
+                    <field name="total_job_estimate"/>
+                    <field name="sales_person_id"/>
+                    <field name="company_id"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+    
+        <record id="action_job_estimate" model="ir.actions.act_window">
+            <field name="name">Job Estimates</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">job.estimate</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="sale_order_form_quote_inherit" model="ir.ui.view">
+            <field name="name">sale.order.form.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='order_line']/tree//field[@name='name']" position="after">
+                    <field name="type"/>
+                </xpath>
+            </field>
+        </record>
+        
+        <menuitem id="menu_job_estimates"
+          name="Job Estimates"
+          parent="sale.sale_order_menu"
+          action="action_job_estimate"
+          sequence="12"/>
+                          
+    </data>
+</odoo>

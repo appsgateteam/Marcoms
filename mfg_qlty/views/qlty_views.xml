@@ -1,0 +1,25 @@
+<odoo>
+    <record id="quality_check_action_mo" model="ir.actions.act_window">
+        <field name="name">Quality Checks</field>
+        <field name="res_model">quality.check</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('production_id', '=', active_id)]</field>
+        <field name="context">{
+            'search_default_production_id': [active_id],
+            'default_production_id': active_id,
+         }
+        </field>
+    </record>
+
+    <record id="quality_alert_view_search_inherit_mrp" model="ir.ui.view">
+        <field name="name">quality.alert.view.search.inherit.mrp</field>
+        <field name="model">quality.alert</field>
+        <field name="inherit_id" ref="qlty_cntrl.quality_alert_view_search"/>
+        <field name="arch" type="xml">
+            <field name="user_id" position="after">
+                <field name="production_id"/>
+            </field>
+        </field>
+    </record>
+</odoo>

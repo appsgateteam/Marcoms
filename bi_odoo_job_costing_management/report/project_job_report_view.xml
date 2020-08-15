@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+	<data>
+
+		<template id="project_job_template_view">
+			<t t-call="web.external_layout">
+				<t t-set="doc" t-value="doc.with_context({'lang':doc.partner_id.lang})" />
+				<div class="page">
+					<t t-foreach="docs" t-as="o">
+						<div class="row">
+							<div class="col-xs-12">
+								<h3 style="margin-top: 30px; font-weight: bold;">
+									<span t-field="o.name" />
+								</h3>
+							</div>
+
+							<table style="border-collapse: collapse;width: 100%;"
+								class="table table-condensed">
+								<thead>
+									<tr>
+										<th>Customer</th>
+										<th>Project Manager</th>
+									</tr>
+								</thead>
+								<tbody class="components_tbody">
+									<tr>
+										<td>
+											<span t-field="o.partner_id.name" />
+										</td>
+										<td>
+											<span t-field="o.user_id.name" />
+											<span t-field="o.task_count" />
+										</td>
+									</tr>
+								</tbody>
+							</table>
+
+							<h2>Tasks :</h2>
+							<br />
+							<table class="table table-condensed">
+								<thead>
+									<tr>
+										<th>Task Name</th>
+										<th>Planned Hours</th>
+										<th>Spent Hours</th>
+										<th>Remaining Hours</th>
+										<th>Assigned to</th>
+										<th>Assigning Date</th>
+										<th>Deadline</th>
+										<th>Stage</th>
+									</tr>
+								</thead>
+								<tbody class="project_tbody">
+									<!-- <t t-foreach="o.timesheet_ids" t-as="task">
+										<tr>
+											<td>
+												<span t-field="timesheet.name" />
+											</td>
+											<td>
+												<span t-field="timesheet.name" />
+											</td>
+											<td>
+												<span t-field="timesheet.name" />
+											</td>
+											<td>
+												<span t-field="timesheet.name" />
+											</td>
+										</tr>
+									</t> -->
+								</tbody>
+							</table>
+
+						</div>
+					</t>
+				</div>
+			</t>
+		</template>
+
+		<template id="project_job_temp_id">
+			<t t-call="web.html_container">
+				<t t-foreach="docs" t-as="doc">
+					<t t-call="bi_odoo_job_costing_management.project_job_template_view" /><!-- 
+						t-lang="doc.partner_id.lang" -->
+				</t>
+			</t>
+		</template>
+
+	</data>
+</odoo>

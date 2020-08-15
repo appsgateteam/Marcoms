@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="account.report_payment_receipt_document">
+        <t t-call="web.external_layout">
+            <t t-set="o" t-value="o.with_context({'lang': lang})"/>
+            <div class="page">
+              <h2 style="margin-left:45%;"><strong>Voucher</strong></h2>
+              <br />
+                <h3><strong>Payment Voucher: <span t-field="o.name"/></strong></h3>
+                <div class="row">
+                    <div class="col-6" t-if="o.payment_date">
+                        <strong>Payment Date: </strong> <span t-field="o.payment_date"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6" t-if="o.partner_type" style="white-space: nowrap;">
+                        <t t-if="o.partner_type == 'customer'">
+                            <strong style="white-space: nowrap;">Customer: </strong>
+                        </t>
+                        <t t-if="o.partner_type == 'supplier'">
+                            <strong style="white-space: nowrap;">Vendor: </strong>
+                        </t><span t-field="o.partner_id" style="white-space: nowrap;"/>
+                    </div>
+                    <div class="col-8" t-if="o.payment_method_id">
+                        <strong style="white-space: nowrap;">Payment Method: </strong><span t-field="o.payment_method_id.name" style="white-space: nowrap;"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6" t-if="o.amount">
+                        <strong style="white-space: nowrap;">Payment Amount: </strong><span t-field="o.amount" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" style="white-space: nowrap;"/>
+                     </div>
+                    <div class="col-6" t-if="o.communication">
+                        <strong style="white-space: nowrap;">Memo: </strong><span t-field="o.communication" style="white-space: nowrap;"/>
+                     </div>
+                </div>
+                <div class="row">
+                    <div class="col-6" t-if="o.journal_id">
+                        <strong style="white-space: nowrap;">Bank: </strong><span t-field="o.journal_id" style="white-space: nowrap;"/>
+                     </div>
+                </div>
+                <div class="row">
+                    <div class="col-6" t-if="o.cheque_reference">
+                        <strong style="white-space: nowrap;">Cheque No: </strong><span t-field="o.cheque_reference" style="white-space: nowrap;"/>
+                     </div>
+                    <div class="col-6" t-if="o.bank_reference">
+                        <strong style="white-space: nowrap;">Bank Reference: </strong><span t-field="o.bank_reference" style="white-space: nowrap;"/>
+                     </div>
+                </div>
+                <br/>
+                <br/>
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th><span>Invoice Date</span></th>
+                            <th><span>Invoice Number</span></th>
+                            <th class="text-right"><span>Original Amount</span></th>
+                            <th class="text-right"><span>Amount Paid</span></th>
+                            <th class="text-right"><span>Balance</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="o.reconciled_invoice_ids" t-as="inv">
+                            <td><span t-field="inv.date_invoice"/></td>
+                            <td><span t-field="inv.number"/></td>
+                            <td class="text-right"><span t-field="inv.amount_total"/></td>
+                            <td class="text-right"><span t-esc="o._get_invoice_payment_amount(inv)" t-options="{'widget': 'monetary', 'display_currency': inv.currency_id}"/></td>
+                            <td class="text-right"><span t-field="inv.residual"/></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br/><br/>
+                <div class="row" id="journal_information2" style="margin-top:250px;">
+                    <div class="col-5">
+                        <div>
+                            <strong>Prepared by :</strong>
+                            <p t-field="o.prepare"/>
+                        </div>
+
+                        <div class="text-left" style="margin-top:250px;">
+                            <strong>Checked by:</strong>
+                            <p t-field="o.checked"/>
+                        </div>
+                        <!--<div class="text-left" style="margin-top:250px;">-->
+                        <!--    <strong>Verified by:</strong>-->
+                        <!--    <p t-field="o.verified"/>-->
+                        <!--</div>-->
+                    </div>  
+               
+                    <div class="col-5">
+                        <div>
+                            <strong>Approved by :</strong>
+                            <p t-field="o.approved"/>
+                        </div>
+                        <div class="text-left" style="margin-top:250px;">
+                            <strong>Received by :</strong>
+                            <p t-field="o.received"/>
+                        </div>
+                    </div>  
+                    <div class="col-5">
+                        <div class="text-left" style="margin-top:250px;">
+                            <strong>Verified by:</strong>
+                            <p t-field="o.verified"/>
+                        </div>
+                    </div>  
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="account.report_payment_receipt">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="lang" t-value="o.partner_id.lang"/>
+                <t t-call="account.report_payment_receipt_document" t-lang="lang"/>
+            </t>
+        </t>
+    </template>
+</odoo>
