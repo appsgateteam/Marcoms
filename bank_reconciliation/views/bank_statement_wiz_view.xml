@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="bank_statement_wiz" model="ir.ui.view">
+        <field name="name">bank.statement.reconciliation</field>
+        <field name="model">bank.statement</field>
+        <field name="arch" type="xml">
+            <form string="Bank Reconciliation">
+                <header>
+                    <button name="show_lines" string="Show Lines" type="object"/>
+                    <button name="reconcile_lines" string="Reconcile" type="object" />
+                    <!-- <button name="unreconcile_lines" string="Unreconcile" type="object" attrs="{'invisible': [('state', 'in', 'unreconciled')]}"/> -->
+                    <!-- <button name="cancel_lines" string="Cancel" type="object" attrs="{'invisible': [('state', 'in', 'draft')]}"/> -->
+                    <!-- <field name="state" widget='statusbar' statusbar_visible="draft,reconciled,unreconciled" /> -->
+                 </header>
+                <group>
+                    <group>
+                        <field name="journal_id"/>
+                        <field name="account_id"/><br/><br/><br/><br/>
+                        <field name="recnl_type" widget="radio" />
+                    </group>
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/><br/><br/><br/><br/>
+                        <field name="gl_balance"/>
+                        <field name="bank_balance"/>
+                        <field name="balance_difference"/>
+                    </group>
+                </group>
+                <!-- <group > -->
+                    
+                <!-- </group> -->
+                <!-- <group class="oe_subtotal_footer oe_right">
+                    <field name="gl_balance"/>
+                    <field name="balance_difference"/>
+                    <field name="bank_balance"/>
+                </group> -->
+                <group>
+                    <field name="statement_lines" nolabel="1">
+                        <tree create="false" editable="bottom" default_order="date">
+                            <field name="date" readonly="True"/>
+                            <field name="move_id" readonly="True" invisible="1" groups="account.group_account_user"/>
+                            <field name="name" readonly="True"/>
+                            <field name="ref" readonly="True"/>
+                            <field name="partner_id" readonly="True"/>
+                            <field name="amount_currency" readonly="True" groups="base.group_multi_currency"/>
+                            <field name="currency_id" readonly="True" invisible="1" />
+                            <field name="date_maturity" readonly="True"/>
+                            <field name="statement_date"/>
+                            <field name="company_currency_id" invisible="1" readonly="True"/>
+                            <field name="debit" sum="Debit Sum" readonly="True"/>
+                            <field name="credit" sum="Credit Sum" readonly="True"/>
+                        </tree>
+                    </field>
+                </group>
+                
+            </form>
+        </field>
+    </record>
+
+    <record id="bank_statement_wiz_tree" model="ir.ui.view">
+        <field name="name">bank.statement.reconciliation.tree</field>
+        <field name="model">bank.statement</field>
+        <field name="arch" type="xml">
+            <tree string="Bank Reconciliation">
+                
+                <field name="journal_id"/>
+                <field name="account_id"/>
+            
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="recnl_type"/>
+                <field name="bank_balance"/>
+                <!-- <field name="state"/> -->
+                    
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="action_bank_statement_wiz" model="ir.actions.act_window">
+        <field name="name">Bank Reconciliation</field>
+        <field name="res_model">bank.statement</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <!-- <field name="target">new</field> -->
+    </record>
+
+    <menuitem id="menu_action_bank_reconciliation" parent="account.menu_finance_entries_actions" action="action_bank_statement_wiz" sequence="25"/>
+</odoo>

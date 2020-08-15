@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="paperformat_mar_report" model="report.paperformat">
+            <field name="name">Marcoms A4 Paper Format</field>
+            <field name="default" eval="True" />
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">40</field>
+            <field name="margin_bottom">38</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">45</field>
+            <field name="dpi">90</field>
+        </record>
+        <record id="paperformat_mar_report_landscape" model="report.paperformat">
+            <field name="name">Marcoms A4 Paper Format landscape</field>
+            <field name="default" eval="True" />
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Landscape</field>
+            <field name="margin_top">40</field>
+            <field name="margin_bottom">28</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">45</field>
+            <field name="dpi">90</field>
+        </record>
+        <record id="paperformat_check_mar" model="report.paperformat">
+            <field name="name">US Bank Check</field>
+            <field name="default" eval="True"/>
+            <field name="format">custom</field>
+            <field name="page_height">297</field>
+            <field name="page_width">210</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">3</field>
+            <field name="margin_bottom">3</field>
+            <field name="margin_left">3</field>
+            <field name="margin_right">3</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">3</field>
+            <field name="dpi">80</field>
+        </record>
+        <report 
+            id="lead_form_report"
+            string="Lead Form"
+            model="crm.lead" 
+            report_type="qweb-pdf"
+            file="marcoms_updates.report_lead_form" 
+            name="marcoms_updates.report_lead_form"
+            print_report_name="'Lead Form - %s' % (object.name)"
+            paperformat="marcoms_updates.paperformat_mar_report"
+        />
+        <report 
+            id="action_report_mar_quotation"
+            model="res.company"
+            name="marcoms_updates.external_layout_mar_quotation"
+            file="marcoms_updates.external_layout_mar_quotation"
+            string="Preview External Marcoms report"
+            menu="False"
+            report_type="qweb-pdf"/>
+        <report 
+            id="mar_quotation_report"
+            string="Quotation Exhibition"
+            model="sale.order" 
+            report_type="qweb-pdf"
+            file="marcoms_updates.report_mar_quotation" 
+            name="marcoms_updates.report_mar_quotation"
+            print_report_name="'%s' % (object.name)"
+            paperformat="marcoms_updates.paperformat_mar_report"
+        />
+        <report 
+            id="sale.action_report_saleorder"
+            string="Quotation / Order"
+            model="sale.order" 
+            report_type="qweb-pdf"
+            file="sale.report_saleorder" 
+            name="sale.report_saleorder"
+            menu="False"
+            print_report_name="(object.state in ('draft', 'sent') and 'Quotation - %s' % (object.name)) or 'Order - %s' % (object.name)"
+        />
+        <report 
+            id="pending_supporting_doc_report"
+            string="Pending Supporting Documents"
+            model="sale.order" 
+            report_type="qweb-pdf"
+            file="marcoms_updates.report_pending_supporting_doc" 
+            name="marcoms_updates.report_pending_supporting_doc"
+            print_report_name="'Pending Supporting Documents '"
+            paperformat="marcoms_updates.paperformat_mar_report_landscape"
+        />
+        <report 
+            id="minimum_stock_level_report"
+            string="Minimum Stock Level"
+            model="stock.warehouse.orderpoint" 
+            report_type="qweb-pdf"
+            file="marcoms_updates.report_minimum_stock_level" 
+            name="marcoms_updates.report_minimum_stock_level"
+            print_report_name="'Minimum Stock Level '"
+            paperformat="marcoms_updates.paperformat_mar_report"
+        />
+        <report 
+            id="action_report_mar_quotation_landscape"
+            model="res.company"
+            name="marcoms_updates.external_layout_mar_quotation_landscape"
+            file="marcoms_updates.external_layout_mar_quotation_landscape"
+            string="Preview External Marcoms report 2"
+            menu="False"
+            report_type="qweb-pdf"/>
+
+        <report
+            id="account.action_report_payment_receipt"
+            model="account.payment"
+            string="Payment / Receipt voucher"
+            report_type="qweb-pdf"
+            name="account.report_payment_receipt"
+            file="account.report_payment_receipt"
+            menu="True"
+        />
+        <report
+            id="action_report_payment_receipt_new"
+            model="account.payment"
+            string="Payment / Receipt"
+            report_type="qweb-pdf"
+            name="marcoms_updates.report_payment_receipt_new"
+            file="marcoms_updates.report_payment_receipt_new"
+            menu="True"
+        />
+        <report
+            id="account.account_invoices"
+            model="account.invoice"
+            string="Invoices /  Credit Note"
+            report_type="qweb-pdf"
+            name="account.report_invoice_with_payments"
+            file="account.report_invoice_with_payments"
+            attachment="(object.state in ('open','in_payment','paid')) and ('INV'+(object.number or '').replace('/','')+'.pdf')"
+            print_report_name="(object._get_report_base_filename())"
+            groups="account.group_account_invoice"
+        />
+        <report
+            id="marcoms_updates.account_invoices_new"
+            model="account.invoice"
+            string="Invoices Second Design"
+            report_type="qweb-pdf"
+            name="marcoms_updates.report_invoice_new"
+            file="marcoms_updates.report_invoice_new"
+            print_report_name="'Invoice- %s' % (object.name)"
+            groups="account.group_account_invoice"
+        />
+        <report
+            id="account.account_invoices_without_payment"
+            model="account.invoice"
+            string="Invoices without Seal"
+            report_type="qweb-pdf"
+            name="account.report_invoice"
+            file="account.report_invoice"
+            menu="False"
+            attachment="(object.state in ('open','in_payment','paid')) and ('INV'+(object.number or '').replace('/','')+'.pdf')"
+            print_report_name="(object._get_report_base_filename())"
+        />
+        <report
+            id="account_invoices_without_seal"
+            model="account.invoice"
+            string="Invoices without Seal"
+            report_type="qweb-pdf"
+            name="marcoms_updates.report_invoice_seal"
+            file="marcoms_updates.report_invoice_seal"
+            attachment="(object.state in ('open','in_payment','paid')) and ('INV'+(object.number or '').replace('/','')+'.pdf')"
+            print_report_name="(object._get_report_base_filename())"
+        />
+        <report id="journal_entry_report_id_report"
+				string="Journal Voucher"
+				model="account.move"
+				report_type="qweb-pdf"
+				file="marcoms_updates.journal_entry_report_template_id_mar"
+				name="marcoms_updates.journal_entry_report_template_id_mar"
+                print_report_name="'Jornal Voucher- %s' % (object.name)"/>	
+        
+        <report id="account_check_printing_report_base.action_report_check_base"
+                string="Payment Check ADCB"
+                model="account.payment"
+                name="account_check_printing_report_base.report_check_base"
+                file="account_check_printing_report_base.report_check_base"
+                report_type="qweb-pdf"
+                paperformat="paperformat_check_mar"/>
+        <report id="action_report_check_base_rak"
+                string="Payment Check RAK BANK"
+                model="account.payment"
+                name="marcoms_updates.report_check_base_rak"
+                file="marcoms_updates.report_check_base_rak"
+                report_type="qweb-pdf"
+                paperformat="paperformat_check_mar"/>
+        <report id="job_costing_report"
+                model="job.costing.report"
+                string="Job Costing"
+                report_type="qweb-pdf"
+                name="marcoms_updates.job_costing_report_view"
+                paperformat="paperformat_mar_report_landscape"
+                menu="False"/>
+
+        <report id="action_report_check_journal_ADCB"
+                string="Check ADCB"
+                model="account.move"
+                name="marcoms_updates.report_check_base_journal"
+                file="marcoms_updates.report_check_base_journal"
+                report_type="qweb-pdf"
+                paperformat="paperformat_check_mar"/>
+        <report id="action_report_check_base_journal_rak"
+                string="Check RAK BANK"
+                model="account.move"
+                name="marcoms_updates.report_check_base_rak_journal"
+                file="marcoms_updates.report_check_base_rak_journal"
+                report_type="qweb-pdf"
+                paperformat="paperformat_check_mar"/>
+    </data>
+</odoo>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+    <record id="product_requisition_seq_name" model="ir.sequence">
+        <field name="name">Product Requisition Sequence Number</field>
+        <field name="code">product.requisition</field>
+        <field name="active">True</field>
+        <field name="prefix">PR/</field>
+        <field name="number_increment">1</field>
+        <field name="number_next">1</field>
+        <field name="padding">4</field>
+        <field name="implementation">standard</field>
+    </record>
+</data>
+
+  <data noupdate="0">
+    <record id="email_template_data_pro_requisi" model="mail.template">
+      <field name="name">Applicant: Product Requisitions</field>
+      <field name="model_id" ref="product_requisition.model_product_requisition"/>
+      <field name="email_from">${object.user_id.login}</field>
+      <field name="subject">Product Requisiton Status</field>
+      <field name="body_html" type="html"><p>
+          Hello there are New Purchase Tender Created Please Check
+          Purchase Requisition ${object.requisition_mat_po_id}</p>
+      </field>
+    </record>
+
+
+    <record model="mail.channel" id="channel_all_pro_requisi">
+      <field name="name">Product Requisitions</field>
+      <field name="group_ids" eval="[(4, ref('product_requisition.group_channel_access'))]"/>
+      <field name="description">General announcements for all Product Requisitions.</field>
+    </record>
+
+    <record id="email_template_data_pro_approve" model="mail.template">
+      <field name="name">Applicant: PO Approve</field>
+      <field name="model_id" ref="product_requisition.model_product_requisition"/>
+      <field name="email_from">${object.user_id.login}</field>
+      <field name="subject">PO to approve</field>
+      <field name="body_html" type="html"><p>
+          Hello there are New Purchase Tender Created Please Check
+          Purchase Requisition ${object.requisition_mat_po_id}</p>
+      </field>
+    </record>
+
+
+    <record model="mail.channel" id="channel_all_pro_approve">
+      <field name="name">PO Approval</field>
+      <field name="group_ids" eval="[(4, ref('product_requisition.group_channel_access'))]"/>
+      <field name="description">General announcements for all PO comes from purchase team.</field>
+    </record>
+  </data>
+</odoo>

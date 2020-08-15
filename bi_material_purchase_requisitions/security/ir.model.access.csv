@@ -1,0 +1,3 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+purchase_requisition_user,purchase_requisition_name,bi_material_purchase_requisitions.model_material_purchase_requisition,,1,1,1,1
+requisition_line_user,requisition_line_name,bi_material_purchase_requisitions.model_requisition_line,,1,1,1,1

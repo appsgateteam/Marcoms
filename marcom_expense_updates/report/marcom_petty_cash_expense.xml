@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="report_petty_cash_expense_document">
+    <t t-call="web.external_layout">
+    <br/>
+    <br/>
+    <br/>
+       
+    <div class="page">
+
+    <style type="text/css">
+            
+              /* United */
+              @font-face {
+                font-family: 'Calibri';
+                font-style: heavy;
+                font-weight: 400;
+                src: url(/home/ubuntu/.fonts/calibrii.ttf) format('truetype');
+              }
+              
+      
+            
+    </style>
+
+    <table class="table table-condensed ">
+                            <br></br>
+                            <br></br>
+                            <br></br>
+                            <br></br>
+                            <br></br>
+                            <div  style="border-bottom: 1px solid black;">
+                                <h3 class="text-center">Petty Cash Claims </h3>
+                                <span style="font-size: 14px;"  ><strong>From</strong>: <t t-esc="date_start" t-options='{"widget": "date"}'/> <strong>To</strong>: <t t-esc="date_end" t-options='{"widget": "date"}'/></span>
+                                <!-- <span style="font-size: 14px;"  ><strong>From</strong>: <t t-esc="date_start" t-options='{"widget": "date"}'/> <strong>To</strong>: <t t-esc="date_end" t-options='{"widget": "date"}'/></span> -->
+                                <!-- <span class="text-center" style="font-size: 14px;">Salesperson: <t t-esc="sale"/></span> -->
+                            </div>
+                            <br></br>
+                            <br></br>
+                            <thead style="font-size: 10px">
+                                <th class="text-center" style="width: 8% border: 1px solid black;">Bill Reference</th>
+                                <th class="text-center" style="width: 10% border: 1px solid black;">Date</th>
+                                <th class="text-center" style="width: 8% border: 1px solid black;">Description</th>
+                                <th class="text-center" style="width: 8% border: 1px solid black;">Product</th>
+                                <th class="text-center" style="width: 8% border: 1px solid black;">Unit Price </th>
+                                <th class="text-center" style="width: 8% border: 1px solid black;">VAT</th>
+                                <th class="text-center" style="width: 10% border: 1px solid black;">Net Amount</th>
+                                <th class="text-center" style="width: 8% border: 1px solid black;">Gross Amount</th>
+                                <th class="text-center" style="width: 8% border: 1px solid black;">Partner</th>
+                                <th class="text-center" style="width: 12% border: 1px solid black;">Project</th>
+                                <th class="text-center" style="width: 10% border: 1px solid black;">State</th>
+                                <th class="text-center" style="width: 12% border: 1px solid black;">Manager</th>
+                                <th class="text-center" style="width: 10% border: 1px solid black;">journal id</th>
+                            </thead>
+                            <tbody>
+                                <t t-set="total_untaxed" t-value="0" />
+                                <t t-set="total_amount" t-value="0" />
+                                <t t-foreach="docs" t-as="doc">
+                                    <tr style="border: 1px solid black;">
+                                        <td style="font-size: 10px border: 1px solid black;"><span t-esc="doc['reference']"/></td>
+                                        <td style="font-size: 10px border: 1px solid black;"><span t-esc="doc['date']" t-options='{"widget": "date"}'/></td>
+                                        <td class="text-center" style="font-size: 10px border: 1px solid black;"><span t-esc="doc['name']"/></td>
+                                        <td class="text-center" style="font-size: 10px border: 1px solid black;">
+                                            <span t-esc="doc['product_id']"/>
+                                        </td>
+                                        <td class="text-center" style="font-size: 10px border: 1px solid black;"><span t-esc="doc['unit_amount']" t-options='{"widget": "monetary", "display_currency": doc["company"].currency_id}'/></td>
+                                        <td class="text-center" style="font-size: 10px border: 1px solid black;"><span t-esc="doc['tax_ids']"/></td>
+                                        <td class="text-center" style="font-size: 10px border: 1px solid black;"><span t-esc="doc['untaxed_amount']" t-options='{"widget": "monetary", "display_currency": doc["company"].currency_id}'/></td> 
+                                        <td class="text-center" style="font-size: 10px border: 1px solid black;"><span t-esc="doc['total_amount']" t-options='{"widget": "monetary", "display_currency": doc["company"].currency_id}'/></td>
+                                        <td class="text-center" style="font-size: 10px border: 1px solid black;"><span t-esc="doc['employee_id']"/></td>
+                                        <td class="text-center" style="font-size: 10px border: 1px solid black;"><span t-esc="doc['project_id']"/></td>
+                                        <td class="text-center" style="font-size: 10px border: 1px solid black;"><span t-esc="doc['state']" /></td>
+                                        <td class="text-center" style="font-size: 10px border: 1px solid black;"><span t-esc="doc['user_id']" /></td>
+                                        <td class="text-center" style="font-size: 10px border: 1px solid black;"><span t-esc="doc['journal_id']" /></td>
+                                    </tr>
+                                    <t t-set="total_untaxed" t-value="total_untaxed + doc['untaxed_amount'] " />
+                                    <t t-set="total_amount" t-value="total_amount + doc['total_amount']" />
+                                </t>
+                                <tr style="border: 1px solid black;">
+                                    <td style="font-size: 10px border: 1px solid black;"></td>
+                                    <td style="font-size: 10px border: 1px solid black;"></td>
+                                    <td class="text-center" style="font-size: 10px border: 1px solid black;"></td>
+                                    <td class="text-center" style="font-size: 10px border: 1px solid black;">
+                                        
+                                    </td>
+                                    <td class="text-center" style="font-size: 10px border: 1px solid black;"></td>
+                                    <td class="text-center" style="font-size: 10px border: 1px solid black;">Totals:</td>
+                                    <td class="text-center" style="font-size: 10px border: 1px solid black;"><span t-esc="total_untaxed" t-options='{"widget": "monetary", "display_currency": doc["company"].currency_id}'/></td> 
+                                    <td class="text-center" style="font-size: 10px border: 1px solid black;"><span t-esc="total_amount" t-options='{"widget": "monetary", "display_currency": doc["company"].currency_id}'/></td>
+                                    <td class="text-center" style="font-size: 10px border: 1px solid black;"></td>
+                                    <td class="text-center" style="font-size: 10px border: 1px solid black;"></td>
+                                    <td class="text-center" style="font-size: 10px border: 1px solid black;"></td>
+                                    <td class="text-center" style="font-size: 10px border: 1px solid black;"></td>
+                                    <td class="text-center" style="font-size: 10px border: 1px solid black;"></td>
+                                </tr>
+                            </tbody>
+    </table>
+
+</div>
+
+   </t>
+</template>
+    
+
+
+    <!-- fffffffffffffffffffffffffff -->
+
+   
+
+<!-- 
+        <div style="white-space: nowrap; margin-left:70%;">
+
+            <span style="white-space: nowrap; font-family: Calibri; font-size: 18px;">Bill Reference : <span t-field="doc.reference"/></span>
+
+        </div>
+
+        <div style="white-space: nowrap; margin-left:70%;">
+
+            <span style="white-space: nowrap; font-family: Calibri; font-size: 18px;">Date : <span t-field="doc.date"/></span>
+
+        </div>
+
+
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+
+
+
+        <div>
+
+            <span class="text-center" style="white-space: nowrap; font-family: Calibri;  font-size: 18px; margin-left:40%; "> Petty Cash Claims </span>
+
+            
+
+        </div>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+
+        <div>
+
+            <span style="white-space: nowrap; font-family: Calibri; margin-left:5%; font-size: 16px;">Description : <span t-field="doc.name"/></span>
+
+            <span style="white-space: nowrap; margin-left: 32%; font-family: Calibri; font-size: 16px;">Product : <span t-field="doc.product_id"/></span>
+
+        </div>
+        <br/>
+        <br/>
+
+        <div>
+
+            <span style="white-space: nowrap; font-family: Calibri; margin-left:5%; font-size: 16px;">Unit Price : <span t-field="doc.unit_amount" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></span>
+
+            <span style="white-space: nowrap; margin-left: 35%; font-family: Calibri;  font-size: 16px;">VAT : <span t-field="doc.tax_ids"/></span>
+
+        </div> 
+        <br/>
+        <br/>
+
+        <div>
+
+            <span style="white-space: nowrap; font-family: Calibri; margin-left:5%; font-size: 16px;">Net Amount : <span t-field="doc.untaxed_amount" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></span>
+
+            <span style="white-space: nowrap; margin-left:33%; font-family: Calibri;  font-size: 16px;">Gross Amount : <span t-field="doc.total_amount" /></span>
+
+        </div>
+        <br/>
+        <br/>
+
+        <div>
+
+            <span style="white-space: nowrap; font-family: Calibri; margin-left:5%; font-size: 16px;">Partner : <span t-field="doc.employee_id.name"/></span>
+
+            <span style="white-space: nowrap; margin-left:36%; font-family: Calibri;  font-size: 16px;">Project : <span t-field="doc.project_id"/></span>
+
+        </div> 
+        <br/>
+        <br/> 
+
+        <div>
+
+            <span style="white-space: nowrap; font-family: Calibri; margin-left:5%; font-size: 16px;">State : <span t-field="doc.sheet_id.state"/></span>
+
+
+            <span style="white-space: nowrap; margin-left:38%; font-family: Calibri;  font-size: 16px;">Manager : <span t-field="doc.sheet_id.user_id"/></span>
+
+        </div>
+        <br/>
+        <br/>  
+
+        <div>
+
+            <span style="white-space: nowrap; font-family: Calibri; margin-left:5%; font-size: 16px;">journal id : <span t-field="doc.sheet_id.journal_id"/></span>
+ 
+            
+
+        </div>  
+
+                
+                    
+    </div> 
+
+       
+    </t>
+</template> -->
+
+
+    <template id="report_petty_cash_expense">
+        <t t-call="web.html_container">
+            <!-- <t t-foreach="docs" t-as="doc"> -->
+                <t t-call="marcom_expense_updates.report_petty_cash_expense_document"/>
+            <!-- </t> -->
+        </t>
+    </template>
+
+</odoo>

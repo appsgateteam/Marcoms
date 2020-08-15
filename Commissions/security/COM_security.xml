@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- <data>
+        <record model="ir.module.category" id="module_product_requisition_category">
+        <field name="name">Product Requisition</field>
+        <field name="description">Helps you handle your Employee Services.</field>
+        <field name="sequence">9</field>
+        </record>
+    </data>
+    <data noupdate="0">
+        <record id="group_channel_access" model="res.groups">
+            <field name="name">Channel Access</field>
+            <field name="category_id" ref="product_requisition.module_product_requisition_category"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        <record id="group_Requester_id" model="res.groups">
+            <field name="name">Requester</field>
+            <field name="category_id" ref="product_requisition.module_product_requisition_category"/>
+            <field name="implied_ids" eval="[(4, ref('group_channel_access'))]"/>
+        </record>
+
+        <record id="group_Purchasing_Manager" model="res.groups">
+            <field name="name">Purchasing</field>
+            <field name="category_id" ref="product_requisition.module_product_requisition_category"/>
+            <field name="implied_ids" eval="[(4, ref('group_channel_access'))]"/>
+        </record>
+
+        <record id="group_Accounts" model="res.groups">
+            <field name="name">Accounts</field>
+            <field name="category_id" ref="product_requisition.module_product_requisition_category"/>
+            <field name="implied_ids" eval="[(4, ref('group_channel_access'))]"/>
+        </record>
+
+        <record id="group_top_management" model="res.groups">
+            <field name="name">Top Management</field>
+            <field name="category_id" ref="product_requisition.module_product_requisition_category"/>
+            <field name="implied_ids" eval="[(4, ref('group_channel_access'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+        <record id="product_requisition_personal" model="ir.rule">
+            <field name="name">Personal Product Requisition</field>
+            <field ref="model_product_requisition" name="model_id"/>
+            <field name="domain_force">[('creator_name','=',user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_Requester_id'))]"/>
+        </record>
+        <record id="product_requisition_personal_top" model="ir.rule">
+            <field name="name">Management Product Requisition</field>
+            <field ref="model_product_requisition" name="model_id"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4, ref('group_top_management'))]"/>
+        </record>
+        <record id="product_requisition_personal_account" model="ir.rule">
+            <field name="name">Accounts Product Requisition</field>
+            <field ref="model_product_requisition" name="model_id"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4, ref('group_Accounts'))]"/>
+        </record>
+        <record id="product_requisition_personal_purchase" model="ir.rule">
+            <field name="name">Purchasing Product Requisition</field>
+            <field ref="model_product_requisition" name="model_id"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4, ref('group_Purchasing_Manager'))]"/>
+        </record>
+    </data>
+
+    <data noupdate="1">
+        <record id="base.default_user" model="res.users">
+            <field name="groups_id" eval="[(4,ref('product_requisition.group_Requester_id'))]"/>
+        </record>
+    </data> -->
+</odoo>

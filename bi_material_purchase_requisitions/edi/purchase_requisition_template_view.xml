@@ -1,0 +1,54 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>
+        <!--Email template -->
+        
+        
+        <record id="email_employee_purchase_requisition" model="mail.template">
+            <field name="name">Approval Request for Purchase Requisition...!!</field>
+            <field name="subject">Approval Request for Purchase Requisition to Purchase Order ${object.sequence or 'n/a' }</field>
+            <field name="model_id" ref="bi_material_purchase_requisitions.model_material_purchase_requisition" />
+            <field name="auto_delete" eval="True" />
+            <field name="body_html"><![CDATA[
+                    <div style="font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: #FFF; ">
+                        <p>Dear ${object.requisition_responsible_id.name or 'n/a' }</p>
+                        <p> Approve request for Purchase Order Requisition -  ${object.sequence}. </p>
+                        <p> Thank You </p>
+                    </div>
+                        ]]>
+            </field>
+        </record>
+        
+        <record id="email_manager_purchase_requisition" model="mail.template">
+            <field name="name">Department Request for Purchase Requisition...!!</field>
+            <field name="subject">Department Request for Purchase Requisition to Purchase Order ${object.sequence or 'n/a' }</field>
+            <field name="model_id" ref="bi_material_purchase_requisitions.model_material_purchase_requisition" />
+            <field name="auto_delete" eval="True" />
+            <field name="body_html"><![CDATA[
+                    <div style="font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: #FFF; ">
+                        <p>Dear ${object.employee_id.name or 'n/a' }</p>
+                        <p> Your Purchase Requisition -  ${object.sequence} is approved by department. </p>
+                        <p> Thank You </p>
+                    </div>
+                        ]]>
+            </field>
+        </record>
+        
+        <record id="email_user_purchase_requisition" model="mail.template">
+            <field name="name">Request for Material Purchase Requisition...!!</field>
+            <field name="subject">Request for Material Purchase Requisition ${object.sequence or 'n/a' }</field>
+            <field name="model_id" ref="bi_material_purchase_requisitions.model_material_purchase_requisition" />
+            <field name="auto_delete" eval="True" />
+            <field name="body_html"><![CDATA[
+                    <div style="font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: #FFF; ">
+                        <p>Dear ${object.employee_id.name or 'n/a' }</p>
+                        <p> Approve Request for Purchase Requisition -  ${object.sequence}. </p>
+                        <p> Thank You </p>
+                    </div>
+                        ]]>
+            </field>
+        </record>        
+        
+        
+    </data>
+</openerp>

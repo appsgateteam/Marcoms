@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="report_pending_supporting_doc_document">
+    <t t-call="marcoms_updates.external_layout_mar_quotation_landscape">
+        <!-- <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)"/> -->
+        <div class="page" style="margin-left:25px;font-size:15px;font-family: Calibri;">
+            <div class="oe_structure"/>
+            <t t-set="i" t-value="1"/>
+
+                <br/>
+                <br/>
+                <h2 class="text-center" style="color:black;">SALES DOCUMENT REPORT</h2><br/>
+                <table style="border-collapse: collapse;border: 1px solid black;width: 100%;">
+                    <thead class="mt-4">
+                        <tr style="background-color:#cccccc;">
+                            <!-- TODO: remove in master -->
+                            <t t-set="colspan" t-value="5"/>
+                            <th class="text-center" style="width:3%;border: 1px solid black;color:black;">NO</th>
+                            <th class="text-center" style="width:9%;border: 1px solid black;color:black;">Date</th>
+                            
+                            <th class="text-center" style="width:9%;border: 1px solid black;color:black;">Date of show completion</th>
+                            <th class="text-center" style="width:6%;border: 1px solid black;color:black;">SO</th>
+                            <th class="text-center" style="width:10%;border: 1px solid black;color:black;">Salesperson</th>
+                            <th class="text-center" style="width:15%;border: 1px solid black;color:black;">Client Name</th>
+                            <th class="text-center" style="width:15%;border: 1px solid black;color:black;">Project Name</th>
+                            <th class="text-center" style="width:9%;border: 1px solid black;color:black;">LPO/Contract</th>
+                            <th class="text-center" style="width:9%;border: 1px solid black;color:black;">Completion Certificate</th>
+                            <th class="text-center" style="width:15%;border: 1px solid black;color:black;">Remark</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="docs" t-as="doc">
+                        <tr>
+                            <td class="text-center" style="width:3%;border: 1px solid black;">
+                                <span t-esc="i"/>
+                            </td>
+                            <td class="text-left" style="width:9%;border: 1px solid black;">
+                                <span t-field="doc.validity_date"/>
+                            </td>
+                            <td class="text-left" style="width:9%;border: 1px solid black;">
+                                <span t-field="doc.validity_date"/>
+                            </td>
+                            <td class="text-left" style="width:6%;border: 1px solid black;">
+                                <span t-esc="doc.name"/>
+                            </td>
+                            <td class="text-left" style="width:10%;border: 1px solid black;">
+                                <span t-esc="doc.user_id.name"/>
+                            </td>
+                            <td class="text-left" style="width:15%;border: 1px solid black;">
+                                <span t-esc="doc.partner_id.name"/>
+                            </td>
+                            <td class="text-left" style="width:15%;border: 1px solid black;">
+                                <span t-esc="doc.project_name"/>
+                            </td>
+                            <td class="text-left" style="width:9%;border: 1px solid black;">
+                                <t t-if="doc.po_contract == True">
+                                    <span >Yes</span>
+                                </t>
+                                <t t-else="">
+                                    <span >No</span>
+                                </t>
+                            </td>
+                            <td class="text-left" style="width:9%;border: 1px solid black;">
+                                <t t-if="doc.certificate_com == True">
+                                    <span >Yes</span>
+                                </t>
+                                <t t-else="">
+                                    <span >No</span>
+                                </t>
+                            </td>
+                            <td class="text-left" style="width:15%;border: 1px solid black;">
+                                <span t-esc="doc.account_remark"/>
+                            </td>
+                        </tr>
+                        
+                        <t t-set="i" t-value="i+1"/>
+                    </t>
+                    </tbody>
+                </table>
+                    
+
+                
+            <div class="oe_structure"/>
+        </div>
+    </t>
+    
+</template>
+
+
+<template id="report_pending_supporting_doc">
+    <t t-call="web.html_container">
+        <!-- <t t-foreach="docs" t-as="doc"> -->
+            <t t-call="marcoms_updates.report_pending_supporting_doc_document" />
+        <!-- </t> -->
+    </t>
+</template>
+</odoo>

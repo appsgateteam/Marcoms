@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <record id="n2n_leave_analysis_tree" model="ir.ui.view">
+            <field name="name">Employee Leave Analysis</field>
+            <field name="model">n2n.leave.analysis.view</field>
+            <field name="arch" type="xml">
+                <tree string="Leave Analysis" create="false">
+                    <field name="identification_id"/>
+                    <field name="employee_id"/>
+                    <field name="designation"/>
+                    <field name="company_id"/>
+                    <field name="join_date"/>
+                    <field name="total_leaves"/>
+                    <field name="total_allocated"/>
+                    <field name="pending_leaves"/>
+                    <field name="wage"/>
+                    <field name="salary_per"/>
+                    <field name="leave_amt"/>                    
+                </tree>
+            </field>
+        </record>
+
+        <record id="n2n_leave_analysis_pivot" model="ir.ui.view">
+            <field name="name">Employee Leave Analysis</field>
+            <field name="model">n2n.leave.analysis.view</field>
+            <field name="arch" type="xml">
+                <pivot string="Leave Analysis">
+                    <field name="identification_id"/>
+                    <field name="employee_id"/>
+                    <field name="designation"/>
+                    <field name="company_id"/>
+                    <field name="join_date"/>
+                    <field name="total_leaves"/>
+                    <field name="total_allocated"/>
+                    <field name="pending_leaves"/>
+                    <field name="wage" type="measure"/>
+                    <field name="salary_per" type="measure"/>
+                    <field name="leave_amt" type="measure"/>
+                    
+                </pivot>
+            </field>
+        </record>
+
+        <record id="n2n_leave_analysis_graph" model="ir.ui.view">
+            <field name="name">Employee Leave Analysis</field>
+            <field name="model">n2n.leave.analysis.view</field>
+            <field name="arch" type="xml">
+                <graph string="Leave Analysis">
+                    <field name="identification_id" type="col"/>
+                    <field name="employee_id" type="row"/>
+                    <field name="designation" type="col"/>
+                    <field name="company_id" type="col"/>
+                    <field name="join_date" type="col"/>
+                    <field name="total_leaves" type="col"/>
+                    <field name="total_allocated" type="col"/>
+                    <field name="pending_leaves" type="col"/>
+                    <field name="wage" type="measure"/>
+                    <field name="salary_per" type="measure"/>
+                    <field name="leave_amt" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <record id="n2n_leave_analysis_search" model="ir.ui.view">
+        <field name="name">Employee Leave Analysis</field>
+        <field name="model">n2n.leave.analysis.view</field>
+        <field name="arch" type="xml">
+            <search string="Leave Analysis">
+                <field name="identification_id"/>
+                <field name="employee_id"/>
+                <field name="designation"/>
+                <field name="company_id"/>                    
+                <group expand="1" string="Group By">
+                    <filter string="Employee" name="employee_id" context="{'group_by':'employee_id'}"/>
+                    <filter string="Company" name="company_id" context="{'group_by':'company_id'}"/>                    
+                </group>
+            </search>
+        </field>
+        </record>
+
+        <record id="action_leave_report_analysis" model="ir.actions.act_window">
+            <field name="name">Employee Leave Analysis</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">n2n.leave.analysis.view</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">pivot,tree,graph</field>
+            <!-- <field name="context">{'group_by': 'date:month'}</field> -->
+            <field name="view_id" ref="n2n_leave_analysis_pivot"/>
+            <field name="search_view_id" ref="n2n_leave_analysis_search"/>
+        </record>
+
+
+
+</odoo>

@@ -1,0 +1,3178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.actions.act_window" id="crm.crm_lead_opportunities_tree_view">
+        <field name="name">Pipeline</field>
+        <field name="res_model">crm.lead</field>
+        <field name="view_mode">kanban,tree,graph,pivot,form,calendar,activity</field>
+        <field name="domain">[('type','=','opportunity')]</field>
+        <field name="context">{
+                'default_type': 'opportunity',
+        }</field>
+        <field name="search_view_id" ref="crm.view_crm_case_opportunities_filter"/>
+    </record>
+    <record id="crm.crm_opportunity_report_action" model="ir.actions.act_window">
+        <field name="name">Pipeline Analysis</field>
+        <field name="res_model">crm.lead</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">pivot,graph,tree,form</field>
+        <field name="search_view_id" ref="crm.crm_opportunity_report_view_search"/>
+        <field name="context">{'search_default_opportunity': True, 'search_default_current': True}</field>
+        <field name="view_ids"
+               eval="[(5, 0, 0),
+                      (0, 0, {'view_mode': 'pivot', 'view_id': ref('crm.crm_opportunity_report_view_pivot')}),
+                      (0, 0, {'view_mode': 'graph', 'view_id': ref('crm.crm_opportunity_report_view_graph')})]"/>
+         <field name="help">Pipeline Analysis gives you an instant access to
+your opportunities with information such as the expected revenue, planned cost,
+missed deadlines or the number of interactions per opportunity. This report is
+mainly used by the sales manager in order to do the periodic review with the
+teams of the sales pipeline.</field>
+    </record>
+    <record id="crm_lead_cus2_report_view_search" model="ir.ui.view">
+        <field name="name">crm.lead.cus2.report.view.search</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_opportunity_report_view_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='salesperson']" position="after">
+                <filter string="Opportunity" name="opportunity" context="{'group_by':'name'}" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="crm_lead_cus2_tree_view_oppo" model="ir.ui.view">
+        <field name="name">crm.lead.cus2.tree.view.oppo</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_tree_view_oppor"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="create">0</attribute>
+            </xpath>
+            <xpath expr="//field[@name='create_date']" position="after">
+                <field name="sequence_no"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="crm_lead_cus2_kanban_view_oppo" model="ir.ui.view">
+        <field name="name">crm.lead.cus2.kanban.view.oppo</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_kanban_view_leads"/>
+        <field name="arch" type="xml">
+            <xpath expr="//kanban" position="attributes">
+                <attribute name="create">0</attribute>
+            </xpath>
+            <xpath expr="//div[hasclass('text-muted','o_kanban_record_subtitle')]" position="inside">
+                <br/><t t-if="record.quotation_value.raw_value"><span>Quotation Value: </span><field name="quotation_value" widget="monetary" options="{'currency_field': 'company_currency'}"/></t>
+            </xpath>
+            <xpath expr="//field[@name='tag_ids']" position="replace">
+                <field name="tag_ids" />
+            </xpath>
+            <xpath expr="//field[@name='planned_revenue']" position="after">
+                <field name="quotation_value2"/>
+            </xpath>
+            <xpath expr="//progressbar" position="replace">
+                <progressbar field="activity_state" colors='{"planned": "success", "today": "warning", "overdue": "danger"}' sum_field="quotation_value2" help="This bar allows to filter the opportunities based on scheduled activities."/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- <menuitem
+            id="crm.crm_menu_root"
+            name="CRM"
+            action="action_your_pipeline"/> -->
+
+    <record model='ir.ui.view' id='crm_lead_form_view'>
+        <field name="name">crm.lead.document.form</field>
+        <field name="model">crm.lead.document</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="doc_attachment_id" widget="many2many_binary" class="oe_inline"/>
+                            <field name="lead_ref" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="issue_date" string="Date"/>
+                            <!-- <field name="expiry_date"/> -->
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model='ir.ui.view' id='crm_lead_tree_view'>
+        <field name="name">crm.lead.document.tree</field>
+        <field name="model">crm.lead.document</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="issue_date"/>
+                <!-- <field name="expiry_date"/> -->
+            </tree>
+        </field>
+    </record>
+
+    <record id="crm_lead_view_search" model="ir.ui.view">
+        <field name="name">crm.lead.document.tree</field>
+        <field name="model">crm.lead.document</field>
+        <field name="arch" type="xml">
+            <search string="Search CRM Documents">
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+    
+    <record model='ir.ui.view' id='sale_order_document_form_view'>
+        <field name="name">sale.order.document.form</field>
+        <field name="model">sale.order.document</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="docss_attachment_id" widget="many2many_binary" class="oe_inline"/>
+                            <field name="sale_ref" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="issue_date" string="Date"/>
+                            <!-- <field name="expiry_date"/> -->
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model='ir.ui.view' id='sale_order_document_tree_view'>
+        <field name="name">sale.order.document.tree</field>
+        <field name="model">sale.order.document</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="issue_date"/>
+                <!-- <field name="expiry_date"/> -->
+            </tree>
+        </field>
+    </record>
+
+    <record id="sale_order_document_view_search" model="ir.ui.view">
+        <field name="name">sale.order.document.tree</field>
+        <field name="model">sale.order.document</field>
+        <field name="arch" type="xml">
+            <search string="Search CRM Documents">
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+
+    <record model='ir.ui.view' id='account_move_document_form_view'>
+        <field name="name">account.move.document.form</field>
+        <field name="model">account.move.document</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="docss_attachment_ids" widget="many2many_binary" class="oe_inline"/>
+                            <field name="pay_ref" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="issue_date" string="Date"/>
+                            <!-- <field name="expiry_date"/> -->
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model='ir.ui.view' id='account_move_document_tree_view'>
+        <field name="name">account.move.document.tree</field>
+        <field name="model">account.move.document</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="issue_date"/>
+                <!-- <field name="expiry_date"/> -->
+            </tree>
+        </field>
+    </record>
+
+    <record id="account_move_document_view_search" model="ir.ui.view">
+        <field name="name">account.move.document.search</field>
+        <field name="model">account.move.document</field>
+        <field name="arch" type="xml">
+            <search string="Search Payment Documents">
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record model='ir.ui.view' id='account_invoice_document_form_view'>
+        <field name="name">account.invoice.document.form</field>
+        <field name="model">account.invoice.document</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="bill_attachment_ids" widget="many2many_binary" class="oe_inline"/>
+                            <field name="pay_ref" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="issue_date" string="Date"/>
+                            <!-- <field name="expiry_date"/> -->
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model='ir.ui.view' id='account_invoice_document_tree_view'>
+        <field name="name">account.invoice.document.tree</field>
+        <field name="model">account.invoice.document</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="issue_date"/>
+                <!-- <field name="expiry_date"/> -->
+            </tree>
+        </field>
+    </record>
+
+    <record id="account_invoice_document_view_search" model="ir.ui.view">
+        <field name="name">account.invoice.document.search</field>
+        <field name="model">account.invoice.document</field>
+        <field name="arch" type="xml">
+            <search string="Search Payment Documents">
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+    <!-- CRM Attachment -->
+
+    <!-- CRM Module Customize Part-->
+
+    <!-- Configuration/Lead & Opporotunities/Lead Tags Menu -->
+    <record id="crm_lead_service_form" model="ir.ui.view">
+        <field name="name">crm.lead.service.form</field>
+        <field name="model">crm.lead.service</field>
+        <field name="arch" type="xml">
+            <form string="Lead Tags">
+                <group>
+                    <field name="name"/>
+                    <field name="color" groups="base.group_no_one"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="crm_lead_service_tree" model="ir.ui.view">
+        <field name="name">crm.lead.service.tree</field>
+        <field name="model">crm.lead.service</field>
+        <field name="arch" type="xml">
+            <tree string="Lead Tags">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="crm_lead_service_action" model="ir.actions.act_window">
+        <field name="name">Services</field>
+        <field name="res_model">crm.lead.service</field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="crm_lead_service_tree"/>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Create a new service for your opportunities
+          </p><p>
+            Create tags that fit your business (product structure, sales type, etc.) to better manage and tack your opportunities.
+          </p>
+        </field>
+    </record>
+
+    <menuitem
+        id="crm_lead_service_action_config"
+        name="Services"
+        action="crm_lead_service_action"
+        parent="crm.menu_crm_config_lead"
+        sequence="6"/>
+        <!-- <record id="crm.action_mark_as_lost" model="ir.actions.server">
+            <field name="name">Mark as Dropped</field>
+            <field name="model_id" ref="model_crm_lead"/>
+            <field name="binding_model_id" ref="crm.model_crm_lead"/>
+            <field name="state">code</field>
+            <field name="code">
+if record:
+    action_values = env.ref('crm.crm_lead_lost_action').read()[0]
+    action_values.update({'context': env.context})
+    action = action_values
+            </field>
+        </record> -->
+
+    <!-- Configuration/Lead & Opporotunities/Lead Tags Menu -->
+    <record id="crm_lead_cus_form" model="ir.ui.view">
+        <field name="name">crm.lead.cus.form</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_form_view_oppor"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="create">0</attribute>
+            </xpath>
+            <xpath expr="//button[@name='%(sale_crm.sale_action_quotations_new)d']" position="replace">
+                <!-- <button string="New Job Estimation" name="create_job_estemation" type="object" class="oe_highlight"
+                        attrs="{'invisible': [('stage_id', '!=', 7)]}"/> -->
+                        <!-- <button string="New Quotation" name="%(sale_crm.sale_action_quotations_new)d" type="action" class="oe_highlight" attrs="{'invisible': [('stage_id', '!=', 7)]}"
+                        context="{'search_default_partner_id': partner_id,'default_partner_id': partner_id,'default_team_id': team_id,'default_campaign_id': campaign_id,'default_medium_id': medium_id,'default_origin': name,'default_source_id': source_id,'default_lead_id': id,'default_lead_name': name}"/> -->
+                        <!-- <button string="New Quotation" name="create_quotations" type="object" class="oe_highlight" attrs="{'invisible': [('stage_id', '!=', 8)]}" / -->
+            </xpath>
+            <xpath expr="//button[@name='%(crm.crm_lead_lost_action)d']" position="replace">
+                <button name="%(crm.crm_lead_lost_action)d" string="Mark Dropped"
+                                type="action" class="oe_highlight"
+                                context="{'default_lead_id': active_id,'default_stage_id': '10'}"
+                                attrs="{'invisible': [('active', '=', False),('probability', '&lt;', 100)]}"
+                                groups="sales_team.group_sale_manager,marcoms_updates.group_sale_top_manager,marcoms_updates.group_creative_coordinator"
+                                />
+                <!-- <button string="Next Stage" name="next_stage_6" type="object" class="oe_highlight" attrs="{'invisible': [('stage_id', '!=', 7)]}" /> -->
+            </xpath>
+            <xpath expr="//button[@name='action_set_won_rainbowman']" position="replace">
+                <button name="action_set_won_rainbowman" string="Mark Won" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('active','=',False), ('probability', '=', 100)]}"
+                groups="sales_team.group_sale_manager,marcoms_updates.group_sale_top_manager"/>
+            </xpath>
+                  
+            <xpath expr="//div[2]" position="replace">
+                <div class="badge-pill badge-danger float-right" attrs="{'invisible': ['|', ('probability', '&gt;', 0), ('active', '=', True)]}">Dropped</div>   
+            </xpath>
+            <button name="%(sale_crm.sale_action_quotations)d" position="replace">
+                <button class="oe_stat_button" type="action"
+                        name="%(sale_crm.sale_action_quotations)d" icon="fa-pencil-square-o"
+                        context="{'default_partner_id': partner_id,'default_user_id': user_id,'default_project_name': show, 'search_default_draft': 1, 'search_default_sent': 1}" groups="sales_team.group_sale_salesman_all_leads,sales_team.group_sale_salesman,sales_team.group_sale_manager,marcoms_updates.group_sale_top_manager">
+                    <div class="o_stat_info">
+                        <field name="sale_number" class="o_stat_value"/>
+                        <span class="o_stat_text"> Quotation(s) </span>
+                    </div>
+                </button>
+                <button class="oe_stat_button" name="document_view" type="object" icon="fa-list-ol">
+                    <field string="Documents" name="document_count" widget="statinfo"/>
+                </button>
+            </button>
+            <button name="%(sale_crm.sale_action_orders)d" position="replace">
+            </button>
+            <xpath expr="//field[@name='team_id']" position="after">
+                <field name="assign_to_designer" attrs="{'invisible': ['|',('stage_id', '=', 1),('stage_id', '=', 2)],'required': [('stage_id', '=', 3)]}" groups="marcoms_updates.group_sale_top_manager,marcoms_updates.group_creative_coordinator"/>
+            </xpath>
+            <xpath expr="//field[@name='lost_reason']" position="after">
+                <field name="des_reason" attrs="{'invisible': [('active', '=', True)]}"/>
+            </xpath>
+            <xpath expr="//field[@name='tag_ids']" position="replace">
+                <field name="tag_ids" string="Type of Client" />
+                <field name="Service_ids" string="Type of Service" widget="many2many_tags" />
+                <field name="source_master" />
+
+            </xpath>
+            <xpath expr="//group[2]" position="after">
+                <h5 class="text-left">Visual Assets</h5><br/>
+                <group>
+                    <group>
+                        <field name="visual_asset1" />
+                        <field name="visual_asset2" />
+                        <field name="visual_asset3" />
+                    </group>
+                    <group>
+                        <field name="visual_asset4" />
+                        <field name="visual_asset5" />
+                    </group>
+                </group><br/>
+                <h5 class="text-left">Type of Response</h5><br/>
+                <group>
+                    <group>
+                        <field name="response1" />
+                    </group>
+                    <group>
+                        <field name="response2" />
+                    </group>
+                </group><br/>
+            </xpath>
+            <xpath expr="//h1" position="after">
+                <label for="sequence_no" class="oe_edit_only"/>
+                <h3><field name="sequence_no"/></h3>
+                <label for="grade"/>
+                <h3><field name="grade"/></h3>
+                <!--<label for="quotation_value"/>-->
+                <!--<h3><field name="quotation_value"/></h3>-->
+            </xpath>
+            <xpath expr="//h2" position="inside">
+              <div class="col">
+                  
+                  <div class="o_row d-flex">
+                     <label for="quotation_value" style="font-size:17px;"/> <field name="quotation_value" class="oe_inline"/>
+                      <!--<span class="oe_grey"> %</span>-->
+                  </div>
+              </div>
+            </xpath>
+            <xpath expr="//page[1]" position="after">
+                <page string="Project Info">
+                    <group>
+                        <group>
+                            <!-- <field name="project_date" readonly="1"/> -->
+                            <field name="design_deadline"/>
+                            <field name="design_complete"/>
+                            <field name="remaining_dates_design"/>
+                            <field name="brief_type"/>
+                            <field name="stand_size"/>
+                        </group>
+                        <group>
+                            <field name="quotation_deadline"/>
+                            <field name="quotation_complete"/>
+                            <field name="remaining_dates"/>
+                            <field name="brief_status" invisible="1" />
+                        </group>
+                    </group>
+                </page>
+                <page string="Remarks">
+                    <label for="creative_dir"/>
+                    <field name="creative_dir"/>
+                    <label for="Sales_dir"/>
+                    <field name="Sales_dir"/>
+                </page>
+                <page string="Evaluation Sheet">
+                    <group>
+                        <group>
+                            <span>Client History with Marcoms</span>
+                            <h5><field name="eval_detail1" domain="[('detail_id', '=', 12)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
+                            <span>Scalability</span>
+                            <h5><field name="eval_detail2" domain="[('detail_id', '=', 13)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
+                            <span>Brand Guidelines</span>
+                            <h5><field name="eval_detail3" domain="[('detail_id', '=', 14)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
+                            <span>Floor Plan and Requirements</span>
+                            <h5><field name="eval_detail4" domain="[('detail_id', '=', 15)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
+                            <span>Client Approach Time</span>
+                            <h5><field name="eval_detail5" domain="[('detail_id', '=', 16)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
+                            <span>Multi Shows</span>
+                            <h5><field name="eval_detail6" domain="[('detail_id', '=', 17)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
+                            <span>Design Time Line </span>
+                            <h5><field name="eval_detail7" domain="[('detail_id', '=', 18)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
+                            <span>Account Manager % of Project Approval</span>
+                            <h5><field name="eval_detail8" domain="[('detail_id', '=', 19)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
+                            <span>Budget " Evaluated by Sales"</span>
+                            <h5><field name="eval_detail9" domain="[('detail_id', '=', 20)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
+                            <span>Brief Details " Evaluated by Sales"</span>
+                            <h5><field name="eval_detail10" domain="[('detail_id', '=', 21)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
+                            <span>Number Of companies Pitching</span>
+                            <h5><field name="eval_detail11" domain="[('detail_id', '=', 22)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
+                            <field name="rate_sum" />
+                        </group>
+                        <group>
+                            <field name="rate1" invisible="1"/>
+                            <field name="rate2" invisible="1"/>
+                            <field name="rate3" invisible="1"/>
+                            <field name="rate4" invisible="1"/>
+                            <field name="rate5" invisible="1"/>
+                            <field name="rate6" invisible="1"/>
+                            <field name="rate7" invisible="1"/>
+                            <field name="rate8" invisible="1"/>
+                            <field name="rate9" invisible="1"/>
+                            <field name="rate10" invisible="1"/>
+                            <field name="rate11" invisible="1"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+            <xpath expr="//page[@name='lead']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_address_email']" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_address_phone']" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </xpath>
+            <xpath expr="//notebook/page[1]" position="inside">
+                <label for="reason_for_lost"/>
+                <field name="reason_for_lost"/>
+                <label for="reason_for_cancel"/>
+                <field name="reason_for_cancel"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="replace">
+                <field name="partner_id" widget="res_partner_many2one" string="Customer" domain="[('customer','=',True),('parent_id','=',False)]" context="{'search_default_customer': 1,                                         'default_name': partner_name, 'default_street': street,                                         'default_street2': street2, 'default_city': city,                                         'default_state_id': state_id, 'default_zip': zip,                                         'default_country_id': country_id, 'default_function': function,                                         'default_phone': phone, 'default_mobile': mobile,                                         'default_email': email_from,                                         'default_user_id': user_id, 'default_team_id': team_id, 'default_website': website,                                         'show_vat': True,                                     }"/>
+                <label for="contact_name"/>
+                <div class="o_row">
+                  <field name="title" placeholder="Title" domain="[]" options="{&quot;no_open&quot;: True}"/>
+                    <field name="contact_name"/>
+                </div>          
+            </xpath>
+            <xpath expr="//field[@name='date_deadline']" position="replace">
+                <field name="show" />
+                <field name="show_venue" />
+                <field name="show_date" />
+                <!-- <field name="quotation_value" invisible="1"/> -->
+                <field name="flag" invisible="1" />
+                <field name="team_ids" invisible="1" />
+                <field name="team1" invisible="1"/>
+                <field name="team2"  invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+    <menuitem
+            id="crm.menu_crm_lost_reason"
+            name="Dropped Reason"
+            action="crm.crm_lost_reason_action"
+            parent="crm.menu_crm_config_lead"
+            sequence="6"/>
+    <menuitem
+            id="crm.menu_crm_lead_categ"
+            name="Types of Clients"
+            action="crm.crm_lead_tag_action"
+            parent="crm.menu_crm_config_lead"
+            sequence="1"/>
+    <record id="crm.crm_lead_lost_action" model="ir.actions.act_window">
+        <field name="name">Drop Reason</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">crm.lead.lost</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="crm.crm_lead_lost_view_form"/>
+        <field name="target">new</field>
+    </record>
+
+    <record id="crm_lead_cus2_form" model="ir.ui.view">
+        <field name="name">crm.lead.cus2.form</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_form_view_leads"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_set_lost']" position="replace">
+                <button name="%(crm.crm_lead_lost_action)d" string="Mark as Dropped" groups="sales_team.group_sale_manager,marcoms_updates.group_sale_top_manager" context="{'default_lead_id': active_id}" type="action" attrs="{'invisible': ['|',('submit_leadd', '=', False),'&amp;', ('probability', '=', 0), ('active', '=', False)]}"/>
+                <button name="submit_lead" string="Submit" type="object" attrs="{'invisible': ['|',('type', '=', 'opportunity'),('submit_leadd', '=', True)]}"/>
+                <!-- <button name="lead_form_print_report" string="Print Lead Form" type="object" /> -->
+            </xpath>
+            <xpath expr="//button[@name='%(crm.action_crm_lead2opportunity_partner)d']" position="replace">
+                <button name="%(crm.action_crm_lead2opportunity_partner)d" string="Convert to Opportunity" type="action"
+                            help="Convert to Opportunity" class="oe_highlight" groups="sales_team.group_sale_manager,marcoms_updates.group_sale_top_manager" attrs="{'invisible': ['|',('type', '=', 'opportunity'),('submit_leadd', '=', False)]}"/>
+            </xpath>
+            <xpath expr="//div[2]" position="replace">
+                <div class="badge-pill badge-danger float-right" attrs="{'invisible': ['|', ('probability', '&gt;', 0), ('active', '=', True)]}">Dropped</div>    
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="replace">
+                <field name="partner_id" string="Customer" invisible="0" widget="res_partner_many2one" context="{'default_name': contact_name, 'default_street': street, 'default_city': city, 'default_state_id': state_id, 'default_zip': zip, 'default_country_id': country_id, 'default_function': function, 'default_phone': phone, 'default_mobile': mobile, 'default_email': email_from, 'default_user_id': user_id, 'default_team_id': team_id, 'default_website': website, 'show_vat': True}" groups="base.group_no_one"/>
+                <field name="submit_leadd" invisible="1" />
+            </xpath>
+            <xpath expr="//field[@name='tag_ids']" position="replace">
+                <field name="tag_ids" string="Type of Client"  />
+                <field name="Service_ids" string="Type of Service" widget="many2many_tags" />
+                <field name="source_master" />
+                <field name="lost_reason" attrs="{'invisible': [('active', '=', True)]}"/>
+                <field name="des_reason" attrs="{'invisible': [('active', '=', True)]}"/>
+            </xpath>
+            <xpath expr="//page[@name='extra']" position="attributes">
+                <attribute name="invisible">1</attribute>
+                <!-- <page name="extra" string="Extra Info">
+                    <group>
+                        <group string="Email" >
+                            <field name="message_bounce" readonly="1"/>
+                        </group>
+                        <group string="Tracking" name="categorization">
+                            <field name="company_id" options="{'no_create': True}"/>
+                            <field name="campaign_id"/>
+                            <field name="medium_id"/>
+                            <field name="source_id"/>
+                            <field name="referred"/>
+                        </group>
+                        <group string="Analysis" >
+                            <field name="date_open"/>
+                            <field name="date_closed"/>
+                            <field name="probability"/>
+                        </group>
+                    </group>
+                </page> -->
+            </xpath>
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_name']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='city']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='country_id']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='website']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='contact_name']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='title']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='email_from']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='function']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='mobile']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='phone']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='priority']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='tag_ids']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='Service_ids']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='street']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='street2']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='state_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='zip']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- <record id="quo_action_view_action" model="ir.actions.act_window">
+        <field name="name">Quotations</field>
+        <field name="res_model">sale.order</field>
+        <field name="search_view_id" ref="sale_quo_search"/>
+        <field name="domain">[('lead_id', '=', active_id),('opportunity_id', '=', active_id)]</field>
+        <field name="context">{'search_default_opportunity_id': [active_id], 'default_opportunity_id': active_id}</field> 
+    </record> -->
+    
+    <record id="evaluation_sheet_new_form" model="ir.ui.view">
+        <field name="name">evaluation.sheet.new.form</field>
+        <field name="model">evaluation.sheet</field>
+        <field name="arch" type="xml">
+            <form string="Evaluation Sheet">
+                <sheet>
+                    <group>
+                        <label for="name" class="oe_edit_only"/>
+                        <h3><field name="name"/></h3>
+                        <label for="description" class="oe_edit_only"/>
+                        <h4><field name="description"/></h4>
+                    </group>
+                    <notebook>
+                        <page string="Details">
+                            <field name="details_id" >
+                                <tree string="Details" editable='bottom'>
+                                    <field name="detail_id" invisible="1"/>
+                                    <field name="name"/>
+                                    <field name="description"/>
+                                    <field name="rate" />
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="evaluation_sheet_new_tree" model="ir.ui.view">
+        <field name="name">evaluation.sheet.new.tree</field>
+        <field name="model">evaluation.sheet</field>
+        <field name="arch" type="xml">
+            <tree string="Evaluation Sheet">
+                <field name="name"/>
+                <field name="description"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="details_sheet_form" model="ir.ui.view">
+        <field name="name">details.sheet.form</field>
+        <field name="model">details.sheet</field>
+        <field name="arch" type="xml">
+            <form string="Details">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="detail_id" invisible="1"/>
+                            <field name="name"/>
+                            
+                        </group>
+                        <group>
+                            <field name="description"/>
+                            <field name="rate" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+<!-- users screen -->
+    <record id="res_users_cus_tree" model="ir.ui.view">
+        <field name="name">res.users.cus.tree</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="team_ids" invisible="1" />
+                <!-- <field name="in_sale" invisible="1" /> -->
+            </xpath>
+        </field>
+    </record>
+<!-- users screen -->
+
+
+    <record id="details_sheet_tree" model="ir.ui.view">
+        <field name="name">details.sheet.tree</field>
+        <field name="model">details.sheet</field>
+        <field name="arch" type="xml">
+            <tree string="Details">
+                <field name="detail_id" invisible="1"/>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="rate" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="evaluation_sheet_action" model="ir.actions.act_window">
+        <field name="name">Evaluation Sheet</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">evaluation.sheet</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>      
+    </record>
+    <record id="details_sheet_action" model="ir.actions.act_window">
+        <field name="name">details Sheet</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">details.sheet</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>      
+    </record>
+
+    <menuitem id="evaluation_sheet_action_config"
+            name="Evaluation Sheet"
+            parent="crm.crm_menu_config"
+            action="evaluation_sheet_action"
+            sequence="10"/>
+    <!-- CRM Module Customize Part-->
+
+    <!--product image partion and CEO Approval  -->
+    <record id="sale_order_line_cus_tree" model="ir.ui.view">
+        <field name="name">sale.order.line.cus.tree</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sale.view_order_line_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='price_subtotal']" position="after">
+                <field name="image_pro" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="sale_orde_cus_tree" model="ir.ui.view">
+        <field name="name">sale.order.cus.tree</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="attributes">
+                <attribute name="invisible">0</attribute>
+            </xpath>
+        </field>
+    </record>
+    <record id="sale.sale_order_view_search_inherit_quotation" model="ir.ui.view">
+        <field name="name">sale.order.search.inherit.quotation</field>
+        <field name="model">sale.order</field>
+        <field name="mode">primary</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='my_sale_orders_filter']" position="replace">
+                <separator/>
+                <filter string="My Quotations" name="my_quotation" domain="[('user_id', '=', uid)]"/>
+                <separator/>
+                <!-- <filter string="Quotations" name="draft" domain="[('state','in',('draft', 'sent'))]"/> -->
+                <filter string="Sales Orders" name="sales" domain="[('state','in',('sale','done'))]"/>
+                <separator/>
+                <filter string="Order Date" name="filter_order_date" date="date_order"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="uom_uom_cus_form" model="ir.ui.view">
+        <field name="name">uom.uom.cus.form</field>
+        <field name="model">uom.uom</field>
+        <field name="inherit_id" ref="uom.product_uom_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='rounding']" position="after">
+                <field name="show_sale" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="sale_order_line_cus_form" model="ir.ui.view">
+        <field name="name">sale.order.line.cus.form</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sale.sale_order_line_view_form_readonly"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='price_subtotal']" position="after">
+                <field name="image_pro" />
+            </xpath>
+        </field>
+    </record>
+    <record id="sale_order_cuss_form" model="ir.ui.view">
+        <field name="name">sale.order.line.cuss.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_order']" position="replace">
+            </xpath>
+            <xpath expr="//button[@name='print_quotation'][1]" position="replace">
+            </xpath>
+            <xpath expr="//button[@name='print_quotation'][1]" position="replace">
+            </xpath>
+            <xpath expr="//field[@name='validity_date']" position="before">
+                <field name="date_order" />
+            </xpath>
+            <xpath expr="//field[@name='payment_term_id']" position="replace">
+                <field name="image_product" />
+                <field name="lead_id"  readonly="1" invisible="1"/>
+                <field name="lead_name"  readonly="1" invisible="1"/>
+                <field name="opportunity_id" />
+                <field name="remaining_dates"  invisible="1"/>
+                <field name="sign_man" groups="sales_team.group_sale_manager"/>
+                <field name="quo_optional" />
+                <field name="sec_subtotal" />
+            </xpath>
+            <xpath expr="//notebook//page[@name='other_information']//field[@name='opportunity_id']" position="replace">
+            </xpath>
+            <xpath expr="//field[@name='state']" position="replace">
+                <field name="state" widget="statusbar" statusbar_visible="draft,approve,sent,sale"/>
+            </xpath>
+            <!-- <xpath expr="//button[@name='payment_action_capture']" position="after">
+                <button name="create_purchase_requisition_from_sales" states="draft,sent,sale" type="object" string="Create Requisition" class="oe_highlight" />
+            </xpath>     -->
+            <xpath expr="//button[@name='action_view_invoice']" position="after">
+                <button class="oe_stat_button" name="requisition_view" type="object" icon="fa-pencil-square-o">
+                    <field string="Requisitions" name="requisition_count" widget="statinfo"/>
+                </button>
+                <button class="oe_stat_button" name="document_view" type="object" icon="fa-list-ol">
+                    <field string="Documents" name="document_count" widget="statinfo"/>
+                </button>
+            </xpath>
+            <xpath expr="//button[@name='action_quotation_send']" position="replace">
+                <button name="set_to_draft" string="Set To Draft" type="object" states="sent,approve,cancel,reject,sale"/>
+                <!-- <button name="action_quotation_send" string="Send by Email" type="object" states="sent,sale"/> -->
+            </xpath>
+            <xpath expr="//button[@name='preview_sale_order']" position="replace">
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="replace">
+                <field name="partner_id" widget="res_partner_many2one" domain="[('customer','=',True),('parent_id','=',False)]" context="{'search_default_customer':1, 'show_address': 1, 'show_vat': True}" options="{&quot;always_reload&quot;: True}"/>
+                <field name="partner_no" string=" "/>
+                <field name="contact_name" readonly="1" invisible="1"/>
+                <field name="comtype" invisible="1"/>
+                <field name="project_name" required="1"/>
+                <field name="pro_show"/>
+                <field name="normal_total_name"/>
+                <field name="optional_total_name"/>
+                <field name="venue_total_name"/>
+                <field name="sum_without_dis" invisible="1"/>
+                <!-- <field name="optional_total" invisible="1"/> -->
+                
+            </xpath>
+            <xpath expr="//field[@name='note']" position="before">
+                <br/>
+                <label for="message" />
+                <field name="message" />
+            </xpath>
+            <xpath expr="//page/field[@name='sale_order_option_ids']//field[@name='price_unit']" position="after">
+                <field name="tax_id" widget="many2many_tags" options="{'no_create': True}" domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]"/>
+                <field name="price_subtotal" widget="monetary" groups="account.group_show_line_subtotals_tax_excluded"/>
+                <field name="company_id" invisible="1" />
+                            
+            </xpath>
+            <xpath expr="//page/field[@name='sale_order_option_ids']/tree/field[@name='product_id']" position="replace">
+                <field name="product_id" invisible="1" readonly="1"/>
+                <field name="product_name" required="1" />
+            </xpath>
+            <xpath expr="//page/field[@name='sale_order_option_ids']/tree/field[@name='price_subtotal']" position="replace">
+                <field name="is_discount" />
+            </xpath>
+            <xpath expr="//page/field[@name='sale_order_option_ids']/tree/field[@name='name']" position="after">
+                <field name="image_pro" />
+            </xpath>
+            <xpath expr="//page/field[@name='sale_order_option_ids']/tree/field[@name='uom_id']" position="replace">
+                <field name="uom_id" groups="uom.group_uom" domain="[('show_sale','=',True)]" options='{"no_open": True,"no_create":True}'/>
+            </xpath>
+            <xpath expr="//page/field[@name='sale_order_option_ids']/tree/button[@name='button_add_to_order']" position="after">
+                <button string="Duplicate" icon="fa-pencil-square-o" name="action_duplicate" aria-label="Sort" type="object"/>
+            </xpath>
+            <xpath expr="//page/field[@name='sale_order_option_ids']" position="after">
+                <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+                    <field name="amount_untaxed_optional" string="Total Amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    <field name="amount_tax_optional" string="VAT" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    <field name="discount_value_op" string="Special Discount" />
+                    <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                        <label for="amount_total_optional"  string="Total with VAT"/>
+                    </div>
+                    <field name="amount_total_optional" nolabel="1" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                </group>
+                <!-- <div style="width:160px;font-weight: bold !important">
+                    <label for="discount_type_op" string="Discount Type:" />
+                    <field name="discount_type_op" class="oe_inline" />
+                </div>
+                <div style="width:160px;font-weight: bold !important">
+                    <label for="discount_rate_op" string="Discount:" />
+                    <field name="discount_rate_op" class="oe_inline" />
+                </div> -->
+            </xpath>
+
+            <xpath expr="//field[@name='amount_untaxed']" position="attributes">
+                <attribute name="string">Total Amount After Discount</attribute>
+            </xpath>
+            <xpath expr="//field[@name='amount_tax']" position="attributes">
+                <attribute name="string">VAT</attribute>
+            </xpath>
+            <!-- <xpath expr="//field[@name='ks_amount_discount']" position="attributes">
+                <attribute name="string">Special Discount</attribute>
+            </xpath> -->
+            <xpath expr="//field[@name='amount_total']" position="attributes">
+                <attribute name="string">Total with VAT</attribute>
+            </xpath>
+            <xpath expr="//field[@name='amount_tax']" position="after">
+                <!-- <field name="ks_amount_discount" /> -->
+                <field name="discount_value" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+            </xpath>
+
+            <xpath expr="//page/field[@name='sale_order_option_ids']/.." position="after">
+                <page string="Venue">
+                    <field name="sale_order_venue_ids">
+                        <tree string="Sales Quotation Template Venue" editable="bottom">
+                            <control>
+                                <create string="Add a product"/>
+                            </control>
+                            <field name="sequence" widget="handle"/>
+                            <field name="product_id" invisible="1" readonly="1"/>
+                            <field name="product_name" required="1" />
+                            <field name="name"/>
+                            <field name="image_pro" />
+                            <field name="quantity"/>
+                            <field name="uom_id" domain="[('show_sale','=',True)]" groups="uom.group_uom" options='{"no_open": True,"no_create":True}'/>
+                            <field name="price_unit"/>
+                            <field name="company_id" invisible="1" />
+                            <field name="tax_id" widget="many2many_tags" options="{'no_create': True}" domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]"/>
+                            <field name="price_subtotal" widget="monetary" groups="account.group_show_line_subtotals_tax_excluded"/>
+                            <field name="discount" groups="sale.group_discount_per_so_line"/>
+                            <field name="is_discount"/>
+                            <button name="button_add_to_order" class="oe_link" icon="fa-shopping-cart" string="Add to order lines" type="object"/>
+                            <button string="Duplicate" icon="fa-pencil-square-o" name="action_duplicate" aria-label="Sort" type="object"/>
+                        </tree>
+                    </field>
+                    <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+                        <field name="amount_untaxed_venue" string="Total Amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        <field name="amount_tax_venue" string="VAT" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        <field name="discount_value_venue" string="Special Discount"/>
+                        <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                            <label for="amount_total_venue" string="Total with VAT"/>
+                        </div>
+                        <field name="amount_total_venue" nolabel="1" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    </group>
+                    <!-- <div style="width:160px;font-weight: bold !important">
+                        <label for="discount_type_venue" string="Discount Type:" />
+                        <field name="discount_type_venue" class="oe_inline" />
+                    </div>
+                    <div style="width:160px;font-weight: bold !important">
+                        <label for="discount_rate_venue" string="Discount:" />
+                        <field name="discount_rate_venue" class="oe_inline" />
+                    </div> -->
+                </page>
+                <page string="Accounts Review" attrs="{'invisible': [('state', '!=', 'sale')]}">
+                    <group >
+                        <group>
+                            <field name="po_contract"/>
+                            <field name="contract_type"/>
+                            
+                        </group>
+                        <group>
+                            <field name="certificate_com"/>
+                        </group>
+                    </group>
+                    <label for="account_remark" />
+                    <field name="account_remark"/>
+                </page>
+            </xpath>
+
+            
+            <xpath expr="//button[@name='action_confirm']" position="replace">
+                <button name="action_to_approve" type="object" states="draft" string="Confirm" class="oe_highlight" />
+                <button name="action_confirm" id="action_confirm"
+                        string="Confirm" class="btn-primary" type="object" states="sent"
+                         groups="sales_team.group_sale_manager"/>
+                <button name="action_approved" type="object" states="approve" string="Approve"  class="oe_highlight" groups="marcoms_updates.group_sale_top_manager"/>
+                <button name="action_to_Reject" type="object" states="approve" string="Reject"  class="btn-danger" groups="marcoms_updates.group_sale_top_manager"/>
+            </xpath>
+            <xpath expr="//page[@name='order_lines']//field[@name='order_line']/tree//field[@name='analytic_tag_ids']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page[@name='order_lines']//field[@name='order_line']/tree" position="replace">
+                <tree
+                    string="Sales Order Lines"
+                    editable="bottom"
+                    decoration-info="(not display_type and invoice_status == 'to invoice')"
+                >
+                    <control>
+                        <create string="Add a product"/>
+                        <create string="Configure a product" context="{'open_product_configurator': True}" groups="product.group_product_variant"/>
+                        <create string="Add a section" context="{'default_display_type': 'line_section'}"/>
+                        <create string="Add a note" context="{'default_display_type': 'line_note'}"/>
+                    </control>
+
+                    <field name="sequence" widget="handle" />
+                    <!-- We do not display the type because we don't want the user to be bothered with that inforamtion if he has no section or note. -->
+                    <field name="display_type" invisible="1"/>
+
+                    <field name="product_updatable" invisible="1"/>
+                    <field
+                        name="product_id"
+                        attrs="{'invisible': [('display_type', '!=', False)],
+                            'readonly': [('product_updatable', '=', False)],
+                            'required': [('display_type', '=', False)],
+                        }"
+                        force_save="1"
+                        context="{
+                            'partner_id': parent.partner_id,
+                            'quantity': product_uom_qty,
+                            'pricelist': parent.pricelist_id,
+                            'uom':product_uom,
+                            'company_id': parent.company_id,
+                            'default_lst_price': price_unit,
+                            'default_description_sale': name
+                        }"
+                        readonly="1"
+                        invisible="1"
+                    />
+                    <field name="product_custom_attribute_value_ids" invisible="1" />
+                    <field name="product_no_variant_attribute_value_ids" invisible="1" />
+                    <field name="product_name" attrs="{
+                        'readonly': [('display_type', '!=', False)],
+                        'required': [('display_type', '=', False)],
+                    }"/>
+                    <field name="name" widget="section_and_note_text"/>
+                    <field
+                        name="product_uom_qty"
+                        string="Ordered Qty"
+                        attrs="{'invisible': [('display_type', '!=', False)]}"
+                        context="{
+                            'partner_id': parent.partner_id,
+                            'quantity': product_uom_qty,
+                            'pricelist': parent.pricelist_id,
+                            'uom': product_uom,
+                            'company_id': parent.company_id
+                        }"
+                    />
+                    <field
+                        name="qty_delivered"
+                        attrs="{'invisible': [('display_type', '!=', False)],
+                            'column_invisible': [('parent.state', 'not in', ['sale', 'done'])],
+                            'readonly': [('qty_delivered_method', '!=', 'manual')]
+                        }"
+                    />
+                    <field name="qty_delivered_manual" invisible="1"/>
+                    <field name="qty_delivered_method" invisible="1"/>
+                    <field
+                        name="qty_invoiced"
+                        attrs="{'invisible': [('display_type', '!=', False)],'column_invisible': [('parent.state', 'not in', ['sale', 'done'])]}"
+                    />
+                    <field name="qty_to_invoice" invisible="1"/>
+                    <field
+                        name="product_uom"
+                        force_save="1"
+                        attrs="{'invisible': [('display_type', '!=', False)],
+                            'readonly': [('state', 'in', ('sale','done', 'cancel'))],
+                            'required': [('display_type', '=', False)],
+                        }"
+                        context="{'company_id': parent.company_id}"
+                        groups="uom.group_uom"
+                        options='{"no_open": True,"no_create":True}'
+                        domain="[('show_sale','=',True)]"
+                    />
+                    <field
+                        name="analytic_tag_ids"
+                        groups="analytic.group_analytic_tags"
+                        widget="many2many_tags"
+                        attrs="{'invisible': [('display_type', '!=', False)]}"
+                        options="{'color_field': 'color'}"
+                        invisible="1"
+                    />
+                    <field
+                        name="price_unit"
+                        attrs="{'invisible': [('display_type', '!=', False)],'readonly': [('qty_invoiced', '&gt;', 0)]}"
+                    />
+                    <field
+                        name="tax_id"
+                        widget="many2many_tags"
+                        options="{'no_create': True}"
+                        domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]"
+                        attrs="{'invisible': [('display_type', '!=', False)],'readonly': [('qty_invoiced', '&gt;', 0)]}"
+                    />
+                    <field name="discount" attrs="{'invisible': [('display_type', '!=', False)]}" groups="sale.group_discount_per_so_line"/>
+                    <field name="price_subtotal" attrs="{'invisible': [('display_type', '!=', False)]}" widget="monetary" groups="account.group_show_line_subtotals_tax_excluded"/>
+                    <field name="price_total" attrs="{'invisible': [('display_type', '!=', False)]}" widget="monetary" groups="account.group_show_line_subtotals_tax_included"/>
+                    <field name="state" invisible="1"/>
+                    <field name="invoice_status" invisible="1"/>
+                    <field name="customer_lead" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="price_tax" invisible="1"/>
+                    <field name="is_discount"/>
+                    <button string="Duplicate" icon="fa-pencil-square-o" name="action_duplicate" aria-label="Sort" type="object"/>
+                </tree>
+            </xpath>
+            <xpath expr="//page[@name='order_lines']//field[@name='order_line']/form//field[@name='price_subtotal']" position="after">
+                <field name="image_pro" />
+            </xpath>
+            <xpath expr="//page[@name='order_lines']//field[@name='order_line']/tree//field[@name='name']" position="after">
+                <field name="image_pro" />
+            </xpath>
+            <!-- <xpath expr="//group[1]" position="after">
+                
+            </xpath> -->
+            
+        </field>
+    </record>
+    <!--product image partion and CEO Approval -->
+    
+    <!-- HR Contract and Payroll Customize Part -->
+
+    <record id="hr_contract_cus_tree" model="ir.ui.view">
+        <field name="name">hr.contract.cus.tree</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='advantages']" position="before">
+                <br />
+                <field name="hr_allowance_line_ids" nolabel="1" colspan="2">
+
+                    <tree editable="top">
+                    
+                       <field name="contract_id" invisible="1"/>
+                       <field name="rule_type" required="1" domain="[('category_id', '=', 'Allowance'),('od_payroll_item','=',False)]" options="{'no_create': True, 'no_create_edit':True}"/>                            
+                       <field name="code" invisible="1"/>
+                       <field name="amt"/>                              
+                           
+                    
+                    </tree>
+
+               </field>
+               <group>
+                  <field name="hr_total_wage" string="Total Salary"/>
+               </group>
+            </xpath>
+            <div name="wage" position="replace">
+                <div class="o_row" name="wage">
+                    <field name="wage" nolabel="1"/>
+                    <span style="margin-left:47px;">/ month</span>
+                </div>
+            </div>
+        </field>
+    </record>
+
+    <record id="hr_allowance_line_form" model="ir.ui.view">
+        <field name="name">hr.allowance.line.form</field>
+        <field name="model">hr.allowance.line</field>
+        <field name="arch" type="xml">
+            <form string="HR Allowance">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="contract_id" />
+                            <field name="code"/> 
+                            
+                        </group>
+                        <group>
+                            <field name="rule_type" />
+                            <field name="amt"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_allowance_line_tree" model="ir.ui.view">
+        <field name="name">hr.allowance.line.tree</field>
+        <field name="model">hr.allowance.line</field>
+        <field name="arch" type="xml">
+            <tree string="Details">
+                <field name="contract_id" />
+                <field name="rule_type"/>                            
+                <field name="code" />
+                <field name="amt"/> 
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="hr_payroll_transactions_line_form" model="ir.ui.view">
+        <field name="name">hr.payroll.transactions.line.form</field>
+        <field name="model">hr.payroll.transactions.line</field>
+        <field name="arch" type="xml">
+            <form string="Payroll Transactions Line">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="payroll_tran_id" />
+                            <field name="deduction" />
+                            <field name="state"/>
+                            <field name="timesheet_cost" invisible="1"/>
+                            <field name="number_of_hours" widget="time" />
+                        </group>
+                        <group>
+                            <field name="tran_note"/>
+                            <field name="payroll_item" />
+                            <field name="allowance" />
+                            <field name="analytic_account"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_payroll_transactions_line_tree" model="ir.ui.view">
+        <field name="name">hr.payroll.transactions.line.tree</field>
+        <field name="model">hr.payroll.transactions.line</field>
+        <field name="arch" type="xml">
+            <tree string="Payroll Transactions Line">
+                <field name="employee_id"/>
+                <field name="payroll_item" />
+                <field name="tran_note" />
+                <field name="allowance"/>
+                <field name="timesheet_cost" invisible="1"/>
+                <field name="number_of_hours" />
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="hr_payroll_transactions_form" model="ir.ui.view">
+        <field name="name">hr.payroll.transactions.form</field>
+        <field name="model">hr.payroll.transactions</field>
+        <field name="arch" type="xml">
+            <form string="Payroll Transactions">
+                <header>
+                    <button name="loans_confirm" states="draft" string="Confirm" type="object" class="oe_highlight"/>
+                    <button name="loans_accept" states="confirm" string="Approve" type="object" class="oe_highlight"/>
+                    <button name="loans_refuse" states="done,draft" string="Refuse" type="object" class="oe_highlight"/>
+                    <button name="loans_set_draft" states="cancelled" string="Set To Draft" type="object" class="oe_highlight"/>
+
+                    <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="date_from" required="1" string="Date" attrs="{'readonly': [('state', 'in', ['done','paid'])]}"/>
+                            <field name="date_to" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="name" required="1" attrs="{'readonly': [('state', 'in', ['done','paid'])]}"/>
+                            <field name="date" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <field name="payroll_tran_line" attrs="{'readonly': [('state', 'in', ['done','paid'])]}">
+                                <tree string="Expense Lines" editable="bottom">
+                                    <field name="employee_id"/>
+                                    <field name="payroll_item" domain="[('od_payroll_item','!=',False)]" options="{'no_create': True, 'no_create_edit':True}"/>
+                                    <field name="tran_note" required="1"/>
+                                    <field name="payroll_tran_id" invisible="1"/>
+                                    <field name="timesheet_cost" invisible="1"/>
+                                    <field name="number_of_hours" />
+                   
+                                    <field name="allowance" sum="Total" string="Amount"/>
+                                    <field name="analytic_account" invisible="1"/>
+                                    <field name="state" invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_payroll_transactions_tree" model="ir.ui.view">
+        <field name="name">hr.payroll.transactions.tree</field>
+        <field name="model">hr.payroll.transactions</field>
+        <field name="arch" type="xml">
+            <tree string="Payroll Transactions" >
+                <field name="date_from"/>
+                <field name="name"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="hr_payroll_transactions_action" model="ir.actions.act_window">
+        <field name="name">Payroll Transactions</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hr.payroll.transactions</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>      
+    </record>
+
+    <menuitem id="hr_payroll_transactions_action_config"
+            name="Payroll Transactions"
+            parent="hr_payroll.menu_hr_payroll_root"
+            action="hr_payroll_transactions_action"
+            sequence="10"/>
+
+    <record id="hr_salary_rule_form" model="ir.ui.view">
+        <field name="name">hr.salary.rule.cus.form</field>
+        <field name="model">hr.salary.rule</field>
+        <field name="inherit_id" ref="hr_payroll.hr_salary_rule_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='active']" position="after">
+                <field name="od_payroll_item" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="hr_payslip_cus_tree" model="ir.ui.view">
+        <field name="name">hr.payslip.cus.tree</field>
+        <field name="model">hr.payslip</field>
+        <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="/form/sheet/notebook/page[2]" position="after">
+                <page string="Variance">
+                    <field name="hr_variance_line_id">
+                        <tree editable="top">
+                            <field name="date_value"/>                           
+                            <field name="payslip_id" invisible="1"/>                                 
+                            <field name="rule_id"/>                           
+                            <field name="tran_id"/>
+                            <field name="tran_note"/>                           
+                            <field name="amount"/>                                 
+                        </tree>
+                    </field>
+                </page>
+             </xpath>
+        </field>
+    </record>
+
+    <record id="hr_variance_line_form" model="ir.ui.view">
+        <field name="name">hr.variance.line.form</field>
+        <field name="model">hr.variance.line</field>
+        <field name="arch" type="xml">
+            <form string="Variance Line">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="payslip_id"/>
+                            <field name="amount" />
+                            <field name="tran_id" />
+                        </group>
+                        <group>
+                            <field name="date_value"/>
+                            <field name="tran_note" />
+                            <field name="rule_id" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_variance_line_tree" model="ir.ui.view">
+        <field name="name">hr.variance.line.tree</field>
+        <field name="model">hr.variance.line</field>
+        <field name="arch" type="xml">
+            <tree string="Variance Line">
+                <field name="payslip_id"/>
+                <field name="amount" />
+                <field name="tran_id" />
+                <field name="date_value"/>
+                <field name="tran_note" />
+                <field name="rule_id" />
+            </tree>
+        </field>
+    </record>
+    <!-- view of payroll transaction Report -->
+    <record id="hr_payroll_tran_sheet_view_tree" model="ir.ui.view">
+        <field name="name">hr.payroll.tran.sheet.view.tree</field>
+        <field name="model">hr.payroll.tran.sheet.view</field>
+        <field name="arch" type="xml">
+            <tree string="Payroll transaction Report">
+                <field name="employee_id"/>
+                <field name="payroll_item"/>
+                <field name="description"/>
+                <field name="tran"/>
+                <field name="date"/>
+                <field name="amount" type="measure"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="hr_payroll_tran_sheet_view_pivot" model="ir.ui.view">
+        <field name="name">hr.payroll.tran.sheet.view.pivot</field>
+        <field name="model">hr.payroll.tran.sheet.view</field>
+        <field name="arch" type="xml">
+            <pivot string="Payroll Transaction Report" disable_linking="True">
+                <field name="employee_id"/>
+                <field name="payroll_item"/>
+                <field name="description"/>
+                <field name="date"/>
+               <field name="amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="hr_payroll_tran_sheet_view_search" model="ir.ui.view">
+        <field name="name">hr.payroll.tran.sheet.view.search</field>
+        <field name="model">hr.payroll.tran.sheet.view</field>
+        <field name="arch" type="xml">
+            <search string="Entry Analysis">
+                <filter string="Employee" name="employee_id"/>
+                <filter string="Payroll Item" name="payroll_item"/>
+                <filter name="date"/>
+                <!-- <group expand="1" string="Group By">
+                    <filter string="Employee" name="Employee" context="{'group_by':'Employee'}"/>
+                    <filter string="Payroll Item" name="Payroll Item" context="{'group_by':'Payroll Item'}"/>
+                    <filter string="Date" context="{'group_by':'date'}"/>
+                </group> -->
+            </search>
+        </field>
+    </record>
+
+    <record id="hr_payroll_tran_sheet_view_action" model="ir.actions.act_window">
+        <field name="name">Payroll Transactions Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hr.payroll.tran.sheet.view</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,pivot</field>      
+    </record>
+
+    <menuitem id="payroll_reporting_config"
+            name="Reporting"
+            parent="hr_payroll.menu_hr_payroll_root"
+            sequence="11"/>
+
+    <menuitem id="hr_payroll_tran_sheet_view_action_config"
+            name="Payroll Transactions Report"
+            parent="payroll_reporting_config"
+            action="hr_payroll_tran_sheet_view_action"
+            sequence="2"/>
+
+    <!-- view of payroll transaction Report -->
+
+    <!-- view of Salary Sheet -->
+    <record id="hr_salary_sheet_view_tree" model="ir.ui.view">
+        <field name="name">hr.salary.sheet.view.tree</field>
+        <field name="model">hr.salary.sheet.view</field>
+        <field name="arch" type="xml">
+            <tree string="Salary Sheet" >
+                <field name="employee_id" string="Employee Name"/>
+                <field name="identification"/>
+                <field name="structure_id"/>
+                <field name="batch_name"/>
+                <field name="basic" string="Basic Salary"/>
+                <field name="hra" string="Housing"/>
+                <field name="trans_allowance" string="Transport Allowance"/>
+                <field name="other_allowance" string="Other Allowance"/>
+                <!-- <field name="food_allowance" string="Food Allowance"/> -->
+                <field name="ot_allowance" string="OT Allowance"/>
+                <field name="allowances_value" string="Allowances"/>
+                <field name="additions" string="Additions"/>
+                <field name="deductions" string="Deductions"/>
+                
+                <field name="loan_deduction" string="Loan"/>
+                <!-- <field name="abs_deduction" string="Absent"/> -->
+                <field name="fine_deduction" string="Fine"/>
+                <field name="gross"/>
+                <field name="net_salary"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="payslip_days"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="hr_salary_sheet_view_graph" model="ir.ui.view">
+        <field name="name">hr.salary.sheet.view.graph</field>
+        <field name="model">hr.salary.sheet.view</field>
+        <field name="arch" type="xml">
+            <graph string="Salary Sheet" >
+                <field name="employee_id" type="row" string="Employee Name"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="hr_salary_sheet_view_pivot" model="ir.ui.view">
+        <field name="name">hr.salary.sheet.view.pivot</field>
+        <field name="model">hr.salary.sheet.view</field>
+        <field name="arch" type="xml">
+            <pivot string="Salary Sheet" disable_linking="True">
+                <field name="employee_id"/>
+                <field name="identification"/>
+                <field name="structure_id"/>
+                <field name="batch_name"/>
+                <field name="basic" />
+                <field name="hra" />
+                <field name="trans_allowance" />
+                <field name="other_allowance" />
+                <field name="ot_allowance" />
+                <field name="allowances_value"/>
+                <field name="additions" />
+                <field name="deductions"/>
+                <field name="cvd0"/>
+                <field name="cvd50"/>
+                <field name="cvd30"/>
+                <field name="cvd40"/>
+                <field name="cvd100"/>
+                <field name="loan_deduction"/>
+                <field name="fine_deduction"/>
+                <field name="gross" type="measure"/>
+                <field name="net_salary"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="payslip_days"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="hr_salary_sheet_view_search" model="ir.ui.view">
+        <field name="name">hr.salary.sheet.view.search</field>
+        <field name="model">hr.salary.sheet.view</field>
+        <field name="arch" type="xml">
+            <search string="Salary Sheet">
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="job_id"/>
+                <field name="type_id"/>
+           		<group expand="1" string="Group By...">
+                    <filter string="Employee" icon="terp-personal" name="employee_id" context="{'group_by':'employee_id'}"/>
+                    <filter string="Department" icon="terp-personal" name="department_id" context="{'group_by':'department_id'}"/>
+                    <filter string="Job" icon="terp-personal" name="job_id" context="{'group_by':'job_id'}"/>
+                    <filter string="Contract Type" icon="terp-personal" name="type_id" context="{'group_by':'type_id'}"/>
+				</group>
+            </search>
+        </field>
+    </record>
+
+    <record id="hr_salary_sheet_view_action" model="ir.actions.act_window">
+        <field name="name">Salary Sheet</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hr.salary.sheet.view</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,graph,pivot</field>
+        <field name="search_view_id" ref="hr_salary_sheet_view_search"/>      
+    </record>
+
+    <menuitem id="hr_salary_sheet_view_action_config"
+            name="Salary Sheet"
+            parent="payroll_reporting_config"
+            action="hr_salary_sheet_view_action"
+            sequence="1"/>
+
+    <!-- view of Salary Sheet -->
+
+    <!-- HR Contract and Payroll Customize Part -->
+
+    <!-- Employee Master edits  -->
+    <record id="res_country_cus_form" model="ir.ui.view">
+        <field name="name">res.country.cus.form</field>
+        <field name="model">res.country</field>
+        <field name="inherit_id" ref="base.view_country_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='code']" position="after">
+                <field name="airfare" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="hr_employee_cus_form" model="ir.ui.view">
+        <field name="name">hr.employee.cus.form</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='toggle_active']" position="after">
+                <button class="oe_stat_button" name="airticket_view" type="object" icon="fa-list-ol">
+                    <field string="Airtickets" name="airticket_count" widget="statinfo"/>
+                </button>
+            </xpath>
+            <div class="oe_button_box" position="inside">
+                <button class="oe_stat_button" name="document_view" type="object" icon="fa-list-ol" context="{'default_employee_ref': id}">
+                    <field string="Documents" name="document_count" widget="statinfo"/>
+                </button>
+            </div>
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <field name="join_date" />
+            </xpath>
+            <xpath expr="//field[@name='country_id']" position="after">
+                <field name="airfare" />
+            </xpath>
+            <xpath expr="//field[@name='work_phone']" position="after">
+                <field name="fax_ch" widget="fax"/>
+            </xpath>
+            <xpath expr="//field[@name='passport_id']" position="after">
+                <field name="pass_expiry_date" />
+            </xpath>
+            <xpath expr="//field[@name='bank_account_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+                
+            </xpath>
+            <xpath expr="//field[@name='visa_no']" position="after">
+                <field name="uid_num" />
+                <field name="emirates_id" />
+                <field name="emirates_id_expiry_date" />
+                <field name="wp_expiry_date" />
+            </xpath>
+            
+        </field>
+    </record>
+    <record id="hr_employee_cus_treess" model="ir.ui.view">
+        <field name="name">hr.employee.cus.treess</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="uae_wps_report.employee_number_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='CIF_data']/group[1]" position="inside">
+                <group>
+                    <field name="cost_center"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+    <record id="hr_employee_cus_tree" model="ir.ui.view">
+        <field name="name">hr.employee.cus.tree</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <field name="leaves_count" string="Pending Leaves" groups="hr.group_hr_user"/>
+                <field name="leaves_count_2" string="Approves Leaves" groups="hr.group_hr_user"/>
+            </xpath>
+        </field>
+    </record>
+    <!-- documents list view -->
+    <record id="hr_employee_document_form_cus2" model="ir.ui.view">
+        <field name="name">hr.employee.document.form.cus2</field>
+        <field name="model">hr.employee.document</field>
+        <field name="inherit_id" ref="oh_employee_documents_expiry.employee_document_form_view"/>
+        <field name="arch" type="xml">	
+            <xpath expr="//field[@name='name']" position="before">
+                <field name="document_type" required="1"/>
+            </xpath>
+            <xpath expr="//field[@name='employee_ref']" position="replace">
+                <field name="employee_ref" string="Employee Name"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="hr_employee_document_tree_cus2" model="ir.ui.view">
+        <field name="name">hr.employee.document.tree.cus2</field>
+        <field name="model">hr.employee.document</field>
+        <field name="inherit_id" ref="oh_employee_documents_expiry.employee_document_tree_view"/>
+        <field name="arch" type="xml">	
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="employee_ref" string="Employee Name"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="hr_employee_document_search_cus2" model="ir.ui.view">
+        <field name="name">hr.employee.document.search.cus2</field>
+        <field name="model">hr.employee.document</field>
+        <field name="arch" type="xml">	
+            <search string="Search Documents">
+                <field name="expiry_date"/>
+                <group expand="0" string="Group By">
+                    <filter name="groupby_expiry_date" string="Expiry Date" domain="[]" context="{'group_by' : 'expiry_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="hr_employee_document_cus_action" model="ir.actions.act_window">
+        <field name="name">Employess Documents</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hr.employee.document</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_groupby_expiry_date':1}</field>
+    </record>
+    <record id="hr_employee_document_cus_action2" model="ir.actions.act_window">
+        <field name="name">Employess Documents</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hr.employee.document</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('employee_ref', '=', active_id)]</field>
+        <field name="context">{'default_employee_ref': active_id}</field>
+    </record>
+    <menuitem id="emp_document_config"
+            name="Documents"
+            parent="hr.menu_hr_root"
+            groups="hr.group_hr_user"
+            action="hr_employee_document_cus_action"
+            sequence="5"/>
+    <!-- documents list view -->
+    <!-- HR airticket part -->
+    <record model='ir.ui.view' id='hr_airticket_form_view'>
+        <field name="name">hr.airticket.form.view</field>
+        <field name="model">hr.airticket</field>
+        <field name="arch" type="xml">
+            <form string="Airticket" >
+                <group>
+                    <group>
+                        <field name="name"/>
+                        <field name="depart"/>
+                        <field name="designation"/>
+                        <field name="join_date"/>
+                    </group>
+                    <group>
+                        <field name="Airfare"/>
+                        <field name="amount"/>
+                        <field name="ticket_date"/>
+                    </group>
+                </group>
+                <group>
+                    <field name="remarks" />
+                </group>
+            </form>
+        </field>
+    </record>
+    <record model='ir.ui.view' id='hr_airticket_tree_view'>
+        <field name="name">hr.airticket.tree.view</field>
+        <field name="model">hr.airticket</field>
+        <field name="arch" type="xml">
+            <tree string="Airticket" >
+                <field name="name"/>
+                <field name="depart"/>
+                <field name="designation"/>
+                <field name="join_date"/>
+                <field name="Airfare"/>
+                <field name="amount"/>
+                <field name="ticket_date"/>
+                <field name="remarks" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- HR airticket part -->
+
+    <!-- Employee Master edits  -->
+    <!-- CRM Lost Reason -->
+    <record id="crm_lead_lost_view_form_cus" model="ir.ui.view">
+        <field name="name">crm.lead.lost.form.cus</field>
+        <field name="model">crm.lead.lost</field>
+        <field name="inherit_id" ref="crm.crm_lead_lost_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='lost_reason_id']" position="replace">
+                <field name="lost_reason_id" string="Drop Reason"/>
+                <field name="description" />
+            </xpath>
+        </field>
+    </record>
+    <record id="crm_opportunity_report_view_search_cus2" model="ir.ui.view">
+        <field name="name">crm.opportunity.report.view.search.cus2</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.view_crm_case_opportunities_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='lost']" position="replace">
+                <filter string="Dropped" name="lost" domain="['&amp;', ('active', '=', False), ('probability', '=', 0)]"/>
+            </xpath>
+            <xpath expr="//filter[@name='message_needaction']" position="replace">
+            </xpath>
+            <xpath expr="//filter[@name='medium']" position="replace">
+            </xpath>
+            <xpath expr="//filter[@name='compaign']" position="replace">
+            </xpath>
+            <xpath expr="//filter[@name='source']" position="replace">
+                <filter string="Source" name="source" domain="[]" context="{'group_by':'source_master'}"/>
+            </xpath>
+            <xpath expr="//filter[@name='close_this_month']" position="replace">
+                <filter string="Expected Closing" name="close_this_month" date="show_date"/>
+            </xpath>
+            <xpath expr="//filter[@name='overdue_opp']" position="replace">
+                <filter string="Overdue Opportunities" name="overdue_opp"
+                            domain="[('show_date', '&lt;', context_today().strftime('%Y-%m-%d')), ('date_closed', '=', False)]"
+                            help="Opportunities with a date of Expected Closing which is in the past"/>
+            </xpath>
+            <xpath expr="//filter[@name='date_deadline']" position="replace">
+            </xpath>
+        </field>
+    </record>
+    <!-- <record id="crm_opportunity_report_view_search2_cus2" model="ir.ui.view">
+        <field name="name">crm.opportunity.report.view.search2.cus2</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.view_crm_case_leads_filter"/>
+        <field name="arch" type="xml">
+            
+        </field>
+    </record> -->
+    <!-- CRM Lost Reason -->
+
+    <!-- Purchase Customization Part -->
+
+    <record id="purchase_order_line_tree_cus2" model="ir.ui.view">
+        <field name="name">purchase.order.line.tree.cus2</field>
+        <field name="model">purchase.order.line</field>
+        <field name="inherit_id" ref="purchase.purchase_order_line_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_planned']" position="replace">
+                <field name="state_id"/>
+                <button string="Add Quantity" icon="fa-shopping-cart" name="action_update_qty" aria-label="Sort" type="object"/>
+                <button string="Confirm Order" icon="fa-check" name="action_add_confirm" aria-label="Sort" type="object"/>
+                <button string="Cancel" icon="fa-times" name="action_cancel" help="Cancel" aria-label="Sort" type="object"/>
+            </xpath>
+
+            <xpath expr="//tree" position="attributes">
+                <attribute name="decoration-danger">state_id == 'cancel'</attribute>
+                <attribute name="decoration-success">state_id == 'confirm'</attribute>
+            </xpath>	
+        </field>
+    </record>
+    <record id="purchase_order_line_search_cus2" model="ir.ui.view">
+        <field name="name">purchase.order.line.search.cus2</field>
+        <field name="model">purchase.order.line</field>
+        <field name="arch" type="xml">	
+            <search string="Search Purchase Order">
+                <field name="order_id"/>
+                <field name="product_id"/>
+                <field name="partner_id" string="Vendor" filter_domain="[('partner_id', 'child_of', self)]"/>
+                <filter name="hide_cancelled" string="Hide cancelled lines" domain="[('state', '!=', 'cancel')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="groupby_supplier" string="Vendor" domain="[]" context="{'group_by' : 'partner_id'}"/>
+                    <filter name="groupby_product" string="Product" domain="[]" context="{'group_by' : 'product_id'}"/>
+                    <filter string="Order Reference" name="order_reference" domain="[]" context="{'group_by' :'order_id'}"/>
+                    <filter string="Status" name="status" domain="[]" context="{'group_by' : 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="purchase_order_line_cus_action" model="ir.actions.act_window">
+        <field name="name">Compare Lines</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">purchase.order.line</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree</field>
+        <field name="domain">[('requ', '=', active_id)]</field>
+        <field name="context">{'search_default_hide_cancelled': 1,'search_default_groupby_product':1}</field>
+    </record>
+    <record id="purchase_requisition_form_cus" model="ir.ui.view">
+        <field name="name">purchase.requisition.form.cus</field>
+        <field name="model">purchase.requisition</field>
+        <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_form"/>
+        <field name="arch" type="xml">	
+            <xpath expr="//button[@name='action_draft']" position="after">
+                <button name="action_compare" string="Analyze RFQ" type="object" attrs="{'invisible': ['|','|','|','|',('state', '=', 'draft'),('state', '=', 'in_progress'),('state', '=', 'done'),('state', '=', 'cancel')], 'required': [('state', '=','open')]}" class="btn-primary"/>
+                
+            </xpath>
+            <field name="vendor_id" position="after">
+                <field name="requisition_so_id"/>
+            </field>
+        </field>
+    </record>
+    <!-- <record id="purchase_order_tree_cus2" model="ir.ui.view">
+        <field name="name">purchase.order.tree.cus2</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='price_unit']" position="after">
+                <field name="requ" invisible="1"/>
+            </xpath>	
+        </field>
+    </record> -->
+    <!-- Purchase second level approve -->
+
+    <record id="purchase_order_cus_form" model="ir.ui.view">
+        <field name="name">purchase.order.cus.form</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='button_approve']" position="replace">
+                <button name="button_approve" type="object" states='to approve' string="Approve Order" class="oe_highlight" groups="marcoms_updates.group_purchase_top_manager"/>
+                <button name="button_approve2" type="object" states='To approve' string="Approve Order" class="oe_highlight" groups="purchase.group_purchase_manager"/>
+                
+            </xpath>
+            <xpath expr="//button[@name='button_cancel']" position="replace">
+                <button name="button_cancel" states="draft,sent,purchase,sel" string="Cancel" type="object" />
+            </xpath>
+            <xpath expr="//button[@id='draft_confirm']" position="replace">
+                <button name="button_confirm" type="object" states="draft,sel" string="Confirm Order" id="draft_confirm"/>            </xpath>
+            <xpath expr="//div[hasclass('oe_button_box')]//button[@name='action_view_picking']" position="replace">
+                <button type="object" name="action_view_picking" class="oe_stat_button" icon="fa-truck" attrs="{'invisible':[('picking_ids','=',[])]}">
+                    <field name="picking_count" widget="statinfo" string="GRN Receipts" help="Incoming Shipments"/>
+                    <field name="picking_ids" invisible="1"/>
+                </button>
+            </xpath>
+            <xpath expr="//field[@name='order_line']" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', 'in', ['purchase'])]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='price_unit']" position="after">
+                <field name="requ" invisible="1"/>
+            </xpath>	
+            <xpath expr="//field[@name='date_order']" position="after">
+                <field name="text" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='taxes_id']" position="replace">
+                <field name="taxes_id" string="VAT" widget="many2many_tags" domain="[('type_tax_use','=','purchase')]" context="{'default_type_tax_use': 'purchase', 'search_view_ref': 'account.account_tax_view_search'}" options="{'no_create': True}"/>
+                <field name="price_tax" string="VAT Amount"/>
+            </xpath>
+            <xpath expr="//field[@name='date_planned']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="date_planned" string="Delivery Date" attrs="{'readonly': [('state', 'not in', ('draft', 'sent'))]}"/>
+                <field name="received_by" />
+                <field name="delivery_location" />
+            </xpath>
+            <xpath expr="//field[@name='amount_untaxed']" position="attributes">
+                <attribute name="string">Total Amount</attribute>
+            </xpath>
+            <xpath expr="//field[@name='amount_tax']" position="attributes">
+                <attribute name="string">VAT</attribute>
+            </xpath>
+            <!-- <xpath expr="//field[@name='ks_amount_discount']" position="attributes">
+                <attribute name="string">Special Discount</attribute>
+            </xpath> -->
+            <xpath expr="//field[@name='amount_total']" position="attributes">
+                <attribute name="string">Total with VAT</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="res_config_settings_view_form_purchase_top" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.purchase.top</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="purchase.res_config_settings_view_form_purchase"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='po_double_validation_amount']" position="after">
+                <label for="po_double_validation_amount_top" class="col-lg-4 o_light_label"/>
+                <field name="po_double_validation_amount_top"/>
+            </xpath>
+        </field>
+    </record>
+    <!-- Purchase second level approve -->
+    <record model="ir.ui.view" id="view_purchase_order_pivot_cus">
+        <field name="name">product.month.pivot.cus</field>
+        <field name="model">purchase.report</field>
+        <field name="inherit_id" ref="purchase.view_purchase_order_pivot"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='price_average']" position="after">
+                <field name="name"/>
+            </xpath>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_purchase_order_graph_cus">
+        <field name="name">product.month.graph.cus</field>
+        <field name="model">purchase.report</field>
+        <field name="inherit_id" ref="purchase.view_purchase_order_graph"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='price_average']" position="after">
+                <field name="name"/>
+            </xpath>
+        </field>
+    </record>
+    <!-- Purchase Customization Part -->
+    <!-- Accounts Customization Part -->
+    <record id="account_invoice_cust_form" model="ir.ui.view">
+        <field name="name">account.invoice.cust.form</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="term" string="Bank Details"/>
+            </xpath>
+            <xpath expr="//field[@name='date_invoice']" position="attributes">
+                <attribute name="string">Date</attribute>
+            </xpath>
+            <xpath expr="//field[@name='amount_untaxed']" position="attributes">
+                <attribute name="string">Total Amount</attribute>
+            </xpath>
+            <xpath expr="//field[@name='amount_tax']" position="attributes">
+                <attribute name="string">VAT</attribute>
+            </xpath>
+            <xpath expr="//field[@name='amount_total']" position="attributes">
+                <attribute name="string">Total with VAT</attribute>
+            </xpath>
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                
+                <field name="LPO"/>
+                <field name="project_name"/>
+                <field name="project" invisible="1"/>
+                <!-- <field name="has_outstanding" invisible="1"/> -->
+            </xpath>
+            <xpath expr="//div[1]" position="replace">
+                <div groups="account.group_account_invoice" class="alert alert-info" role="alert" style="margin-bottom:0px;" >
+                    You have <bold><a class="alert-link" href="#outstanding" role="button">outstanding payments</a></bold> for this customer. You can allocate them to mark this invoice as paid.
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='has_outstanding']" position="replace">
+                <field name="has_outstanding" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="account_invoice_cus_form" model="ir.ui.view">
+        <field name="name">account.invoice.cus.form</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_supplier_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='%(account.action_account_invoice_refund)d']" position="attributes">
+                <attribute name="string">Ask for a Debit Note</attribute>
+            </xpath>
+            <xpath expr="//field[@name='reference']" position="after">
+                <field name="project_name"/>
+                <field name="project" invisible="1"/>
+            </xpath>
+            
+            <xpath expr="//div[1]" position="replace">
+                <div groups="account.group_account_invoice" class="alert alert-info" role="alert" style="margin-bottom:0px;" >
+                    You have <bold><a class="alert-link" href="#outstanding" role="button">outstanding debits</a></bold> for this supplier. You can allocate them to mark this bill as paid.
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='has_outstanding']" position="replace">
+                <field name="has_outstanding" invisible="1"/>
+            </xpath>
+            <xpath expr="//sheet/div[1]" position="before" >
+                <div class="oe_button_box" name="button_box">
+                    <button class="oe_stat_button" name="document_view" type="object" icon="fa-list-ol">
+                        <field string="Documents" name="document_count" widget="statinfo"/>
+                    </button>
+                </div>
+                
+            </xpath>
+        </field>
+    </record>
+    
+    <record id="account_invoice_refund_cus_form" model="ir.ui.view">
+        <field name="name">account.invoice.refund.cus.form</field>
+        <field name="model">account.invoice.refund</field>
+        <field name="inherit_id" ref="account.view_account_invoice_refund"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='invoice_refund']" position="replace">
+                <button string='Add Debit Note' name="invoice_refund" type="object" class="btn-primary"/>   
+            </xpath>
+        </field>
+    </record>
+
+    <record id="account_payment_custtts_form" model="ir.ui.view">
+        <field name="name">account.payment.custtts.form</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_invoice_form"/>
+        <field name="arch" type="xml">
+            
+            <xpath expr="//field[@name='payment_date']" position="after">
+                <!-- <field name="cheque_date" attrs="{'readonly': [('state', '!=', 'draft')]}"/> -->
+                <field name="pdc_account" attrs="{'invisible': [('payment_method_code', '!=', 'pdc')],'required': [('payment_method_code', '=', 'pdc')]}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="account_payment_cust_form" model="ir.ui.view">
+        <field name="name">account.payment.cust.form</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_form"/>
+        <field name="arch" type="xml">
+            <button name="button_journal_entries" position="after">
+                <button class="oe_stat_button" name="button_journal_entries_release"
+                                    string="Release Journal Items" type="object"
+                                    groups="account.group_account_user"
+                                    attrs="{'invisible':[('release_count','=',0)]}" icon="fa-bars"/>
+                
+            </button>
+            <xpath expr="//button[@name='post']" position="before">
+                <button name="action_release" class="oe_highlight" attrs="{'invisible': ['|',('state', 'in', ['draft','cancelled']),'|',('payment_method_code', '!=', 'pdc'),('release_count', '!=', 0)]}" string="Release" type="object"/>
+            </xpath>
+            <xpath expr="//field[@name='payment_date']" position="after">
+                <!-- <field name="cheque_date" attrs="{'readonly': [('state', '!=', 'draft')]}"/> -->
+                <field name="pdc_account" attrs="{'invisible': [('payment_method_code', '!=', 'pdc')],'required': [('payment_method_code', '=', 'pdc')]}"/>
+            </xpath>
+            <xpath expr="//field[@name='effective_date']" position="replace">
+                <field name="effective_date" attrs="{'required': [('payment_method_code', '=', 'pdc')]}"/>
+            </xpath>
+            <xpath expr="//field[@name='payment_method_code']" position="after">
+                <field name="seal" />
+                <field name="accountname" invisible="1"/>
+                <field name="company_id"  invisible="1"/>
+                <field name="release_count" invisible="1" />
+                <field name="release_check" invisible="1" />
+                <field name="add_variance_count" invisible="1" />
+                <field name="flag_acc" invisible="1" />
+            </xpath>
+            <xpath expr="//notebook[1]" position="after">
+                <group>
+                    <button name="get_outstanding_info" class="oe_highlight"  string="Get Outstanding amounts" type="object" invisible="1" attrs="{'invisible': [('add_variance_count', '!=', 0)]}"/>
+                </group>
+                <field name="invoice_lines_outstand" >
+                    <tree create="false" editable="bottom">
+                        <field name="payment_id" invisible="1"/>
+                        <field name="move_id" invisible="1"/>
+                        <!-- <field name="invoice_id" /> -->
+                        <field name="title" readonly="1"/>
+                        <field name="due_date" readonly="1"/>
+                        <field name="amount" readonly="1" sum="Total Amount"/>
+                        <field name="open_amount" readonly="1" sum="Due Amount"/>
+                        <field name="allocation" sum="Allocation"/>
+                        <!-- <button string="Add" icon="fa-check" name="action_add" aria-label="Sort" type="object"/> -->
+                    </tree>
+                    <form string="Variance" create="false">
+                        <group>
+                            <field name="payment_id" invisible="1"/>
+                            <field name="move_id" invisible="1"/>
+                            <field name="title" readonly="1"/>
+                            <field name="due_date" readonly="1"/>
+                            <field name="amount" readonly="1"/>
+                            <field name="open_amount" readonly="1"/>
+                            <field name="allocation" />
+                        </group>
+                    </form>
+                </field>
+                <group>
+                    <field name="var_account" />
+                </group>
+                <group>
+                    <field name="var_amount" />
+                </group>
+                <group>
+                    <field name="remarks" />
+                </group>
+            </xpath>
+            <xpath expr="//field[@name='bank_reference']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- <xpath expr="//field[@name='due_date']" position="after">
+                <field name="move_id_outstand" invisible="1" />
+                <field name="outstand" invisible="1" />
+            </xpath> -->
+        </field>
+    </record>
+
+    <!-- bank details -->
+
+    <record id="bank_details_form_view" model="ir.ui.view">
+        <field name="name">bank.details.form.view</field>
+        <field name="model">bank.details</field>
+        <field name="arch" type="xml">
+            <form string="Bank Details">
+            <sheet>
+                <div class="oe_title oe_left">
+                    <h1>
+                        <field name="name" domain="[('type','=','bank')]"/>
+                    </h1>
+                </div>
+                <group>
+                    <group>
+                        <field name="bank_name" />
+                        <field name="branch" />
+                        <field name="currency" />
+                        <field name="swift_code" />
+                    </group>
+                    <group>
+                        <field name="acc_no" />
+                        <field name="iban" />
+                        <field name="ban" invisible="1"/>
+
+                    </group>
+                </group>
+            </sheet>
+            <div class="oe_chatter">
+                <field name="message_follower_ids" widget="mail_followers"/>
+                <field name="message_ids" widget="mail_thread"/>
+            </div>
+            </form>    
+        </field>
+    </record>
+
+    <record id="bank_details_tree_view" model="ir.ui.view">
+        <field name="name">bank.details.tree.view</field>
+        <field name="model">bank.details</field>
+        <field name="arch" type="xml">
+            <tree string="Bank Details">
+                <field name="name"/>
+                <field name="branch"/>
+                <field name="acc_no"/>
+                <field name="iban"/>
+                <field name="swift_code"/>
+                <field name="currency"/>
+            </tree>
+        </field>
+    </record>
+    <record id="bank_details_action" model="ir.actions.act_window">
+        <field name="name">Bank Details</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">bank.details</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+            id="bank_details_action_menuitem"
+            name="Bank Details"
+            sequence="21"
+            parent="account.menu_finance_receivables"
+            groups="account.group_account_invoice"
+            action="bank_details_action"/>
+
+
+    <record id="res_partner_cus_form" model="ir.ui.view">
+        <field name="name">res.partner.cus.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='type']" position="before">
+                <field name="sequence_no" />  
+            </xpath>
+        </field>
+    </record>
+
+    <record id="stock_picking_cus_form" model="ir.ui.view">
+        <field name="name">stock.picking.cus.form</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="replace">
+                <field name="partner_id"  domain="['|',('supplier', '=', True),('customer', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- Accounts Customization Part -->
+    <!-- Requisition Screen in Sales Module -->
+
+    <record id="requisition_sales_form_view" model="ir.ui.view">
+        <field name="name">requisition.sales.form.view</field>
+        <field name="model">material.requisition.sales</field>
+        <field name="arch" type="xml">
+            <form string="Material Requisition">
+            <header>
+                <!-- <button name="confirm_requisition" string="Confirm" type="object" class="btn-primary" attrs="{'invisible': [('state', 'in', ['department_approval','ir_approve','approved','po_created','received','cancel'])]}" groups="base.group_user"/>
+                <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': [('state', 'in', ['department_approval','ir_approve','approved','po_created','received','cancel'])]}" groups="base.group_user"/>
+                <button name="department_approve" type="object" string="Department Approve" attrs="{'invisible': [('state', 'in', ['new','ir_approve','approved','po_created','received','cancel'])]}"/>
+                <button name="product_available" type="object" string="Check Availability" attrs="{'invisible': [('state', 'in', ['new','department_approval','po_created','received','cancel','approved'])]}"/>
+                <button name="action_reject" type="object" string="Reject" attrs="{'invisible': [('state', 'in', ['new','approved','po_created','cancel'])]}"/>
+                <button name="action_approve" type="object" string="Approve" attrs="{'invisible': [('state', 'in', ['new','department_approval','po_created','received','cancel','approved'])]}"/> -->
+                <button name="create_purchase_requisition" type="object" string="Create Purchase Requisition" attrs="{'invisible': ['|',('state', 'in', ['new','cancel']),('flag','=',True)]}" groups="purchase.group_purchase_manager,purchase.group_purchase_user"/>
+                <button name="action_to_po" type="object" string="Confirm" attrs="{'invisible': [('state', 'in', ['po_created','back','cancel'])]}"/>
+                <button name="action_pricing" type="object" string="Response to Sender" attrs="{'invisible': [('state', 'in', ['new','back','cancel'])]}" groups="purchase.group_purchase_manager,purchase.group_purchase_user"/>
+                <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': [('state', 'in', ['cancel'])]}" groups="base.group_user"/>
+                <!-- <button name="create_picking" type="object" string="Create Picking" attrs="{'invisible': [('state', 'in', ['new','department_approval','ir_approve','received','po_created','cancel'])]}"/>
+                <button name="action_received" type="object" string="Received" attrs="{'invisible': [('state', 'in', ['new','department_approval','ir_approve','approved','received','cancel'])]}"/>
+                <button name="action_reset_draft" type="object" string="Reset To Draft" attrs="{'invisible': [('state', 'in', ['new','department_approval','ir_approve','approved','po_created'])]}"/> -->
+                <field name="state" widget="statusbar" />
+            </header>
+            <sheet>
+                <!-- <div class="oe_button_box" name="button_box">
+                    <button type="object" name="purchase_order_button" class="oe_stat_button" icon="fa-book" attrs="{'invisible': [('purchase_order_count', '=', 0)]}">
+                        <field name="purchase_order_count" widget="statinfo" string="Purchase Order" />
+                    </button>
+                </div> -->
+
+                <div class="oe_title oe_left">
+                    <h1>
+                        <field name="sequence"/>
+                    </h1>
+                </div>
+                <group>
+                    <group>
+                        <field name="partner_id" attrs="{'readonly': [('state', 'in', ['cancel'])]}" domain="[('customer','=',True),('parent_id','=',False)]"/>
+                        <field name="sales_id" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
+                        <field name="show_name" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
+                        <field name="flag" invisible="1" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
+                        <!-- <field name="task_id" attrs="{'readonly': [('state', 'in', ['cancel'])]}" domain="[('project_id.analytic_account_id','=',analytic_id)]"/> -->
+                    </group>
+                    <group>
+                        <field name="requisition_date" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
+                        <field name="oppor_id" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
+                        <field name="requisition_dead" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
+                        <!-- <field name="requisition_deadline_date" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
+                        <field name="company_id" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/> -->
+                    </group>
+                </group>
+                <notebook>
+                    <page string="Requisitions Lines">
+                        <field name="requisition_line_ids" widget="one2many_list" attrs="{'readonly': [('state', 'in', ['back','cancel'])]}">
+                            <tree string="Requisitions Lines" editable="bottom">
+                                <field name="product_id" />
+                                <field name="description" />
+                                <field name="qty" />
+                                <field name="available_qty" invisible="1" />
+                                <field name="uom_id" />
+                                <field name="price" />
+                                <field name="total_price" />
+                                <field name="remarks" />
+                            </tree>
+                        </field>
+                        <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+                            <!-- <field name="amount_untaxed_optional" widget="monetary" options="{'currency_field': 'currency_id'}"/> -->
+                            <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                                <label for="total_price"/>
+                            </div>
+                            <field name="total_price" nolabel="1" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </group>
+                    </page>
+                </notebook>
+                <label for="reason_for_requisition"/>
+                <field name="reason_for_requisition"/>
+            </sheet>
+            <div class="oe_chatter">
+                <field name="message_follower_ids" widget="mail_followers"/>
+                <field name="message_ids" widget="mail_thread"/>
+            </div>
+            </form>    
+        </field>
+    </record>
+
+    <record id="requisition_sales_tree_view" model="ir.ui.view">
+        <field name="name">requisition.sales.tree.view</field>
+        <field name="model">material.requisition.sales</field>
+        <field name="arch" type="xml">
+            <tree string="Material Requisition">
+                <field name="sequence" string="Number"/>
+                <field name="partner_id"/>
+                <field name="sales_id"/>
+                <field name="oppor_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    <record id="requisition_sales_action" model="ir.actions.act_window">
+        <field name="name">Price Inquiries</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">material.requisition.sales</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+            id="requisition_sales_action_menuitem"
+            name="Price Inquiries"
+            sequence="20"
+            parent="purchase.menu_procurement_management"
+            groups="purchase.group_purchase_user"
+            action="requisition_sales_action"/>
+    <menuitem
+            id="requisition_sales_action_menuitem_sales"
+            name="Price Inquiries"
+            sequence="20"
+            parent="sale.sale_order_menu"
+            groups="sales_team.group_sale_salesman"
+            action="requisition_sales_action"/>
+
+    <!-- Requisition Screen in Sales Module -->
+    <!-- Reordering reules edit -->
+    <record id="stock_warehouse_orderpoint_cus_form" model="ir.ui.view">
+        <field name="name">stock.warehouse.orderpoint.cus.form</field>
+        <field name="model">stock.warehouse.orderpoint</field>
+        <field name="inherit_id" ref="stock.view_warehouse_orderpoint_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id']" position="after">
+                <field name="onhand_qty"/>   
+                <field name="deff_qty"/>   
+            </xpath>
+        </field>
+    </record>
+    <!-- Reordering reules edit -->
+
+    <menuitem
+            id="crm.crm_menu_root"
+            name="CRM"
+            action="crm.action_your_pipeline"
+            web_icon="crm,static/description/icon.png"
+            groups="sales_team.group_sale_salesman,sales_team.group_sale_manager,marcoms_updates.group_creative_designer,marcoms_updates.group_creative_coordinator"
+            sequence="6"/>
+    <menuitem id="crm.crm_menu_leads"
+            name="Leads"
+            parent="crm.crm_menu_root"
+            groups="sales_team.group_sale_salesman,sales_team.group_sale_manager"
+            sequence="5"/>
+    
+    <record model="ir.actions.act_window" id="purchase_requisition.action_purchase_requisition">
+        <field name="name">Purchase Tender</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">purchase.requisition</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="context">{}</field>
+        <field name="search_view_id" ref="purchase_requisition.view_purchase_requisition_filter"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+            Start a new purchase agreement
+            </p><p>
+            Example of purchase agreements include call for tenders and blanket orders.
+            </p><p>
+            In a call for tenders, you can record the products you need to buy
+            and generate the creation of RfQs to vendors. Once the tenders have
+            been registered, you can review and compare them and you can
+            validate some and cancel others.
+            </p><p>
+            For a blanket order, you can record an agreement for a specifc period
+            (e.g. a year) and you order products within this agreement, benefiting
+            from the negociated prices.
+            </p>
+        </field>
+    </record>
+    <menuitem
+            id="purchase_requisition.menu_purchase_requisition_pro_mgt"
+            name="Purchase Tender"
+            sequence="10"
+            parent="purchase.menu_procurement_management"
+            action="purchase_requisition.action_purchase_requisition"/>
+    <record id="purchase_requisition.tender_type_action" model="ir.actions.act_window">
+        <field name="name">Purchase Tender Types</field>
+        <field name="res_model">purchase.requisition.type</field>
+        <field name="context">{}</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,kanban,form</field>
+    </record>
+    <menuitem
+        id="purchase_requisition.menu_purchase_requisition_type"
+        name="Purchase Tender Types"
+        sequence="2"
+        parent="purchase.menu_purchase_config"
+        action="purchase_requisition.tender_type_action"/>
+    <menuitem action="account.action_account_payments" id="account.menu_action_account_payments_receivable" parent="account.menu_finance_receivables" sequence="15" name="Receipts"/>
+        
+    <!-- -->
+
+    <!-- sequence of the opportunity -->
+
+
+
+
+    <!-- Ledger Report -->
+    <template id="acc_pi.filter_info_template">
+        <t t-if="model._name == 'account.partner.ledger'">
+            <t t-if="options.get('date') and options['date'].get('string')"><h4 class="text-center print_only">As of <t t-esc="report.get('yo_date')" t-options="{&quot;widget&quot;: &quot;date&quot;,&quot;format&quot;: &quot;dd-MMM-yyyy&quot;}"/></h4></t>
+        
+            <span style="font-size:15px; " class="print_only"><t t-esc="report.get('company_name')"/></span><br/>
+            
+        
+            
+            <div class="row print_only" style="margin-top: 20px; margin-bottom: 10px;font-size:15px;border: 1px solid black;">
+                
+                <div class="col-6">
+                    <!--<div class="col-12 print_only" style="font-size:15px;">-->
+                    <!--      <t t-if="options.get('partner_ids') != None">-->
+                              
+                    <!--          <t t-set="res_partner_value" t-value="'All'"/>-->
+                    <!--          <t t-foreach="options['selected_partner_ids']" t-as="partner_name">-->
+                    <!--              <t t-set="res_partner_value" t-value="''"/>-->
+                    <!--              <t t-esc="partner_name"/>-->
+                    <!--          </t>-->
+                    <!--          <t t-esc="res_partner_value"/>-->
+                    <!--      </t>-->
+                    <!--  </div>-->
+                    <t t-if="not options.get('multi_company')">
+                        <span>Customer      <t t-if="options.get('partner_ids') != None">
+                              
+                              <t t-set="res_partner_value" t-value="'All'"/>
+                              <t t-foreach="options['selected_partner_ids']" t-as="partner_name">
+                                  <t t-set="res_partner_value" t-value="''"/>
+                                  <t t-esc="partner_name"/>
+                                  </t>
+                              <t t-esc="res_partner_value"/>
+                          </t></span><br/>
+                        <span>Contact         <t t-if="options.get('partner_ids') != None">
+                              
+                              <!--<t t-set="res_partner_value" t-value="'All'"/>-->
+                              <t t-foreach="options['partner_zip']" t-as="partner_zip">
+                                  <!--<t t-set="res_partner_value" t-value="''"/>-->
+                                  <t t-esc="partner_zip"/>
+                                  </t>
+                              <!--<t t-esc="res_partner_value"/>-->
+                          </t></span><br/>
+                        <span>Address         <t t-if="options.get('partner_ids') != None">
+                              
+                              <!--<t t-set="res_partner_value" t-value="'All'"/>-->
+                              <t t-foreach="options['selected_street']" t-as="selected_street">
+                                  <!--<t t-set="res_partner_value" t-value="''"/>-->
+                                  <t t-esc="selected_street"/>
+                                  </t>
+                              <!--<t t-esc="res_partner_value"/>-->
+                          </t></span><br/>
+                    </t>
+                    <t t-if="options.get('multi_company')">
+                        <br/>Companies:
+                        <t t-set="company_value" t-value="'All'"/>
+                        <t t-foreach="options['multi_company']" t-as="c">
+                            <t t-if="c.get('selected') == True">
+                                <t t-set="company_value" t-value="''"/>
+                                "<t t-esc="c.get('name')"/>"
+                            </t>
+                        </t>
+                        <t t-esc="company_value"/>
+                    </t>
+                </div>
+                <div class="col-4">
+                    <div class="col-12">
+                        <span>Telephone          <t t-if="options.get('partner_ids') != None">
+                              
+                              <!--<t t-set="res_partner_value" t-value="'All'"/>-->
+                              <t t-foreach="options['selected_phone']" t-as="selected_phone">
+                                  <t t-set="res_partner_value" t-value="''"/>
+                                  <t t-esc="selected_phone"/>
+                                  </t>
+                              <t t-esc="res_partner_value"/>
+                          </t></span><br/>
+                        <span>Currency Code    <t t-esc="report.get('company_currency')"/> - (<t t-esc="report.get('company_currencylabel')"/>)</span>
+                    </div>
+                </div>
+            </div>
+        </t>
+        <t t-else="">
+            <div class="row print_only" style="margin-top: 20px; margin-bottom: 10px;">
+                <div class="col-4">
+                    <t t-if="options.get('date') and options['date'].get('string')"><t t-esc="options['date']['string']"/></t>
+                    <t t-if="not options.get('multi_company')">
+                        <br/><t t-esc="report.get('company_name')"/>
+                    </t>
+                    <t t-if="options.get('multi_company')">
+                        <br/>Companies:
+                        <t t-set="company_value" t-value="'All'"/>
+                        <t t-foreach="options['multi_company']" t-as="c">
+                            <t t-if="c.get('selected') == True">
+                                <t t-set="company_value" t-value="''"/>
+                                "<t t-esc="c.get('name')"/>"
+                            </t>
+                        </t>
+                        <t t-esc="company_value"/>
+                    </t>
+                </div>
+                <div class="col-4">
+                    <t t-if="options.get('cash_basis')">Cash Basis</t><t t-if="options.get('cash_basis') == False">Accrual Basis<br/></t>
+                    <t t-if="options.get('all_entries')" groups="account.group_account_user">With Draft Entries</t><t t-if="options.get('all_entries') == False">Posted Entries Only</t>
+                </div>
+                <div class="col-4">
+                    <div class="col-12">
+                        <t t-if="options.get('multi_company')">
+                            Companies:
+                            <t t-set="company_value" t-value="'All'"/>
+                            <t t-foreach="options['multi_company']" t-as="c">
+                                <t t-if="c.get('selected') == True">
+                                    <t t-set="company_value" t-value="''"/>
+                                    <t t-esc="c.get('name')"/>
+                                </t>
+                            </t>
+                            <t t-esc="company_value"/>
+                        </t>
+                    </div>
+                    <div class="col-12">
+                        <t t-if="options.get('journals')">
+                            Journals:
+                            <t t-set="journal_value" t-value="'All'"/>
+                            <t t-foreach="options['journals']" t-as="j">
+                                <t t-if="j.get('selected') == True">
+                                    <t t-set="journal_value" t-value="''"/>
+                                    <t t-esc="j.get('code')"/>
+                                </t>
+                            </t>
+                            <t t-esc="journal_value"/>
+                        </t>
+                    <t t-if="options.get('analytic_account_ids')">
+                        <br/>
+                        Analytic Accounts:
+                        <t t-foreach="options['analytic_account_ids']" t-as="acc">
+                            <t t-esc="acc.get('name')"/>
+                        </t>
+                    </t>
+                    </div>
+                    <div class="col-12">
+                        <t t-if="options.get('analytic_accounts') != None">
+                            Analytic Accounts:
+                            <t t-set="analytic_account_value" t-value="'All'"/>
+                            <t t-foreach="options['selected_analytic_account_names']" t-as="analytic_account_name">
+                                <t t-set="analytic_account_value" t-value="''"/>
+                                <t t-esc="analytic_account_name"/>
+                            </t>
+                            <t t-esc="analytic_account_value"/>
+                        </t>
+                    </div>
+                    <div class="col-12">
+                        <t t-if="options.get('analytic_tags') != None">
+                            Analytic Tags:
+                            <t t-set="analytic_tag_value" t-value="'All'"/>
+                            <t t-foreach="options['selected_analytic_tag_names']" t-as="analytic_tag_name">
+                                <t t-set="analytic_tag_value" t-value="''"/>
+                                <t t-esc="analytic_tag_name"/>
+                            </t>
+                            <t t-esc="analytic_tag_value"/>
+                        </t>
+                    </div>
+                    <div class="col-12">
+                        <t t-if="options.get('partner_ids') != None">
+                            Partners:
+                            <t t-set="res_partner_value" t-value="'All'"/>
+                            <t t-foreach="options['selected_partner_ids']" t-as="partner_name">
+                                <t t-set="res_partner_value" t-value="''"/>
+                                <t t-esc="partner_name"/>
+                            </t>
+                            <t t-esc="res_partner_value"/>
+                        </t>
+                    </div>
+                    <div class="col-12">
+                        <t t-if="options.get('partner_categories') != None">
+                            Partner Categories:
+                            <t t-set="res_partner_category_value" t-value="'All'"/>
+                            <t t-foreach="options['selected_partner_categories']" t-as="partner_category_name">
+                                <t t-set="res_partner_category_value" t-value="''"/>
+                                <t t-esc="partner_category_name"/>
+                            </t>
+                            <t t-esc="res_partner_category_value"/>
+                        </t>
+                    </div>
+                    <div class="col-12">
+                        <t t-if="options.get('ir_filters') != None">
+                            Filter:
+                            <t t-set="selected_filter_name" t-value="'None'"/>
+                            <t t-foreach="options['ir_filters']" t-as="current_filter">
+                                <t t-if="current_filter['selected']">
+                                    <t t-set="selected_filter_name" t-value="current_filter['name']"/>
+                                </t>
+                            </t>
+                            <t t-esc="selected_filter_name"/>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Ledger Report -->
+
+    <!-- expense changes -->
+    <record id="hr_expense_cus_form" model="ir.ui.view">
+        <field name="name">hr.expense.cus.form</field>
+        <field name="model">hr.expense</field>
+        <field name="inherit_id" ref="hr_expense.hr_expense_view_form"/>
+        <field name="arch" type="xml">
+            <label for="quantity" position="replace">
+
+            </label>
+            <xpath expr="//field[@name='quantity']" position="replace">
+            </xpath>
+            <xpath expr="//field[@name='product_uom_id']" position="replace">
+            </xpath>
+            <xpath expr="//field[@name='sale_order_id']" position="replace">
+            </xpath>
+            <xpath expr="//field[@name='employee_id']" position="before">
+                <field name="is_vendor" groups="hr_expense.group_hr_expense_user"/>
+            </xpath>
+            <xpath expr="//field[@name='employee_id']" position="after">
+                <field name="vendor_id" domain="[('supplier','=',True)]" attrs="{'invisible': [('is_vendor', '=', False)]}" groups="hr_expense.group_hr_expense_user"/>
+            </xpath>
+            <label for="payment_mode" position="replace">
+
+            </label>
+            <xpath expr="//field[@name='payment_mode']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='employee_id']" position="attributes">
+                <attribute name="required">0</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="hr_expense_sheet_cus_form" model="ir.ui.view">
+        <field name="name">hr.expense.sheet.cus.form</field>
+        <field name="model">hr.expense.sheet</field>
+        <field name="inherit_id" ref="hr_expense.view_hr_expense_sheet_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='employee_id']" position="before">
+                <field name="is_vendor" readonly="1" groups="hr_expense.group_hr_expense_user"/>
+            </xpath>
+            <xpath expr="//field[@name='employee_id']" position="after">
+                <field name="vendor_id" domain="[('supplier','=',True)]" attrs="{'invisible': [('is_vendor', '=', False)]}" groups="hr_expense.group_hr_expense_user"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="make_invisible" model="res.groups">
+
+        <field name="name">Invisible</field>
+
+    </record>
+
+    <!-- <menuitem
+        id="hr_holidays.hr_holidays_menu_manager_all"
+        name="All"
+        parent="hr_holidays.menu_hr_holidays_approvals"
+        groups="make_invisible"
+        sequence="2"
+        />
+    <menuitem
+        id="hr_holidays.menu_open_employee_leave"
+        name="Leaves"
+        parent="hr_holidays.hr_holidays_menu_manager_all"
+        groups="make_invisible"
+        action="hr_holidays.hr_leave_action_all"
+        sequence="1"
+        />
+    <menuitem
+        id="hr_holidays.hr_holidays_menu_manager_all_allocations"
+        name="Allocations"
+        parent="hr_holidays.hr_holidays_menu_manager_all"
+        groups="make_invisible"
+        action="hr_holidays.hr_leave_allocation_action_all"
+        sequence="2"
+        /> -->
+    <delete id="hr_holidays.hr_holidays_menu_manager_all_allocations" model="ir.ui.menu"/>
+    <delete id="hr_holidays.menu_open_employee_leave" model="ir.ui.menu"/>
+    <delete id="hr_holidays.hr_holidays_menu_manager_all" model="ir.ui.menu"/>
+
+    <!-- expense changes -->
+    <!-- Leaves Analysis -->
+    <delete
+        id="hr_holidays.menu_hr_available_holidays_report_tree"
+        model="ir.ui.menu"/>
+
+    <record id="view_holiday_tree_analysis" model="ir.ui.view">
+        <field name="name">hr.holidays.report_tree.analysis</field>
+        <field name="model">leave.analysis</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <tree string="Leaves Analysis">
+                <field name="employee_id"/>
+                <field name="holiday_status_id"/>
+                <!-- <field name="number_of_days"/> -->
+                <!-- <field name="the_month"/> -->
+                <field name="total_leave_days"/>
+                <field name="total_allocated_days"/>
+                <field name="pending_leaves"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_holiday_pivot_analysis" model="ir.ui.view">
+        <field name="name">hr.holidays.report_pivot.analysis</field>
+        <field name="model">leave.analysis</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <pivot string="Leaves Summary">
+                <field name="employee_id" type="row"/>
+                <!-- <field name="the_month" type="col"/> -->
+                <field name="total_leave_days" type="measure"/>
+                <field name="total_allocated_days" type="measure"/>
+                <field name="holiday_status_id" />
+                <field name="pending_leaves" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_holiday_graph_analysis" model="ir.ui.view">
+        <field name="name">hr.holidays.report_graph.analysis</field>
+        <field name="model">leave.analysis</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <graph string="Leaves Summary">
+                <field name="employee_id"/>
+                <field name="total_allocated_days" type="measure"/>
+                <field name="total_leave_days" type="measure"/>
+                <field name="pending_leaves" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_hr_leave_analysis_report" model="ir.actions.act_window">
+        <field name="name">Leaves Analysis</field>
+        <field name="res_model">leave.analysis</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,graph,pivot</field>
+        <!-- <field name="context">{'search_default_leaves':1}</field> -->
+    </record>
+
+    <record id="action_window_leave_analysis_graph" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">graph</field>
+        <field name="view_id" ref="view_holiday_graph_analysis"/>
+        <field name="act_window_id" ref="action_hr_leave_analysis_report"/>
+    </record>
+
+    <menuitem
+        name="Leaves Analysis"
+        id="menu_hr_leave_analysis_report_tree"
+        action="action_hr_leave_analysis_report"
+        parent="hr_holidays.menu_hr_holidays_report" sequence="5"/>
+
+
+
+    <!-- Leaves Analysis -->
+
+    <record id="account_move_formCus" model="ir.ui.view">
+        <field name="name">account.move.formCus</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <button name="open_reconcile_view" position="after">
+                <button class="oe_stat_button" name="document_view" type="object" icon="fa-list-ol">
+                    <field string="Documents" name="document_count" widget="statinfo"/>
+                </button>
+            </button>
+            <xpath expr="//field[@name='reverse_entry_id']" position="after">
+                <field name="check_amount"/>
+                <field name="AC_print" widget="ratio" />
+                <field name="partner" />
+                <field name="check_amount_in_words" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='narration']" position="after">
+                <group>
+                    <group>
+                        <field name="prepare"/>
+                        <field name="checked"/>
+                        <field name="verified"/>
+                    </group>
+                    <group>
+                        <field name="received"/>
+                        <field name="approved"/>
+                    </group>
+                </group>       
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_template_kanbanCus" model="ir.ui.view">
+        <field name="name">product.template.kanabanCus</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_kanban_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//ul[1]" position="after">
+                <ul>
+                    <li>Cost: <field name="standard_price" widget="monetary" options="{'currency_field': 'currency_id', 'field_digits': True}"/></li>
+                </ul>
+            </xpath>
+        </field>
+    </record>
+    <!-- <record id="crm_lead_kanbanCus" model="ir.ui.view">
+        <field name="name">crm.lead.kanabanCus</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_kanban_view_leads"/>
+        <field name="arch" type="xml">
+            <xpath expr="//kanban" position="attributes">
+                <attribute name="create">0</attribute>
+            </xpath>
+        </field>
+    </record> -->
+
+    <record id="purchase.purchase_rfq" model="ir.actions.act_window">
+        <field name="name">Requests for Quotation</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">purchase.order</field>
+        <field name="view_mode">tree,kanban,form,pivot,graph,calendar,activity</field>
+        <field name="search_view_id" ref="purchase.view_purchase_order_filter"/>
+        <field name="domain">[('state','not in',('purchase', 'done'))]</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Create a request for quotation
+          </p><p>
+            The quotation contains the history of the discussion
+            you had with your vendor.
+          </p>
+        </field>
+    </record>
+
+    <!-- Assets Tracking-->
+
+    <record id="asset_tracking_form_view" model="ir.ui.view">
+        <field name="name">asset.tracking.form.view</field>
+        <field name="model">asset.tracking</field>
+        <field name="arch" type="xml">
+            <form string="Assets Track">
+            <header>
+                <button name="action_confirm" states="draft" string="Confirm" type="object" class="oe_highlight"/>
+
+                <field name="state" widget="statusbar" statusbar_visible="draft,confirm"/>
+            </header>
+            <sheet>
+                <div class="oe_title oe_left">
+                    <label for="name" class="oe_edit_only"/>
+                    <h3><field name="name"/></h3>
+                </div>
+                <group>
+                    <group>
+                        <field name="asset_name" attrs="{'readonly': [('state','=','confirm')]}"/>
+                        <field name="asset_category"  attrs="{'readonly': [('state','=','confirm')]}"/>
+                        <field name="from_project" attrs="{'readonly': [('state','=','confirm')]}"/>
+                        <field name="to_project" attrs="{'readonly': [('state','=','confirm')]}"/>
+                    </group>
+                    <group>
+                        <field name="transfer_date" attrs="{'readonly': [('state','=','confirm')]}"/>
+                        <field name="asset_responsible" attrs="{'readonly': [('state', '=','confirm')]}"/>
+                        <!-- <field name="ban" invisible="1"/> -->
+
+                    </group>
+                </group>
+                <label for="Remarks" />
+                <field name="Remarks" attrs="{'readonly': [('state','=','confirm')]}"/>
+            </sheet>
+            <div class="oe_chatter">
+                <field name="message_follower_ids" widget="mail_followers"/>
+                <field name="message_ids" widget="mail_thread"/>
+            </div>
+            </form>    
+        </field>
+    </record>
+
+    <record id="asset_tracking_tree_view" model="ir.ui.view">
+        <field name="name">asset.tracking.tree.view</field>
+        <field name="model">asset.tracking</field>
+        <field name="arch" type="xml">
+            <tree string="Assets Track">
+                <field name="name"/>
+                <field name="asset_name"/>
+                <field name="asset_category"/>
+                <field name="transfer_date"/>
+                <field name="asset_responsible"/>
+                <field name="from_project"/>
+                <field name="to_project"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    <record id="asset_tracking_action" model="ir.actions.act_window">
+        <field name="name">Assets Tracking</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">asset.tracking</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+            id="asset_tracking_action_menuitem"
+            name="Assets Tracking"
+            sequence="99"
+            parent="account.menu_finance_entries_management"
+            action="asset_tracking_action"/>
+
+
+    <record id="account_asset_asset_formCus" model="ir.ui.view">
+        <field name="name">account.asset.asset.formCus</field>
+        <field name="model">account.asset.asset</field>
+        <field name="inherit_id" ref="om_account_asset.view_account_asset_asset_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Tracking List">
+                    <field name="tracking_id" readonly="1">
+                        <tree string="Tracking List" create="0" delete="0" editable='bottom'>
+                            <field name="name"/>
+                            <field name="asset_name"/>
+                            <field name="asset_category"/>
+                            <field name="transfer_date"/>
+                            <field name="asset_responsible"/>
+                            <field name="from_project"/>
+                            <field name="to_project"/>
+                            <field name="state"/>
+                        </tree>
+                        <form string="Assets Track">
+                            <header>
+                                <!-- <button name="action_confirm" states="draft" string="Confirm" type="object" class="oe_highlight"/> -->
+                
+                                <field name="state" widget="statusbar" statusbar_visible="draft,confirm"/>
+                            </header>
+                            <sheet>
+                            <div class="oe_title oe_left">
+                                <label for="name" class="oe_edit_only"/>
+                                <h3><field name="name"/></h3>
+                            </div>
+                            <group>
+                                <group>
+                                    <field name="asset_name" />
+                                    <field name="asset_category"  />
+                                    <field name="from_project" />
+                                    <field name="to_project" />
+                                </group>
+                                <group>
+                                    <field name="transfer_date" />
+                                    <field name="asset_responsible" />
+                                    <!-- <field name="ban" invisible="1"/> -->
+            
+                                </group>
+                            </group>
+                            <label for="Remarks" />
+                            <field name="Remarks" />
+                            </sheet>
+                        </form>
+                    </field>
+                </page>      
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Assets Tracking-->
+
+    <!-- document type and cost center masters -->
+
+    <record id="document_type_form_view" model="ir.ui.view">
+        <field name="name">document.type.form.view</field>
+        <field name="model">document.type</field>
+        <field name="arch" type="xml">
+            <form string="Document Type">
+            <sheet>
+                    <label for="name" />
+                    <h2><field name="name"/></h2>
+            </sheet>
+            <div class="oe_chatter">
+                <field name="message_follower_ids" widget="mail_followers"/>
+                <field name="message_ids" widget="mail_thread"/>
+            </div>
+            </form>    
+        </field>
+    </record>
+
+    <record id="document_type_tree_view" model="ir.ui.view">
+        <field name="name">document.type.tree.view</field>
+        <field name="model">document.type</field>
+        <field name="arch" type="xml">
+            <tree string="Document Type">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+    <record id="document_type_action" model="ir.actions.act_window">
+        <field name="name">Document Type</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">document.type</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+            id="document_type_action_menuitem"
+            name="Document Type"
+            sequence="98"
+            parent="hr.menu_human_resources_configuration"
+            action="document_type_action"/>
+
+    <record id="cost_center_form_view" model="ir.ui.view">
+        <field name="name">cost.center.form.view</field>
+        <field name="model">cost.center</field>
+        <field name="arch" type="xml">
+            <form string="Cost Center">
+            <sheet>
+                    <label for="name" />
+                    <h2><field name="name"/></h2>
+            </sheet>
+            <div class="oe_chatter">
+                <field name="message_follower_ids" widget="mail_followers"/>
+                <field name="message_ids" widget="mail_thread"/>
+            </div>
+            </form>    
+        </field>
+    </record>
+
+    <record id="cost_center_tree_view" model="ir.ui.view">
+        <field name="name">cost.center.tree.view</field>
+        <field name="model">cost.center</field>
+        <field name="arch" type="xml">
+            <tree string="Cost Center">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+    <record id="cost_center_action" model="ir.actions.act_window">
+        <field name="name">Cost Center</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cost.center</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+            id="cost_center_action_menuitem"
+            name="Cost Center"
+            sequence="99"
+            parent="hr.menu_human_resources_configuration"
+            action="cost_center_action"/>
+
+
+
+            <record id="source_master_form_view" model="ir.ui.view">
+                <field name="name">source.master.form.view</field>
+                <field name="model">source.master</field>
+                <field name="arch" type="xml">
+                    <form string="Source Master">
+                    <sheet>
+                            <label for="name" />
+                            <h2><field name="name"/></h2>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                    </form>    
+                </field>
+            </record>
+        
+            <record id="source_master_tree_view" model="ir.ui.view">
+                <field name="name">source.master.tree.view</field>
+                <field name="model">source.master</field>
+                <field name="arch" type="xml">
+                    <tree string="Source Master">
+                        <field name="name"/>
+                    </tree>
+                </field>
+            </record>
+            <record id="source_master_action" model="ir.actions.act_window">
+                <field name="name">Source Master</field>
+                <field name="type">ir.actions.act_window</field>
+                <field name="res_model">source.master</field>
+                <field name="view_type">form</field>
+                <field name="view_mode">tree,form</field>
+            </record>
+        
+            <menuitem
+                    id="source_master_action_menuitem"
+                    name="Source Master"
+                    sequence="99"
+                    parent="crm.menu_crm_config_lead"
+                    action="source_master_action"/>
+    
+    <!-- document type and cost center masters -->
+
+</odoo>

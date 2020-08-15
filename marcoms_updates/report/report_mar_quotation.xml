@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="report_mar_quotation_document">
+    <t t-call="marcoms_updates.external_layout_mar_quotation">
+        <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)"/>
+        <div class="page" style="margin-left:25px;font-size:15px;font-family: Calibri;">
+            <style type="text/css">
+                @font-face {
+                  font-family: 'PWSignaturetwo';
+                  font-style: heavy;
+                  font-weight: 400;
+                  src: url(marcoms_updates/static/src/fonts/PWSignaturetwo.ttf) format('truetype');
+                }
+            </style>
+            <div class="oe_structure"/>
+                <span>Date:  <b><span t-field="doc.date_order" t-options-widget="&quot;date&quot;" class="mb6"/></b></span><br/><br/>
+                <span>Ref #:  <b><span t-field="doc.name" class="mb6"/></b></span><br/><br/>
+                <b><span>To:  <span t-field="doc.partner_id.name" class="mb6"/></span></b><br/>
+                <t t-if="doc.partner_id.street">&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;<b><span t-field="doc.partner_id.street" style="white-space: nowrap;"/><br/></b></t>
+                <t t-if="doc.partner_id.phone">&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;<b><span style="white-space: nowrap;"><span t-field="doc.partner_id.phone" style="white-space: nowrap;"/></span></b><br/></t>
+                <t t-if="doc.partner_id.vat">&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;<b><span style="white-space: nowrap;">TRN: <span t-field="doc.partner_id.vat"/></span></b><br/></t>
+                <t t-if="doc.partner_id.city or doc.partner_id.country_id">&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;<b><t t-if="doc.partner_id.city"><span t-field="doc.partner_id.city"/></t>&amp;nbsp;<t t-if="doc.partner_id.country_id">,&amp;nbsp;<span t-field="doc.partner_id.country_id"/></t></b></t><br/><br/>
+                <h5 class="text-center" style="white-space: nowrap;"><b><u>Quotation for the supply of <span t-field="doc.pro_show"/></u></b></h5><br/><br/><br/>
+
+                <p t-field="doc.message"/><br/><br/>
+
+                <t t-if="doc.state == 'sent' or doc.state == 'sale'">
+                    
+                    <!--<b><span t-field="doc.sign_man" style="font-family:PWSignaturetwo;font-size:40px;white-space: nowrap;"/></b><br/>-->
+                    <b><span t-field="doc.sign_man" class="mb6"/></b><br/>
+                    <b><span t-field="doc.sign_man.job_title" class="mb6"/></b><br/>
+                </t>
+            <div class="oe_structure"/>
+        </div>
+        <!-- new page -->
+        <p style="page-break-after:always"/>
+        <div class="page" style="margin-left:25px;font-size:15px;font-family: Calibri;">
+            <div class="oe_structure"/>
+                <h5 class="text-center" style="white-space: nowrap;"><b><u>Quotation for the supply of <span t-field="doc.pro_show"/></u></b></h5><br/><br/>
+                
+                <div style="width: 95%;height: 250px;padding:10px;border: 1px solid black;">
+                  <div style="float:left;">
+                    <span>Ref #:  <b><span t-field="doc.name" class="mb6"/></b></span><br/>
+                    <span>Tax ID:  <b><span t-field="res_company.vat" class="mb6"/></b></span><br/><br/>
+                    <b><span>From:</span></b><br/>
+                    <b><span t-field="res_company.name" style="color:red;" class="mb6"/></b>
+                  </div>
+                  <div style="margin-left:53%;">
+                    <b><span>Quotation Date:  <span t-field="doc.date_order" t-options-widget="&quot;date&quot;" class="mb6"/></span></b><br/><br/><br/><br/>
+                    <p>
+                        Tel : <span t-field="doc.sign_man.work_phone" class="mb6"/><br/>
+                        Fax : <span t-field="doc.sign_man.fax_ch" class="mb6"/><br/>
+                        Mob : <span t-field="doc.sign_man.mobile_phone" class="mb6"/><br/>
+                        e‐mail :<span t-field="doc.sign_man.work_email" class="mb6"/>
+                    </p>
+                  </div>
+                </div><br/>
+                <div class="mt0" style="width: 95%;height: 530px;padding:10px;border: 1px solid black;">
+                    <b><span>To:  <span t-field="doc.partner_id.name" class="mb6"/></span></b><br/><br/><br/>
+                    <b><span>Commercial Details:</span></b><br/>
+                    <!--<b><span>Quotation value of the stand elements without Venue or</span></b><br/>-->
+                    <!--<b><span>optional elements OR VAT :<span t-field="doc.amount_untaxed" class="mb6"/> <span t-field="doc.pricelist_id.currency_id" class="mb6"/> </span></b><br/><br/>-->
+                    <!-- <b><span>Price after discount stand elements without Venue or</span></b><br/> -->
+                    <!-- <b><span>optional elements OR VAT: <span t-field="doc.amount_untaxed" class="mb6"/></span></b><br/><br/> -->
+                    <!--<b><span>Venue charges and Optional Elements for client selection:</span></b><br/>-->
+                    <!--<b><span><span t-field="doc.optional_total" class="mb6"/> <span t-field="doc.pricelist_id.currency_id" class="mb6"/></span></b><br/><br/>-->
+                    <!--<b><span>Total Quotation Value: <span t-field="doc.amount_untaxed" class="mb6"/> </span></b><br/><br/>-->
+                    <!--<b><span>5% VAT:  <span t-field="doc.amount_tax" class="mb6"/> </span></b><br/><br/>-->
+                    <!--<b><span>Total Quotation Value including 5% VAT:  <span t-field="doc.amount_total" class="mb6"/> </span></b><br/><br/>-->
+                    <!--<b><span>Marcoms VAT No :  <span t-field="res_company.vat" class="mb6"/> </span></b><br/><br/>-->
+                    <t t-set="gross" t-value="0"/>
+                    <t t-set="gross_op" t-value="0"/>
+                    <t t-set="gross_venue" t-value="0"/>
+                    <table style="border-collapse: collapse;border: 1px solid black;width: 100%;">
+                        <tr style="background-color:#cccccc;">
+                            <!-- TODO: remove in master -->
+                            <t t-set="colspan" t-value="5"/>
+                            <th class="text-center" style="width:30%;"/>
+                            <t t-if="doc.discount_value">
+                            <th class="text-center" style="width:10%">Gross Amount</th>
+                            <th class="text-center" style="width:10%">Discount Amount</th>
+                            </t>
+                            <th class="text-center" style="width:15%;">Net</th>
+                            <th class="text-center" style="width:15%">VAT</th>
+                            <th class="text-center" style="width:15%">Net + VAT</th>
+                        </tr>
+                        <tbody>
+                            <tr>
+                                <td class="text-left" style="width:30%;border-bottom: 1px solid black;background-color:#cccccc;">
+                                    <b><span t-esc="doc.normal_total_name"/></b>
+                                </td>
+                                <t t-if="doc.discount_value">
+                                <t t-set="gross" t-value="doc.amount_untaxed + doc.discount_value"/>
+                                <td class="text-right" style="border: 1px solid black;width:10%;"><span t-esc="gross" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></td>
+                                <td class="text-right" style="border: 1px solid black;width:10%;"><span t-esc="doc.discount_value" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></td>
+                                </t>
+                                <td class="text-right" style="border: 1px solid black;width:15%;">
+                                    <!--<t t-set="Net1" t-value="doc.amount_untaxed - doc.ks_amount_discount"/>-->
+                                    <span t-esc="doc.amount_untaxed" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
+                                </td>
+                                <td class="text-right" style="border: 1px solid black;width:15%;">
+                                    <span t-esc="doc.amount_tax" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
+                                </td>
+                                <td class="text-right" style="border: 1px solid black;width:15%;">
+                                    <!--<t t-set="Netvat1" t-value="doc.amount_tax + Net1"/>-->
+                                    <span t-esc="doc.amount_total" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
+                                </td>
+                            </tr>
+                            <t t-if="doc.sale_order_option_ids">
+                                <tr>
+                                    <td class="text-left" style="width:30%;border-bottom: 1px solid black;background-color:#cccccc;">
+                                        <b><span t-esc="doc.optional_total_name"/></b>
+                                    </td>
+                                    <t t-if="doc.discount_value_op">
+                                    <t t-set="gross_op" t-value="doc.amount_untaxed_optional + doc.discount_value_op"/>
+                                    <td class="text-right" style="border: 1px solid black;width:10%;"><span t-esc="gross_op" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></td>
+                                
+                                    <td class="text-right" style="border: 1px solid black;width:10%;"><span t-esc="doc.discount_value_op" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></td>
+                                    </t>
+                                    <td class="text-right" style="border: 1px solid black;width:15%;">
+                                        <span t-esc="doc.amount_untaxed_optional" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
+                                    </td>
+                                    <td class="text-right" style="border: 1px solid black;width:15%;">
+                                        <span t-esc="doc.amount_tax_optional" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
+                                    </td>
+                                    <td class="text-right" style="border: 1px solid black;width:15%;">
+                                        <span t-esc="doc.amount_total_optional" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
+                                    </td>
+                                </tr>
+                            </t>
+                            <t t-if="doc.sale_order_venue_ids">
+                                <tr>
+                                    <td class="text-left" style="width:30%;border-bottom: 1px solid black;background-color:#cccccc;">
+                                        <b><span t-esc="doc.venue_total_name"/></b>
+                                    </td>
+                                    <t t-if="doc.discount_value_venue">
+                                      <t t-set="gross_venue" t-value="doc.amount_untaxed_venue + doc.discount_value_venue"/>
+                                    <td class="text-right" style="border: 1px solid black;width:10%;"><span t-esc="gross_venue" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></td>
+                                
+                                    <td class="text-right" style="border: 1px solid black;width:10%;"><span t-esc="doc.discount_value_venue" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></td>
+                                    </t>
+                                    <td class="text-right" style="border: 1px solid black;width:15%;">
+                                        <span t-esc="doc.amount_untaxed_venue" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
+                                    </td>
+                                    <td class="text-right" style="border: 1px solid black;width:15%;">
+                                        <span t-esc="doc.amount_tax_venue" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
+                                    </td>
+                                    <td class="text-right" style="border: 1px solid black;width:15%;">
+                                        <span t-esc="doc.amount_total_venue" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                    
+                  </div>
+                  
+
+                
+            <div class="oe_structure"/>
+        </div>
+        <!-- new page -->
+        <p style="page-break-after:always"/>
+        <div class="page" style="margin-left:25px;font-size:15px;font-family: Calibri;">
+            <div class="oe_structure"/>
+            <div class="m-0">
+              <t t-if="doc.image_product">
+                <img t-attf-src="data:image/*;base64,{{doc.image_product}}" style="width:65%;height:300px;margin-left:130px;"/>
+              </t>
+            </div>
+            <t t-set="display_discount" t-value="any([l.discount for l in doc.order_line])"/>
+            <t t-set="img_test" t-value="0"/>
+            <t t-foreach="doc.order_line" t-as="line">
+              <t t-if="line.image_pro" ><t t-set="img_test" t-value="1"/></t>
+              </t>
+            <t t-if="img_test == 1">
+            <t t-foreach="doc.sale_order_option_ids" t-as="line">
+              <t t-if="line.image_pro" ><t t-set="img_test" t-value="1"/></t>
+              </t>
+            <t t-foreach="doc.sale_order_venue_ids" t-as="line">
+              <t t-if="line.image_pro" ><t t-set="img_test" t-value="1"/></t>
+              </t>
+              </t>
+            <table style="border-collapse: collapse;border: 1px solid black;width: 100%;">
+                <br/><br/>
+                <thead class="mt-4">
+                  
+                    <tr style="background-color:#cccccc;">
+                        <!-- TODO: remove in master -->
+                        <t t-set="colspan" t-value="5"/>
+                        <th class="text-center" style="border: 1px solid black;width:3%;color:black;font-size:15px;">Sr.</th>
+                        <th class="text-center" style="border: 1px solid black;width:13%;color:black;font-size:15px;">Item</th>
+                        <th class="text-center" style="border: 1px solid black;width:35%;color:black;font-size:15px;">Description and Details</th>
+                        <t t-if="img_test == 1"><th class="text-center" style="border: 1px solid black;width:17%;color:black;font-size:15px;">Image</th></t>
+                        <th class="text-center" style="border: 1px solid black;width:12%;color:black;font-size:15px;">Qty</th>
+                        <th class="text-center" style="border: 1px solid black;width:10%;color:black;font-size:15px;">Price per unit</th>
+                        <!--<th t-if="display_discount" class="text-center" groups="sale.group_discount_per_so_line">-->
+                        <!--    <span>Disc.(%)</span>-->
+                            <!-- TODO: remove in master -->
+                        <!--    <t t-set="colspan" t-value="colspan+1"/>-->
+                        <!--</th>-->
+                        <!--<th class="text-center">Taxes</th>-->
+                        <th class="text-center" style="border: 1px solid black;width:10%;color:black;font-size:15px;">
+                            <t groups="account.group_show_line_subtotals_tax_excluded">Total Amount</t>
+                            <t groups="account.group_show_line_subtotals_tax_included">Total Amount</t>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="sale_tbody">
+                    <t t-set="sec_name" t-value="' '"/>
+                    <t t-set="current_subtotal" t-value="0"/>
+                      <t t-set="i" t-value="1"/>
+                        <!--<tr>-->
+                        <!--    <t t-if="doc.image_product">-->
+                        <!--    <td colspan="7" style="border: 1px solid black;">-->
+                        <!--        <img t-attf-src="data:image/*;base64,{{doc.image_product}}" style="width:100%;height:500px;padding:10px;"/>-->
+                        <!--    </td>-->
+                        <!--    </t>-->
+                        <!--</tr>-->
+                    <t t-set="totalsnor" t-value="0.0"/>
+                    <t t-foreach="doc.order_line" t-as="line">
+                        <t t-if="line.is_discount != True">
+                        <t t-set="current_subtotal" t-value="current_subtotal + line.price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>
+                        <t t-set="current_subtotal" t-value="current_subtotal + line.price_total" groups="account.group_show_line_subtotals_tax_included"/>
+                        
+                        <tr t-att-class="'bg-200 font-weight-bold o_line_section' if line.display_type == 'line_section' else 'font-italic o_line_note' if line.display_type == 'line_note' else ''">
+                            <t t-if="not line.display_type">
+                                <td class="text-center" style="border: 1px solid black;width:3%;vertical-align: top;">
+                                    <span t-esc="i"/>
+                                </td>
+                                <td class="text-left" style="border: 1px solid black;width:13%;vertical-align: top;">
+                                    <span t-field="line.product_name"/><br/>
+                                </td>
+                                <td class="text-left" style="border: 1px solid black;width:35%;vertical-align: top;"><span t-field="line.name"/></td>
+                                <t t-if="img_test == 1"><td style="border: 1px solid black;width:17%;">
+                                    <t t-if="line.image_pro"><img t-attf-src="data:image/*;base64,{{line.image_pro}}" style="width:100%;height:100px"/></t>
+                                </td></t>
+                                <td class="text-left" style="border: 1px solid black;width:12%;vertical-align: top;">
+                                    <t t-esc="line.product_uom_qty" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:3}"/>
+                                    <span t-field="line.product_uom" groups="uom.group_uom"/>
+                                </td>
+                                <td class="text-right" style="border: 1px solid black;width:10%;vertical-align: top;">
+                                    <span t-field="line.price_unit"/>
+                                </td>
+                                <!--<td t-if="display_discount" class="text-right" groups="sale.group_discount_per_so_line">-->
+                                <!--    <span t-field="line.discount"/>-->
+                                <!--</td>-->
+                                <!--<td class="text-right">-->
+                                <!--    <span t-esc="', '.join(map(lambda x: (x.description or x.name), line.tax_id))"/>-->
+                                <!--</td>-->
+                                <td class="text-right o_price_total" style="border: 1px solid black;width:10%;vertical-align: top;">
+                                    <span t-field="line.price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>
+                                    <span t-field="line.price_total" groups="account.group_show_line_subtotals_tax_included"/>
+                                </td>
+                            </t>
+                            <t t-if="line.display_type == 'line_section'">
+                              <t t-set="i" t-value="i-1"/>
+                                <td colspan="3" class="text-center" style="border-left: 1px solid black;font-size:20px;vertical-align: top;">
+                                    <span t-field="line.name"/>
+                                </td>
+                                <td colspan="4" class="text-center" style="border-right: 1px solid black;vertical-align: top;">
+                                    <t t-if="line.image_pro"><img t-attf-src="data:image/*;base64,{{line.image_pro}}" style="width:90%;height:200px;margin-left:10px;"/></t>
+                                </td>
+                                <t t-set="current_section" t-value="line"/>
+                                <t t-set="sec_name" t-value="line.name"/>
+                                <t t-set="current_subtotal" t-value="0"/>
+                            </t>
+                            <t t-if="line.display_type == 'line_note'">
+                                <t t-set="i" t-value="i-1"/>
+                                <td colspan="99" style="border: 1px solid black;vertical-align: top;">
+                                    <span t-field="line.name"/>
+                                </td>
+                            </t>
+                            <t t-set="i" t-value="i+1"/>
+                        </tr>
+                        <t t-set="totalsnor" t-value="totalsnor + line.price_subtotal"/>
+                        <!-- <t t-if="line.display_type == 'line_section'">
+                            <tr>
+                              <td colspan="99" style="border: 1px solid black;">
+                                  <t t-if="line.image_pro"><img t-attf-src="data:image/*;base64,{{line.image_pro}}" style="width:55%;height:250px;margin-left:140px;"/></t>
+                              </td>
+                            </tr>
+                        </t> -->
+                        </t>
+                        <t t-if="doc.sec_subtotal == True">
+                            <t t-if="current_section and (line_last or doc.order_line[line_index+1].display_type == 'line_section')">
+                                <tr class="is-subtotal text-right">
+                                    <td colspan="99" style="border: 1px solid black;">
+                                        <span t-esc="sec_name" style="margin-right:100px"/>
+                                        <strong class="mr16">Subtotal</strong>
+                                        <span t-esc="current_subtotal" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.pricelist_id.currency_id}"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </t>
+                        
+                    </t>
+                    <tr>
+                        <td class="text-left" colspan="99" style="border: 1px solid black;font-size:18px;">
+                            <!--<t t-set="totalsven" t-value="doc.amount_untaxed_venue - doc.discount_value_venue"/>-->
+                            <b><span><span t-esc="doc.normal_total_name"/>:<span t-esc="totalsnor" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/> <span t-field="doc.pricelist_id.currency_id"/></span></b>
+                        </td>
+                    </tr>
+                    <t t-set="totals" t-value="0.0"/>
+                    <t t-set="totalsven" t-value="0.0"/>
+                    <t t-if="doc.sale_order_option_ids">
+                        <tr>
+                        <td class="text-center" colspan="7" style="border: 1px solid black;font-size:18px;">
+                          <b><span><span t-esc="doc.optional_total_name"/></span></b>
+                        </td>
+                      </tr>
+                      
+                      <t t-foreach="doc.sale_order_option_ids" t-as="l">
+                        <t t-if="l.is_discount != True">
+                        <tr>
+                                  <td class="text-center" style="border: 1px solid black;width:3%;">
+                                      <span t-esc="i"/>
+                                  </td>
+                                  <td style="border: 1px solid black;width:13%;">
+                                      <span t-field="l.product_name"/><br/>
+                                  </td>
+                                  <td style="border: 1px solid black;width:40%;"><span t-field="l.name"/></td>
+                                  <t t-if="img_test == 1"><td style="border: 1px solid black;width:17%;">
+                                    <t t-if="l.image_pro"><img t-attf-src="data:image/*;base64,{{l.image_pro}}" style="width:100%;height:100px"/></t>
+                                  </td></t>
+                                  <td class="text-right" style="border: 1px solid black;width:7%;">
+                                      <t t-esc="l.quantity" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:3}"/>
+                                      <span t-field="l.uom_id" groups="uom.group_uom"/>
+                                  </td>
+                                  <td class="text-right" style="border: 1px solid black;width:10%;">
+                                      <span t-field="l.price_unit"/>
+                                  </td>
+                                  <td class="text-right o_price_total" style="border: 1px solid black;width:10%;">
+                                      <span t-field="l.price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>
+                                  </td>
+                              <t t-set="i" t-value="i+1"/>
+                          </tr>
+                          <t t-set="totals" t-value="totals + l.price_subtotal"/>
+                          </t>
+                      </t>
+                      <tr>
+                        <td class="text-left" colspan="7" style="border: 1px solid black;font-size:18px;">
+                            <!--<t t-set="totals" t-value="doc.amount_untaxed_optional - doc.discount_value_op"/>-->
+                              <b><span><span t-esc="doc.optional_total_name"/>:<span t-esc="totals" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/> <span t-field="doc.pricelist_id.currency_id"/></span></b>
+                        </td>
+                      </tr>
+                      </t>
+                      
+                    <t t-if="doc.sale_order_venue_ids">
+                      <tr>
+                        <td class="text-center" colspan="7" style="border: 1px solid black;font-size:18px;">
+                          <b><span><span t-esc="doc.venue_total_name"/></span></b>
+                        </td>
+                      </tr>
+                      
+                      <t t-foreach="doc.sale_order_venue_ids" t-as="li">
+                        <t t-if="li.is_discount != True">
+                        <tr>
+                                  <td class="text-center" style="border: 1px solid black;width:3%;">
+                                      <span t-esc="i"/>
+                                  </td>
+                                  <td style="border: 1px solid black;width:13%;">
+                                      <span t-field="li.product_name"/><br/>
+                                  </td>
+                                  <td style="border: 1px solid black;width:40%;"><span t-field="li.name"/></td>
+                                  <t t-if="img_test == 1"><td style="border: 1px solid black;width:17%;">
+                                    <t t-if="li.image_pro"><img t-attf-src="data:image/*;base64,{{li.image_pro}}" style="width:100%;height:100px"/></t>
+                                  </td></t>
+                                  <td class="text-right" style="border: 1px solid black;width:7%;">
+                                      <t t-esc="li.quantity" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:3}"/>
+                                      <span t-field="li.uom_id" groups="uom.group_uom"/>
+                                  </td>
+                                  <td class="text-right" style="border: 1px solid black;width:10%;">
+                                      <span t-field="li.price_unit"/>
+                                  </td>
+                                  <td class="text-right o_price_total" style="border: 1px solid black;width:10%;">
+                                      <span t-field="li.price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>
+                                  </td>
+                              <t t-set="i" t-value="i+1"/>
+                          </tr>
+                          <t t-set="totalsven" t-value="totalsven + li.price_subtotal"/>
+                          </t>
+                      </t>
+                      <tr>
+                        <td class="text-left" colspan="7" style="border: 1px solid black;font-size:18px;">
+                            <!--<t t-set="totalsven" t-value="doc.amount_untaxed_venue - doc.discount_value_venue"/>-->
+                              <b><span><span t-esc="doc.venue_total_name"/>:<span t-esc="totalsven" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/> <span t-field="doc.pricelist_id.currency_id"/></span></b>
+                        </td>
+                      </tr>
+                      
+                    </t>
+                </tbody>
+            </table>
+            <p style="page-break-after:always"/>
+            <br/><br/>
+            <table style="border-collapse: collapse;border: 1px solid black;width: 100%;">
+                        <tr style="background-color:#cccccc;">
+                            <!-- TODO: remove in master -->
+                            <t t-set="colspan" t-value="5"/>
+                            <th class="text-center" style="width:30%;"/>
+                            <t t-if="doc.discount_value">
+                            <th class="text-center" style="width:10%">Gross Amount</th>
+                            <th class="text-center" style="width:10%">Discount Amount</th>
+                            </t>
+                            <th class="text-center" style="width:15%;">Net</th>
+                            <th class="text-center" style="width:15%">VAT</th>
+                            <th class="text-center" style="width:15%">Net + VAT</th>
+                        </tr>
+                        <tbody>
+                            <tr>
+                                <td class="text-left" style="width:30%;border-bottom: 1px solid black;background-color:#cccccc;">
+                                    <b><span t-esc="doc.normal_total_name"/></b>
+                                </td>
+                                <t t-if="doc.discount_value">
+                                <td class="text-right" style="border: 1px solid black;width:10%;"><span t-esc="gross" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></td>
+                                
+                                <td class="text-right" style="border: 1px solid black;width:10%;"><span t-esc="doc.discount_value" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></td>
+                                </t>
+                                <td class="text-right" style="border: 1px solid black;width:15%;">
+                                    <!--<t t-set="Net1" t-value="doc.amount_untaxed - doc.ks_amount_discount"/>-->
+                                    <span t-esc="doc.amount_untaxed" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
+                                </td>
+                                <td class="text-right" style="border: 1px solid black;width:15%;">
+                                    <span t-esc="doc.amount_tax" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
+                                </td>
+                                <td class="text-right" style="border: 1px solid black;width:15%;">
+                                    <!--<t t-set="Netvat1" t-value="doc.amount_tax + Net1"/>-->
+                                    <span t-esc="doc.amount_total" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
+                                </td>
+                            </tr>
+                            <t t-if="doc.sale_order_option_ids">
+                                <tr>
+                                    <td class="text-left" style="width:30%;border-bottom: 1px solid black;background-color:#cccccc;">
+                                        <b><span t-esc="doc.optional_total_name"/></b>
+                                    </td>
+                                    <t t-if="doc.discount_value_op">
+                                    <td class="text-right" style="border: 1px solid black;width:10%;"><span t-esc="gross_op" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></td>
+                                
+                                    <td class="text-right" style="border: 1px solid black;width:10%;"><span t-esc="doc.discount_value_op" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></td>
+                                    </t>
+                                    <td class="text-right" style="border: 1px solid black;width:15%;">
+                                        <span t-esc="doc.amount_untaxed_optional" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
+                                    </td>
+                                    <td class="text-right" style="border: 1px solid black;width:15%;">
+                                        <span t-esc="doc.amount_tax_optional" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
+                                    </td>
+                                    <td class="text-right" style="border: 1px solid black;width:15%;">
+                                        <span t-esc="doc.amount_total_optional" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
+                                    </td>
+                                </tr>
+                            </t>
+                            <t t-if="doc.sale_order_venue_ids">
+                                <tr>
+                                    <td class="text-left" style="width:30%;border-bottom: 1px solid black;background-color:#cccccc;">
+                                        <b><span t-esc="doc.venue_total_name"/></b>
+                                    </td>
+                                    <t t-if="doc.discount_value_venue">
+                                    <td class="text-right" style="border: 1px solid black;width:10%;"><span t-esc="gross_venue" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></td>
+                                
+                                    <td class="text-right" style="border: 1px solid black;width:10%;"><span t-esc="doc.discount_value_venue" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></td>
+                                    </t>
+                                    <td class="text-right" style="border: 1px solid black;width:15%;">
+                                        <span t-esc="doc.amount_untaxed_venue" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
+                                    </td>
+                                    <td class="text-right" style="border: 1px solid black;width:15%;">
+                                        <span t-esc="doc.amount_tax_venue" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
+                                    </td>
+                                    <td class="text-right" style="border: 1px solid black;width:15%;">
+                                        <span t-esc="doc.amount_total_venue" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+            <p style="page-break-after:always"/>
+            <p t-field="doc.note"/>
+            <div class="oe_structure"/>
+        </div>
+        <div class="footer ">
+            <div class="oe_structure"/>
+              <div class="row mt8">
+                  <div class="col-4" style="margin-left:30px;">
+                    <br/>
+                      <b><span style="white-space: nowrap;color:red;">Signed by Client’s Representative:_______</span></b>
+                      
+                  </div>
+                  <div class="col-5 text-right">
+                    <br/>
+                    <b><span style="white-space: nowrap;color:red;">Signed by MARCOM’s Representative:</span></b><t t-if="doc.state == 'sent' or doc.state == 'sale'"><img src="/marcoms_updates/static/img/stamp.png" style="margin-top:-52px;margin-left:100%;width:180px; height:157px;"/></t>
+                  </div>
+                  <div class="col-2">
+                    <br/>
+                      <ul t-if="report_type == 'pdf'" class="list-inline pagenumber float-right text-center" style="margin-bottom:10px;">
+                          <li class="list-inline-item"><strong><span class="page"/></strong></li>
+                      </ul>
+                  </div>
+              </div>
+              
+              <div class="oe_structure"/>
+          </div>
+    </t>
+</template>
+
+
+<template id="report_mar_quotation">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="doc">
+            <t t-call="marcoms_updates.report_mar_quotation_document" t-lang="doc.partner_id.lang"/>
+        </t>
+    </t>
+</template>
+</odoo>

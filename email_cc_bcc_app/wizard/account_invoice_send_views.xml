@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record model="ir.ui.view" id="inherit_account_invoice_send_wizard_form">
+        <field name="name">inherit.account.invoice.send.form</field>
+        <field name="model">account.invoice.send</field>
+        <field name="inherit_id" ref="account.account_invoice_send_wizard_form"/>
+        <field name="arch" type="xml">
+            <field name="subject" position="after">
+                <field name="cc_visible" invisible="1"/>
+                <field name="bcc_visible" invisible="1"/>
+                <field name="partner_cc_ids" placeholder="Add CC contacts to notify..." widget="many2many_tags_email"
+                        attrs="{'invisible': [('cc_visible','=',False)]}" context="{'force_email':True, 'show_email':True}"/>
+                <field name="partner_bcc_ids" placeholder="Add BCC contacts to notify..." widget="many2many_tags_email"
+                        attrs="{'invisible': [('bcc_visible','=',False)]}" context="{'force_email':True, 'show_email':True}"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

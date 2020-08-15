@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<odoo>
+
+        <record id="add_qty_purchase_form" model="ir.ui.view">
+            <field name="name">add.qty.purchase.form</field>
+            <field name="model">add.qty.purchase</field>
+            <field name="arch" type="xml">
+                <form string="Transfer Remark">
+                    <p class="oe_grey">
+                        
+                    </p>
+                    <group>
+                        <field name="qty"/>
+                        
+                    </group>
+                    <footer>
+						<button name="action_add_qty" string="Change Quantity" type="object" class="btn-primary"/>
+						<button string="Cancel" class="btn-default" special="cancel"/>
+					</footer>		
+				</form>
+            </field>
+        </record>
+
+        <record id="add_next_stage_form" model="ir.ui.view">
+            <field name="name">add.qty.purchase.form</field>
+            <field name="model">add.qty.purchase</field>
+            <field name="arch" type="xml">
+                <form string="Transfer Remark">
+                    <p class="oe_grey">
+                        Move to Quoting Stage!
+                    </p>
+                    <footer>
+						<button name="next_stage_6" string="Yes" type="object" class="btn-primary"/>
+						<button string="Cancel" class="btn-default" special="cancel"/>
+					</footer>		
+				</form>
+            </field>
+        </record>
+
+        <record id="add_qty_purchase_action" model="ir.actions.act_window">
+            <field name="name">Update Qty</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">add.qty.purchase</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="add_qty_purchase_form"/>
+            <field name="target">new</field>
+        </record>
+
+</odoo>

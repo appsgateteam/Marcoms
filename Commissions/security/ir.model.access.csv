@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_team_commission_manager,team.commission,model_team_commission,base.group_user,1,1,1,1
+access_employee_commission_manager,employee.commission,model_employee_commission,base.group_user,1,1,1,1
+access_commission_evaluation_manager,commission.evaluation,model_commission_evaluation,base.group_user,1,1,1,1
+access_commission_lines_manager,commission.lines,model_commission_lines,base.group_user,1,1,1,1

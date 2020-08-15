@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<openerp>
+    <data>
+        <template id="tis_web_arabic.layout" inherit_id="web.layout" name="RTL Layout">
+            <xpath expr="//html/head/t" position="after">
+                <link t-if="lang_direction == 'rtl'" href="/tis_web_arabic/static/src/css/bootstrap-rtl.min.css" rel="stylesheet"/>
+                <link t-if="lang_direction == 'rtl'" href="/tis_web_arabic/static/src/css/arabic.css" rel="stylesheet"/>
+            </xpath>
+            <xpath expr="//html" position="before">
+                <t t-set="body_classname" t-value="lang_direction + ' ' + (body_classname or '')"/>
+            </xpath>
+        </template>
+    </data>
+</openerp>

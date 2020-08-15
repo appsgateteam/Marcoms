@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<odoo>
+        <record id="petty_cash_wizard_view_form" model="ir.ui.view">
+            <field name="name">petty.cash.wizard.view.form</field>
+            <field name="model">petty.cash.report</field>
+            <field name="arch" type="xml">
+                <form string="Select Date">
+                    <group class="oe_title">
+
+                        <field name="date_start"/>
+                        <field name="date_end"/>
+
+                    </group>
+                    <footer>
+                        <button name="get_report" string="Get Report" type="object" class="oe_highlight"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+        
+
+        <record id="petty_cash_wizard" model="ir.actions.act_window">
+            <field name="name">Petty Cash</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">petty.cash.report</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="petty_cash_wizard_view_form"/>
+            <field name="target">new</field>
+        </record>
+</odoo>

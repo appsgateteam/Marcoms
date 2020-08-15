@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+
+	<record id="employee_leave_report" model="ir.ui.view">
+		<field name="name">employee.leave.report.form</field>
+		<field name="model">employee.leave.report</field>
+		<field name="arch" type="xml">
+			<form string="Export Employee Leaves">
+				<group>
+					<field name="date" required="1"/>
+					<field name="employee_id"/>
+				</group>
+				<footer>
+					<button string="Generate" class="btn-primary" name="generate" type="object" />
+					<button string="Cancel" class="btn-primary" special="cancel"/>
+				</footer>
+			</form>
+		</field>
+	</record>	
+	<record id="wizard_employee_leave_action_report" model="ir.actions.act_window">
+        <field name="name">Employee Leave Report</field>
+        <field name="res_model">employee.leave.report</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="employee_leave_report"/>
+        <field name="target">new</field>
+    </record>
+ 
+    <menuitem action="wizard_employee_leave_action_report" id="menu_employee_reporting_leave_excel" parent="marcoms_updates.payroll_reporting_config"/>
+		
+
+</odoo>

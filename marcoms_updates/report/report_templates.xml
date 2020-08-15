@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Assets for reports -->
+
+    <template id="web.report_assets_common">
+        <link rel="stylesheet" type="text/scss" href="/web/static/src/scss/layout_clean.scss"/>
+    </template>
+
+    <!-- Private templates used internally by reports -->
+    <template id="external_layout_mar_quotation">
+        <div class="header">
+            <div class="">
+            <div class="row">
+                <div class="col-6">
+                    <img t-if="res_company.logo" t-att-src="image_data_uri(res_company.logo)" alt="Logo" style="width:350px; height:200px;"/>
+                </div>
+                <div class="col-5 offset-1" name="company_address">
+                    
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div class="article o_report_layout_clean" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')">
+            <t t-call="web.address_layout"/>
+            <t t-raw="0"/>
+        </div>
+
+        <!-- <div class="footer ">
+            <div class="row mt8">
+                <div class="col-5" style="margin-left:30px;">
+                    <b><span style="white-space: nowrap;color:red;">Signed by Client’s Representative:____________</span></b>
+                    
+                </div>
+                <div class="col-5 text-right">
+                  <b><span style="white-space: nowrap;color:red;">Signed by MARCOM’s Representative:___________</span></b>
+                </div>
+                <div class="col-1">
+                    <ul t-if="report_type == 'pdf'" class="list-inline pagenumber float-right text-center">
+                        <li class="list-inline-item"><strong><span class="page"/></strong></li>
+                    </ul>
+                </div>
+            </div>
+        </div> -->
+    </template>
+
+    <template id="external_layout_mar_quotation_landscape">
+        <div class="header">
+            <div class="">
+            <div class="row">
+                <div class="col-6">
+                    <img t-if="res_company.logo" t-att-src="image_data_uri(res_company.logo)" alt="Logo" style="width:350px; height:200px;"/>
+                </div>
+                <div class="col-5 offset-1" name="company_address">
+                    
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div class="article o_report_layout_clean" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')">
+            <t t-call="web.address_layout"/>
+            <t t-raw="0"/>
+        </div>
+
+        <div class="footer ">
+            <div class="row mt8">
+                <!-- <div class="col-5" style="margin-left:30px;">
+                    <b><span style="white-space: nowrap;color:red;">Signed by Client’s Representative:____________</span></b>
+                    
+                </div> -->
+                <div class="col-10 text-left" style="margin-left:30px;">
+                  <b><span t-field="res_company.date_today" /></b>
+                </div> 
+                <div class="col-1" >
+                    <ul t-if="report_type == 'pdf'" class="list-inline pagenumber float-right text-center">
+                        <li class="list-inline-item"><strong><span class="page"/></strong></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="external_layout_boxed_po">
+        <div class="header">
+            <div class="">
+            <div class="row">
+                <div class="col-8">
+                    <img t-if="res_company.logo" t-att-src="image_data_uri(res_company.logo)" alt="Logo" style="width:350px; height:200px;"/>
+                </div>
+                <div class="col-6 text-left mb4" style="font-size:17px;">
+                    <h4 class="mt0" t-field="res_company.report_header"/>
+                    <div name="company_address" class="mb4">
+                        <span class="company_address" style="color:black;" t-field="res_company.partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;], &quot;no_marker&quot;: true}"/>
+                        <div t-if="res_company.vat" style="color:black;" class="mt16">TRN No: <span t-field="res_company.vat" style="color:black;"/></div>
+                  
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div class="article o_report_layout_boxed" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')">
+            <t t-call="web.address_layout"/>
+            <t t-raw="0"/>
+        </div>
+
+        <div class="footer">
+            <!--<div class="text-center">-->
+            <!--    <ul class="list-inline">-->
+            <!--        <li t-if="company.phone" class="list-inline-item">Tel: <span t-field="company.phone"/></li>-->
+            <!--        <li t-if="company.email" class="list-inline-item">Mail: <span t-field="company.email"/></li>-->
+            <!--        <li t-if="company.website" class="list-inline-item">Web: <span t-field="company.website"/></li>-->
+            <!--        <li t-if="company.vat" class="list-inline-item"><t t-esc="company.country_id.vat_label or 'Tax ID'"/>: <span t-field="company.vat"/></li>-->
+            <!--    </ul>-->
+            <!--    <div t-field="company.report_footer"/>-->
+            <!--    <div t-if="report_type == 'pdf'">-->
+            <!--        Page: <span class="page"/> / <span class="topage"/>-->
+            <!--    </div>-->
+            <!--</div>-->
+            <div class="row mt4">
+                <div class="col-5" style="margin-left:15px;">
+                    <b><span style="white-space: nowrap;color:red;margin-top:-20px;">Issued by:  </span></b>
+                    <img src="/marcoms_updates/static/img/ul.png" style="margin-top:-20px;width:220px; height:160px;"/>
+                </div>
+                <div class="col-5 text-right">
+                  <br/><br/><br/>
+                  <b><span style="white-space: nowrap;color:red;margin-top:20px;">Received by:___________</span></b>
+                </div>
+                <!--<div class="col-1">-->
+                <!--    <ul t-if="report_type == 'pdf'" class="list-inline pagenumber float-right text-center">-->
+                <!--        <li class="list-inline-item"><strong><span class="page"/></strong></li>-->
+                <!--    </ul>-->
+                <!--</div>-->
+            </div>
+        </div>
+    </template>
+
+    <template id="external_layout_boxed_po_without_seal">
+        <div class="header">
+            <div class="">
+            <div class="row">
+                <div class="col-8">
+                    <img t-if="res_company.logo" t-att-src="image_data_uri(res_company.logo)" alt="Logo" style="width:350px; height:200px;"/>
+                </div>
+                <div class="col-6 text-left mb4" style="font-size:17px;">
+                    <h4 class="mt0" t-field="res_company.report_header"/>
+                    <div name="company_address" class="mb4">
+                        <span class="company_address" style="color:black;" t-field="res_company.partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;], &quot;no_marker&quot;: true}"/>
+                        <div t-if="res_company.vat" style="color:black;" class="mt16">TRN No: <span t-field="res_company.vat" style="color:black;"/></div>
+                  
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div class="article o_report_layout_boxed" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')">
+            <t t-call="web.address_layout"/>
+            <t t-raw="0"/>
+        </div>
+
+        <div class="footer">
+            <!--<div class="text-center">-->
+            <!--    <ul class="list-inline">-->
+            <!--        <li t-if="company.phone" class="list-inline-item">Tel: <span t-field="company.phone"/></li>-->
+            <!--        <li t-if="company.email" class="list-inline-item">Mail: <span t-field="company.email"/></li>-->
+            <!--        <li t-if="company.website" class="list-inline-item">Web: <span t-field="company.website"/></li>-->
+            <!--        <li t-if="company.vat" class="list-inline-item"><t t-esc="company.country_id.vat_label or 'Tax ID'"/>: <span t-field="company.vat"/></li>-->
+            <!--    </ul>-->
+            <!--    <div t-field="company.report_footer"/>-->
+            <!--    <div t-if="report_type == 'pdf'">-->
+            <!--        Page: <span class="page"/> / <span class="topage"/>-->
+            <!--    </div>-->
+            <!--</div>-->
+            <div class="row mt4">
+                <div class="col-5" style="margin-left:15px;">
+                    <b><span style="white-space: nowrap;color:red;margin-top:20px;">Issued by:___________</span></b>
+                    <!-- <img src="/marcoms_updates/static/img/ul.png" style="margin-top:-20px;width:220px; height:160px;"/> -->
+                </div>
+                <div class="col-5 text-right">
+                  
+                  <b><span style="white-space: nowrap;color:red;margin-top:20px;">Received by:___________</span></b>
+                </div>
+                <!--<div class="col-1">-->
+                <!--    <ul t-if="report_type == 'pdf'" class="list-inline pagenumber float-right text-center">-->
+                <!--        <li class="list-inline-item"><strong><span class="page"/></strong></li>-->
+                <!--    </ul>-->
+                <!--</div>-->
+            </div>
+        </div>
+    </template>
+
+    <template id="web.external_layout_boxed">
+        <div class="header">
+            <div class="">
+            <div class="row">
+                <div class="col-8">
+                    <img t-if="res_company.logo" t-att-src="image_data_uri(res_company.logo)" alt="Logo" style="width:350px; height:200px;"/>
+                </div>
+                <div class="col-6 text-left mb4" style="font-size:17px;">
+                    <h4 class="mt0" t-field="res_company.report_header"/>
+                    <div name="company_address" class="mb4">
+                        <span class="company_address" style="color:black;" t-field="res_company.partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;], &quot;no_marker&quot;: true}"/>
+                        <div t-if="res_company.vat" style="color:black;" class="mt16">TRN No: <span t-field="res_company.vat" style="color:black;"/></div>
+                  
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div class="article o_report_layout_boxed" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')">
+            <t t-call="web.address_layout"/>
+            <t t-raw="0"/>
+        </div>
+
+        <div class="footer">
+            <!--<div class="text-center">-->
+            <!--    <ul class="list-inline">-->
+            <!--        <li t-if="company.phone" class="list-inline-item">Tel: <span t-field="company.phone"/></li>-->
+            <!--        <li t-if="company.email" class="list-inline-item">Mail: <span t-field="company.email"/></li>-->
+            <!--        <li t-if="company.website" class="list-inline-item">Web: <span t-field="company.website"/></li>-->
+            <!--        <li t-if="company.vat" class="list-inline-item"><t t-esc="company.country_id.vat_label or 'Tax ID'"/>: <span t-field="company.vat"/></li>-->
+            <!--    </ul>-->
+            <!--    <div t-field="company.report_footer"/>-->
+            <!--    <div t-if="report_type == 'pdf'">-->
+            <!--        Page: <span class="page"/> / <span class="topage"/>-->
+            <!--    </div>-->
+            <!--</div>-->
+            <div class="row mt4">
+                <!-- <div class="col-5" style="margin-left:15px;">
+                    <b><span style="white-space: nowrap;color:red;margin-top:-20px;">Issued by:  </span></b>
+                    <img src="/marcoms_updates/static/img/ul.png" style="margin-top:-20px;width:220px; height:180px;"/>
+                    
+                </div>
+                <div class="col-5 text-right">
+                  <br/><br/><br/>
+                  <b><span style="white-space: nowrap;color:red;margin-top:20px;">Received by:___________</span></b>
+                </div> -->
+                <div class="col-1">
+                   <ul t-if="report_type == 'pdf'" class="list-inline pagenumber float-right text-center">
+                       <li class="list-inline-item"><strong><span class="page"/></strong></li>
+                   </ul>
+                </div>
+            </div>
+        </div>
+    </template>
+
+</odoo>

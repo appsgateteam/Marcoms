@@ -1,0 +1,1219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data > 
+
+<!--food section  -->
+
+
+        <record id="food_section_form" model="ir.ui.view">
+            <field name="name">food.section.form</field>
+            <field name="model">food.expense</field>
+            <field name="arch" type="xml">
+
+                <form string="Expenses" class="o_expense_form">
+                <header>
+                  <button name="action_submit_expenses" string="Create Report" type="object" class="oe_highlight o_expense_submit" attrs="{'invisible': ['|', ('attachment_number', '&lt;=', 0), ('sheet_id', '!=', False)]}"/>
+                  <widget name="attach_document" string="Attach Document" action="message_post" attrs="{'invisible': ['|', ('attachment_number', '&lt;', 1), ('id','=',False)]}"/>
+                  <widget name="attach_document" string="Attach Document" action="message_post" highlight="1" attrs="{'invisible': ['|',('attachment_number', '&gt;=', 1), ('id','=',False)]}"/>
+                  <button name="action_submit_expenses" string="Create Report" type="object" class="o_expense_submit" attrs="{'invisible': ['|', ('attachment_number', '&gt;=', 1), ('sheet_id', '!=', False)]}"/>
+                  <field name="state" widget="statusbar" statusbar_visible="draft,reported,approved,done,refused"/>
+                  <button name="action_view_sheet" type="object" string="View Report" class="oe_highlight" attrs="{'invisible': [('sheet_id', '=', False)]}"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box">
+                        <button name="action_get_attachment_view"
+                            class="oe_stat_button"
+                            icon="fa-book"
+                            type="object"
+                            attrs="{'invisible': [('attachment_number', '=', 0)]}">
+                            <field name="attachment_number" widget="statinfo" string="Documents" options="{'reload_on_button': true}"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Lunch with Customer"/>
+                        </h1>
+                       
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="product_id" context="{'default_can_be_expensed': 1, 'tree_view_ref': 'hr_expense.product_product_expense_tree_view'}"/>
+                            <field name="unit_amount" required="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <label for="quantity"/>
+                            <div>
+                                <field name="quantity" class="oe_inline"/>
+                                <!-- <field name="product_uom_id" widget="selection" class="oe_inline" groups="uom.group_uom"/> -->
+                            </div>
+                            <field name="tax_ids" domain="[('type_tax_use', '=', 'purchase')]" widget="many2many_tags" groups="account.group_account_user"/>
+                        </group><group>
+                            <field name="reference"/>
+                            <field name="date"/>
+                            <!-- <field name="account_id" domain="[('internal_type', '=', 'other')]" groups="account.group_account_user"/> -->
+                            <field name="employee_id" invisible="1" groups="hr_expense.group_hr_expense_user"/>
+                            <field name="sheet_id" invisible="1"/>
+                            <field name="currency_id" groups="base.group_multi_currency"/>
+                            <field name="analytic_account_id" invisible="1" groups="analytic.group_analytic_accounting"/>
+                            <field name="analytic_tag_ids" invisible="1" widget="many2many_tags" groups="analytic.group_analytic_tags"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group><group>
+                            <field name="total_amount" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                            <!-- <label for="payment_mode"/>
+                            <div>
+                                <field name="payment_mode" />
+                            </div> -->
+                        </group>
+                         <group>
+                            <field name="meal_type" />
+                            <field name="partner_id" />
+                            <field name="project_id" groups="hr_expense.group_hr_expense_user"/>
+                            <field name="project_manager" invisible="1"/>
+                        </group>
+
+                    </group>
+                    <div>
+                        <field name="description" class="oe_inline" placeholder="Notes..."/>
+                    </div>
+                </sheet>
+                <div class="o_attachment_preview"/>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+                </form>
+
+                    
+
+            </field>
+        </record>
+
+        <record id="hr_expense_submit_action_server_food" model="ir.actions.server">
+            <field name="name">Submit Report</field>
+            <field name="type">ir.actions.server</field>
+            <field name="model_id" ref="model_food_expense"/>
+            <field name="binding_model_id" ref="model_food_expense"/>
+            <field name="state">code</field>
+            <field name="code">
+if records:
+    action = records.action_submit_expenses()
+            </field>
+        </record>
+
+        <!-- <record id="hr_expense_submit_action_server_food_view" model="ir.actions.server">
+            <field name="name">View Report</field>
+            <field name="type">ir.actions.server</field>
+            <field name="model_id" ref="model_food_expense"/>
+            <field name="binding_model_id" ref="model_food_expense"/>
+            <field name="state">code</field>
+            <field name="code">
+if records:
+    action = records.action_view_sheet()
+            </field>
+        </record> -->
+
+        <record id="hr_expense_submit_action_server_transportaion" model="ir.actions.server">
+            <field name="name">Submit Report</field>
+            <field name="type">ir.actions.server</field>
+            <field name="model_id" ref="model_transportaion_expense"/>
+            <field name="binding_model_id" ref="model_transportaion_expense"/>
+            <field name="state">code</field>
+            <field name="code">
+if records:
+    action = records.action_submit_expenses()
+            </field>
+        </record>
+
+        <record id="food_expense_tree" model="ir.ui.view">
+            <field name="name">food.expense.tree</field>
+            <field name="model">food.expense</field>
+            <field name="arch" type="xml">
+                <tree string="Expenses" decoration-bf="message_unread == True" class="o_expense_tree">
+                    <field name="currency_id" invisible="True"/>
+                    <field name="attachment_number" invisible="True"/>
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="date"/>
+                    <field name="reference"/>
+                    <field name="project_id"/>
+                    <field name="meal_type"/>
+                    <field name="quantity"/>
+                    <field name="total_amount" sum="Total Amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    <field name="state"/>
+                    <field name="sheet_id" invisible="not context.get('show_report', False)"/>
+                    <!-- <field name="payment_mode"/> -->
+                    <field name="analytic_account_id" invisible="1" groups="analytic.group_analytic_accounting"/>
+                    <field name="analytic_tag_ids" invisible="1" widget="many2many_tags" groups="analytic.group_analytic_tags"/>
+                    <button name="action_get_attachment_view" string="View Attached Documents" type="object" icon="fa-paperclip" attrs="{'invisible': [('attachment_number', '=', 0)]}"/>
+                    <field name="message_unread" invisible="1"/>
+                    
+                </tree>
+            </field>
+        </record>
+        
+        <record id="food_section_menu_action2" model="ir.actions.act_window">
+            <field name="name">Food Claims</field>
+            <field name="res_model">food.expense</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[]</field>
+        </record>
+        <!-- food section -->
+        <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ sum="Total Amount" -->
+
+
+         <!-- food section sheet -->
+        <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
+
+        <record id="view_food_expense_sheet_tree" model="ir.ui.view">
+            <field name="name">food.expense.sheet.tree</field>
+            <field name="model">food.expense.sheet</field>
+            <field name="arch" type="xml">
+                <tree string="Expense Reports" decoration-warning="state=='draft'" decoration-bf="message_unread == True" decoration-danger="state=='cancel'">
+                    <field name="name" string="Expense Report"/>
+                    <field name="employee_id"/>
+                    <field name="create_date"/>
+                    <field name="accounting_date" groups="account.group_account_manager"/>
+                    <field name="total_amount" sum="Total Amount"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="state"/>
+                    <field name="message_unread" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_food_expense_sheet_form" model="ir.ui.view">
+            <field name="name">food.expense.sheet.form</field>
+            <field name="model">food.expense.sheet</field>
+            <field eval="25" name="priority"/>
+            <field name="arch" type="xml">
+                <form string="Expense Reports" class="o_expense_sheet">
+                <field name="can_reset" invisible="1"/>
+                 <header>
+                    <button name="action_submit_sheet" states="draft" string="Submit to Manager" type="object" class="oe_highlight o_expense_sheet_submit"/>
+                    <button name="approve_expense_sheets" states="submit" string="Approve" type="object" groups="hr_expense.group_hr_expense_user" class="oe_highlight o_expense_sheet_approve"/>
+                    <button name="action_sheet_move_create" states="approve" string="Post Journal Entries" type="object" groups="account.group_account_manager" class="oe_highlight o_expense_sheet_post"/>
+                    <button name="%(marcom_expense_updates.food_expense_sheet_register_payment_wizard_action)d" type="action" string="Register Payment" class="oe_highlight o_expense_sheet_pay" attrs="{'invisible': [('state', '!=', 'post')]}" context="{'default_amount': total_amount, 'partner_id': address_id}" groups="account.group_account_manager"/>
+                    <button name="reset_expense_sheets" string="Reset to Draft" type="object" attrs="{'invisible': ['|', ('can_reset', '=', False), ('state', 'not in', ['submit', 'cancel'])]}"/>
+                    <button name="%(marcom_expense_updates.food_expense_refuse_wizard_action)d" states="submit,approve" context="{'hr_expense_refuse_model':'food.expense.sheet'}" string="Refuse" type="action" groups="hr_expense.group_hr_expense_user" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submit,approve,post,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box">
+                        <button name="action_get_attachment_view"
+                            class="oe_stat_button"
+                            icon="fa-book"
+                            type="object"
+                            attrs="{'invisible': [('attachment_number', '=', 0)]}">
+                            <field name="attachment_number" widget="statinfo" string="Documents"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Trip to NY"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id" invisible="1"/>
+                            <field name="payment_mode"/>
+                            <field name="user_id" readonly="1"/>
+                            <field name="address_id" invisible="1"/>
+                            <field name="department_id" invisible="1"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                     <notebook>
+                     <!-- ['|',('state', '=', 'draft'),('project_id', '=', 'project_id')] ('can_project', '=', True)-->
+                        <page string="Expense">
+                        <field name="expense_line_ids" nolabel="1" widget="many2many" domain="[('state', '=', 'draft'),('project_manager','=',user_id)]" options="{'reload_on_button': True}" context="{'form_view_ref' : 'hr_expense.hr_expense_view_form_without_header', 'expense_adding_line': True}">
+                            <tree decoration-danger="is_refused">
+                                <field name="date"/>
+                                <field name="name"/>
+                                <field name="partner_id"/>
+                                <field name="project_id"/>
+                                <field name="reference"/>
+                                <field name="unit_amount"/>
+                                <field name="quantity"/>
+                                <field name="tax_ids" widget="many2many_tags" groups="account.group_account_user"/>
+                                <field name="can_project" invisible="1"/>
+                                <field name="state" invisible="1"/>
+                                <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
+                                <field name="analytic_tag_ids" invisible="1" widget="many2many_tags" groups="analytic.group_analytic_tags"/>
+                                <field name="message_unread" invisible="1"/>
+                                <field name="attachment_number" string=" "/>
+                                <button name="action_get_attachment_view" string="View Attachments" type="object" icon="fa-paperclip"/>
+                                <!-- <field name="tax_ids" widget="many2many_tags" groups="account.group_account_user"/> -->
+                                <field name="currency_id" invisible="1"/>
+                                <field name="total_amount"/>
+                                <field name="company_currency_id" invisible="1"/>
+                                <field name="total_amount_company" groups="base.group_multi_currency"/>
+                                <field name="is_refused" invisible="True"/>
+                           </tree>
+                           <form >
+                            <group>
+                                <field name="date"/>
+                                <field name="name"/>
+                                <field name="partner_id"/>
+                                <field name="project_id"/>
+                                <field name="reference"/>
+                                <field name="unit_amount"/>
+                                <field name="quantity"/>
+                                <field name="tax_ids" widget="many2many_tags" groups="account.group_account_user"/>
+                                <field name="can_project" invisible="1"/>
+                                <field name="state" invisible="1"/>
+                                <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
+                                <field name="analytic_tag_ids" invisible="1" widget="many2many_tags" groups="analytic.group_analytic_tags"/>
+                                </group>
+                             <group>
+                                <field name="message_unread" invisible="1"/>
+                                <field name="attachment_number" string=" "/>
+                                <button name="action_get_attachment_view" string="View Attachments" type="object" icon="fa-paperclip"/>
+                                <!-- <field name="tax_ids" widget="many2many_tags" groups="account.group_account_user"/> -->
+                                <field name="currency_id" invisible="1"/>
+                                <field name="total_amount"/>
+                                <field name="company_currency_id" invisible="1"/>
+                                <field name="total_amount_company" groups="base.group_multi_currency"/>
+                                <field name="is_refused" invisible="True"/>
+                             </group>
+                          </form>
+                        </field>
+                        <field name="currency_id" invisible="1"/>
+                        <group class="oe_subtotal_footer oe_right" colspan="2" name="expense_total">
+                                <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                                    <label for="total_amount"/>
+                                </div>
+                                <field name="total_amount" nolabel="1" class="oe_subtotal_footer_separator"/>
+                            </group>
+                        </page>
+                        <page string="Other Info">
+                            <group>
+                                <group>
+                                    <field name="journal_id" domain="[('type', '=', 'purchase')]" options="{'no_open': True, 'no_create': True}" attrs="{'invisible': [('payment_mode', '!=', 'own_account')]}"/>
+                                    <field name="bank_journal_id" groups="account.group_account_user" options="{'no_open': True, 'no_create': True}" attrs="{'invisible': [('payment_mode', '!=', 'company_account')]}" domain="[('type', 'in', ['cash', 'bank'])]"/>
+                                    <field name="accounting_date" groups="account.group_account_user" attrs="{'invisible': [('state', 'not in', ['approve', 'post', 'done'])]}"/>
+                                </group>
+                                <group>
+                                    <field name="account_move_id" groups="account.group_account_user" attrs="{'invisible': [('state', 'not in', ['post', 'done'])]}" readonly="1"/>
+                                </group>
+                        </group>
+                        </page>
+                     </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+                </form>
+            </field>
+        </record>
+
+<!-- Transportaion Start -->
+
+        <!--Transportaion section  -->
+
+
+        <record id="transportaion_section_form" model="ir.ui.view">
+            <field name="name">transportaion.section.form</field>
+            <field name="model">transportaion.expense</field>
+            <field name="arch" type="xml">
+
+                <form string="Expenses" class="o_expense_form">
+                <header>
+                  <button name="action_submit_expenses" string="Create Report" type="object" class="oe_highlight o_expense_submit" attrs="{'invisible': ['|', ('attachment_number', '&lt;=', 0), ('sheet_id', '!=', False)]}"/>
+                  <widget name="attach_document" string="Attach Document" action="message_post" attrs="{'invisible': ['|', ('attachment_number', '&lt;', 1), ('id','=',False)]}"/>
+                  <widget name="attach_document" string="Attach Document" action="message_post" highlight="1" attrs="{'invisible': ['|',('attachment_number', '&gt;=', 1), ('id','=',False)]}"/>
+                  <button name="action_submit_expenses" string="Create Report" type="object" class="o_expense_submit" attrs="{'invisible': ['|', ('attachment_number', '&gt;=', 1), ('sheet_id', '!=', False)]}"/>
+                  <field name="state" widget="statusbar" statusbar_visible="draft,reported,approved,done,refused"/>
+                  <button name="action_view_sheet" type="object" string="View Report" class="oe_highlight" attrs="{'invisible': [('sheet_id', '=', False)]}"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box">
+                        <button name="action_get_attachment_view"
+                            class="oe_stat_button"
+                            icon="fa-book"
+                            type="object"
+                            attrs="{'invisible': [('attachment_number', '=', 0)]}">
+                            <field name="attachment_number" widget="statinfo" string="Documents" options="{'reload_on_button': true}"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Lunch with Customer"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="product_id" context="{'default_can_be_expensed': 1, 'tree_view_ref': 'hr_expense.product_product_expense_tree_view'}"/>
+                            <field name="rates" required="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="labour_charges" required="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="waiting_charges" required="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="total_amount" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                            <!-- <label for="quantity"/>
+                            <div>
+                                <field name="quantity" class="oe_inline"/>
+                                <field name="product_uom_id" widget="selection" class="oe_inline" groups="uom.group_uom"/>
+                            </div>
+                            <field name="tax_ids" domain="[('type_tax_use', '=', 'purchase')]" widget="many2many_tags" groups="account.group_account_user"/> -->
+                        </group>
+                        <group>
+                            <field name="reference"/>
+                            <field name="date"/>
+                            <!-- <field name="account_id" domain="[('internal_type', '=', 'other')]" groups="account.group_account_user"/> -->
+                            <field name="employee_id" invisible="1" groups="hr_expense.group_hr_expense_user"/>
+                            <field name="sheet_id" invisible="1"/>
+                            <field name="currency_id" groups="base.group_multi_currency"/>
+                            <field name="analytic_account_id" invisible="1" groups="analytic.group_analytic_accounting"/>
+                            <field name="analytic_tag_ids" invisible="1" widget="many2many_tags" groups="analytic.group_analytic_tags"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="type_id" />
+                            <field name="vehicle_type_id" />
+                            <field name="partner_id" />
+                            <field name="trip_from" />
+                            <field name="trip_to" />
+                            <field name="vehicle_no"/>
+                            <field name="project_id" groups="hr_expense.group_hr_expense_user"/>
+                            <field name="project_manager" invisible="1" />
+                            <field name="remarks" />
+                        </group>
+                            <!-- <label for="payment_mode"/>
+                            <div>
+                                <field name="payment_mode" />
+                            </div> -->
+
+                    </group>
+                    <div>
+                        <field name="description" class="oe_inline" placeholder="Notes..."/>
+                    </div>
+                </sheet>
+                <div class="o_attachment_preview"/>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+                </form>
+
+                    
+
+            </field>
+        </record>
+
+        <record id="transportaion_expense_tree" model="ir.ui.view">
+            <field name="name">transportaion.expense.tree</field>
+            <field name="model">transportaion.expense</field>
+            <field name="arch" type="xml">
+                <tree string="Expenses" decoration-bf="message_unread == True" class="o_expense_tree">
+                    <field name="currency_id" invisible="True"/>
+                    <field name="attachment_number" invisible="True"/>
+                    <field name="name"/>
+                    <field name="product_id"/>
+                    <field name="date"/>
+                    <field name="reference"/>
+                    <field name="partner_id"/>
+                    <field name="vehicle_no"/>
+                    <field name="project_id"/>
+                    <field name="type_id"/>
+                    <field name="trip_from"/>
+                    <field name="trip_to"/>
+                    <field name="vehicle_type_id"/>
+                    <field name="rates"/>
+                    <field name="labour_charges"/>
+                    <field name="waiting_charges"/>
+                    <field name="total_amount" sum="Total Amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    <field name="remarks"/>
+                    <field name="state"/>
+
+                    <field name="sheet_id" invisible="not context.get('show_report', False)"/>
+                    <!-- <field name="payment_mode"/> -->
+                    <field name="analytic_account_id" invisible="1" groups="analytic.group_analytic_accounting"/>
+                    <field name="analytic_tag_ids" invisible="1" widget="many2many_tags" groups="analytic.group_analytic_tags"/>
+                    <button name="action_get_attachment_view" string="View Attached Documents" type="object" icon="fa-paperclip" attrs="{'invisible': [('attachment_number', '=', 0)]}"/>
+                    <field name="message_unread" invisible="1"/>
+                    
+                    
+                    
+                </tree>
+            </field>
+        </record>
+        
+        <record id="transportaion_section_menu_action" model="ir.actions.act_window">
+            <field name="name">Transportaion Claims</field>
+            <field name="res_model">transportaion.expense</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[]</field>
+        </record>
+        <!-- transportaion section -->
+        <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ sum="Total Amount" -->
+
+
+         <!-- transportaion section sheet -->
+        <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
+
+        <record id="view_transportaion_expense_sheet_tree" model="ir.ui.view">
+            <field name="name">transportaion.expense.sheet.tree</field>
+            <field name="model">transportaion.expense.sheet</field>
+            <field name="arch" type="xml">
+                <tree string="Expense Reports" decoration-warning="state=='draft'" decoration-bf="message_unread == True" decoration-danger="state=='cancel'">
+                    <field name="name" string="Expense Report"/>
+                    <field name="employee_id"/>
+                    <field name="create_date"/>
+                    <field name="accounting_date" groups="account.group_account_manager"/>
+                    <field name="total_amount" sum="Total Amount"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="state"/>
+                    <field name="message_unread" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_transportaion_expense_sheet_form" model="ir.ui.view">
+            <field name="name">transportaion.expense.sheet.form</field>
+            <field name="model">transportaion.expense.sheet</field>
+            <field eval="25" name="priority"/>
+            <field name="arch" type="xml">
+                <form string="Expense Reports" class="o_expense_sheet">
+                <field name="can_reset" invisible="1"/>
+                 <header>
+                    <button name="action_submit_sheet" states="draft" string="Submit to Manager" type="object" class="oe_highlight o_expense_sheet_submit"/>
+                    <button name="approve_expense_sheets" states="submit" string="Approve" type="object" groups="hr_expense.group_hr_expense_user" class="oe_highlight o_expense_sheet_approve"/>
+                    <button name="action_sheet_move_create" states="approve" string="Post Journal Entries" type="object" groups="account.group_account_manager" class="oe_highlight o_expense_sheet_post"/>
+                    <button name="%(marcom_expense_updates.transportaion_expense_sheet_register_payment_wizard_action)d" type="action" string="Register Payment" class="oe_highlight o_expense_sheet_pay" attrs="{'invisible': [('state', '!=', 'post')]}" context="{'default_amount': total_amount, 'partner_id': address_id}" groups="account.group_account_manager"/>
+                    <button name="reset_expense_sheets" string="Reset to Draft" type="object" attrs="{'invisible': ['|', ('can_reset', '=', False), ('state', 'not in', ['submit', 'cancel'])]}"/>
+                    <button name="%(marcom_expense_updates.transportaion_expense_refuse_wizard_action)d" states="submit,approve" context="{'hr_expense_refuse_model':'transportaion.expense.sheet'}" string="Refuse" type="action" groups="hr_expense.group_hr_expense_user" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submit,approve,post,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box">
+                        <button name="action_get_attachment_view"
+                            class="oe_stat_button"
+                            icon="fa-book"
+                            type="object"
+                            attrs="{'invisible': [('attachment_number', '=', 0)]}">
+                            <field name="attachment_number" widget="statinfo" string="Documents"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Trip to NY"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id" invisible="1"/>
+                            <field name="payment_mode"/>
+                            <field name="user_id" readonly="1"/>
+                            <field name="address_id" invisible="1"/>
+                            <field name="department_id" invisible="1"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                     <notebook>
+                        <page string="Expense">
+                        <field name="expense_line_ids" nolabel="1" widget="many2many" domain="[('state', '=', 'draft'),('project_manager','=',user_id)]" options="{'reload_on_button': True}" context="{'form_view_ref' : 'hr_expense.hr_expense_view_form_without_header', 'expense_adding_line': True}">
+                            <tree decoration-danger="is_refused">
+                                <field name="date"/>
+                                <field name="name"/>
+                                <field name="partner_id"/>
+                                <field name="project_id"/>
+                                <field name="reference"/>
+                                <field name="rates"/>
+                                <field name="labour_charges"/>
+                                <field name="waiting_charges"/>
+                                <field name="state" invisible="1"/>
+                                <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
+                                <field name="analytic_tag_ids" invisible="1" widget="many2many_tags" groups="analytic.group_analytic_tags"/>
+                                <field name="message_unread" invisible="1"/>
+                                <field name="attachment_number" string=" "/>
+                                <button name="action_get_attachment_view" string="View Attachments" type="object" icon="fa-paperclip"/>
+                                <!-- <field name="tax_ids" widget="many2many_tags" groups="account.group_account_user"/> -->
+                                <field name="currency_id" invisible="1"/>
+                                <field name="total_amount"/>
+                                <field name="company_currency_id" invisible="1"/>
+                                <field name="total_amount_company" groups="base.group_multi_currency"/>
+                                <field name="is_refused" invisible="True"/>
+                           </tree>
+                           <form >
+                            <group>
+                               <field name="date"/>
+                               <field name="name"/>
+                               <field name="partner_id"/>
+                               <field name="project_id"/>
+                               <field name="reference"/>
+                               <field name="rates"/>
+                               <field name="labour_charges"/>
+                               <field name="waiting_charges"/>
+                               <field name="state" invisible="1"/>
+                               <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
+                               <field name="analytic_tag_ids" invisible="1" widget="many2many_tags" groups="analytic.group_analytic_tags"/>
+                             </group>
+                             <group>
+                               <field name="message_unread" invisible="1"/>
+                               <field name="attachment_number" string=" "/>
+                               <button name="action_get_attachment_view" string="View Attachments" type="object" icon="fa-paperclip"/>
+                               <!-- <field name="tax_ids" widget="many2many_tags" groups="account.group_account_user"/> -->
+                               <field name="currency_id" invisible="1"/>
+                               <field name="total_amount"/>
+                               <field name="company_currency_id" invisible="1"/>
+                               <field name="total_amount_company" groups="base.group_multi_currency"/>
+                               <field name="is_refused" invisible="True"/>
+                             </group>
+                          </form>
+                        </field>
+                        <field name="currency_id" invisible="1"/>
+                        <group class="oe_subtotal_footer oe_right" colspan="2" name="expense_total">
+                                <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                                    <label for="total_amount"/>
+                                </div>
+                                <field name="total_amount" nolabel="1" class="oe_subtotal_footer_separator"/>
+                            </group>
+                        </page>
+                        <page string="Other Info">
+                            <group>
+                                <group>
+                                    <field name="journal_id" domain="[('type', '=', 'purchase')]" options="{'no_open': True, 'no_create': True}" attrs="{'invisible': [('payment_mode', '!=', 'own_account')]}"/>
+                                    <field name="bank_journal_id" groups="account.group_account_user" options="{'no_open': True, 'no_create': True}" attrs="{'invisible': [('payment_mode', '!=', 'company_account')]}" domain="[('type', 'in', ['cash', 'bank'])]"/>
+                                    <field name="accounting_date" groups="account.group_account_user" attrs="{'invisible': [('state', 'not in', ['approve', 'post', 'done'])]}"/>
+                                </group>
+                                <group>
+                                    <field name="account_move_id" groups="account.group_account_user" attrs="{'invisible': [('state', 'not in', ['post', 'done'])]}" readonly="1"/>
+                                </group>
+                        </group>
+                        </page>
+                     </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+                </form>
+            </field>
+        </record>
+
+
+
+
+<!--Start Petty cash section  -->
+
+
+
+        <record id="petty_cash_section_form" model="ir.ui.view">
+            <field name="name">petty.cash.section.form</field>
+            <field name="model">petty.cash.expense</field>
+            <field name="arch" type="xml">
+
+                <form string="Expenses" class="o_expense_form">
+                <header>
+                  <button name="action_submit_expenses" string="Create Report" type="object" class="oe_highlight o_expense_submit" attrs="{'invisible': ['|', ('attachment_number', '&lt;=', 0), ('sheet_id', '!=', False)]}"/>
+                  <widget name="attach_document" string="Attach Document" action="message_post" attrs="{'invisible': ['|', ('attachment_number', '&lt;', 1), ('id','=',False)]}"/>
+                  <widget name="attach_document" string="Attach Document" action="message_post" highlight="1" attrs="{'invisible': ['|',('attachment_number', '&gt;=', 1), ('id','=',False)]}"/>
+                  <button name="action_submit_expenses" string="Create Report" type="object" class="o_expense_submit" attrs="{'invisible': ['|', ('attachment_number', '&gt;=', 1), ('sheet_id', '!=', False)]}"/>
+                  <field name="state" widget="statusbar" statusbar_visible="draft,reported,approved,done,refused"/>
+                  <button name="action_view_sheet" type="object" string="View Report" class="oe_highlight" attrs="{'invisible': [('sheet_id', '=', False)]}"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box">
+                        <button name="action_get_attachment_view"
+                            class="oe_stat_button"
+                            icon="fa-book"
+                            type="object"
+                            attrs="{'invisible': [('attachment_number', '=', 0)]}">
+                            <field name="attachment_number" widget="statinfo" string="Documents" options="{'reload_on_button': true}"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Lunch with Customer"/>
+                        </h1>
+                       
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="product_id" context="{'default_can_be_expensed': 1, 'tree_view_ref': 'hr_expense.product_product_expense_tree_view'}"/>
+                            <field name="unit_amount" required="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <!-- <label for="quantity"/>
+                            <div>
+                                <field name="quantity" class="oe_inline"/>
+                                <field name="product_uom_id" widget="selection" class="oe_inline" groups="uom.group_uom"/>
+                            </div> -->
+                            <field name="tax_ids" domain="[('type_tax_use', '=', 'purchase')]" widget="many2many_tags" groups="account.group_account_user"/>
+                        </group><group>
+                            <field name="reference"/>
+                            <field name="date"/>
+                            <!-- <field name="account_id" domain="[('internal_type', '=', 'other')]" groups="account.group_account_user"/> -->
+                            <field name="employee_id" groups="hr_expense.group_hr_expense_user"/>
+                            <field name="employees_id" invisible="1" groups="hr_expense.group_hr_expense_user"/>
+                            <field name="sheet_id" invisible="1"/>
+                            <field name="currency_id" groups="base.group_multi_currency"/>
+                            <field name="analytic_account_id" invisible="1" groups="analytic.group_analytic_accounting"/>
+                            <field name="analytic_tag_ids" invisible="1" widget="many2many_tags" groups="analytic.group_analytic_tags"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group><group>
+                            <field name="untaxed_amount" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                            <field name="total_amount" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                            <!-- <label for="payment_mode"/>
+                            <div>
+                                <field name="payment_mode" />
+                            </div> -->
+                        </group>
+                         <group>
+                            <!-- <field name="meal_type" /> -->
+                            <!-- <field name="partner_id" /> -->
+                            <field name="project_id" groups="hr_expense.group_hr_expense_user"/>
+                        </group>
+
+                    </group>
+                    <div>
+                        <field name="description" class="oe_inline" placeholder="Notes..."/>
+                    </div>
+                </sheet>
+                <div class="o_attachment_preview"/>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="petty_cash_expense_tree" model="ir.ui.view">
+            <field name="name">petty.cash.expense.tree</field>
+            <field name="model">petty.cash.expense</field>
+            <field name="arch" type="xml">
+                <tree string="Expenses" decoration-bf="message_unread == True" class="o_expense_tree">
+                    <field name="currency_id" invisible="True"/>
+                    <field name="attachment_number" invisible="True"/>
+                    <field name="name"/>
+                    <field name="product_id"/>
+                    <field name="date"/>
+                    <field name="reference"/>
+                    <field name="account_id"/>
+                    <!-- <field name="partner_id"/> -->
+                    <field name="project_id"/>
+                    <!-- <field name="meal_type"/> -->
+                    <!-- <field name="quantity"/> -->
+                    <field name="untaxed_amount" sum="Total Amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    <field name="total_amount" sum="Total Amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    <field name="state"/>
+                    <field name="sheet_id" invisible="not context.get('show_report', False)"/>
+                    <!-- <field name="payment_mode"/> -->
+                    <!-- <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
+                    <field name="analytic_tag_ids" widget="many2many_tags" groups="analytic.group_analytic_tags"/> -->
+                    <button name="action_get_attachment_view" string="View Attached Documents" type="object" icon="fa-paperclip" attrs="{'invisible': [('attachment_number', '=', 0)]}"/>
+                    <field name="message_unread" invisible="1"/>
+                    
+                </tree>
+            </field>
+        </record>
+        
+        <record id="petty_cash_section_menu_action" model="ir.actions.act_window">
+            <field name="name">Petty Cash Claims</field>
+            <field name="res_model">petty.cash.expense</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[]</field>
+        </record>
+        <!-- petty cash section -->
+        <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ sum="Total Amount" -->
+
+
+         <!-- petty cash section sheet -->
+        <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
+
+        <record id="view_petty_cash_expense_sheet_tree" model="ir.ui.view">
+            <field name="name">view.petty.cash.expense.sheet.tree</field>
+            <field name="model">petty.cash.sheet</field>
+            <field name="arch" type="xml">
+                <tree string="Expense Reports" decoration-warning="state=='draft'" decoration-bf="message_unread == True" decoration-danger="state=='cancel'">
+                    <field name="name" string="Expense Report"/>
+                    <field name="employee_id"/>
+                    <field name="create_date"/>
+                    <field name="accounting_date" groups="account.group_account_manager"/>
+                    <field name="total_amount" sum="Total Amount"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="state"/>
+                    <field name="message_unread" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_petty_cash_expense_sheet_form" model="ir.ui.view">
+            <field name="name">view.petty.cash.expense.sheet.form</field>
+            <field name="model">petty.cash.sheet</field>
+            <field eval="25" name="priority"/>
+            <field name="arch" type="xml">
+                <form string="Expense Reports" class="o_expense_sheet">
+                <field name="can_reset" invisible="1"/>
+                 <header>
+                    <button name="action_submit_sheet" states="draft" string="Submit to Manager" type="object" class="oe_highlight o_expense_sheet_submit"/>
+                    <button name="approve_expense_sheets" states="submit" string="Approve" type="object" groups="hr_expense.group_hr_expense_user" class="oe_highlight o_expense_sheet_approve"/>
+                    <button name="action_sheet_move_create" states="approve" string="Post Journal Entries" type="object" groups="account.group_account_manager" class="oe_highlight o_expense_sheet_post"/>
+                    <button name="%(marcom_expense_updates.petty_cash_expense_sheet_register_payment_wizard_action)d" type="action" string="Register Payment" class="oe_highlight o_expense_sheet_pay" attrs="{'invisible': [('state', '!=', 'post')]}" context="{'default_amount': total_amount, 'partner_id': address_id}" groups="account.group_account_manager"/>
+                    <button name="reset_expense_sheets" string="Reset to Draft" type="object" attrs="{'invisible': ['|', ('can_reset', '=', False), ('state', 'not in', ['submit', 'cancel'])]}"/>
+                    <button name="%(marcom_expense_updates.petty_cash_expense_refuse_wizard_action)d" states="submit,approve" context="{'hr_expense_refuse_model':'petty.cash.sheet'}" string="Refuse" type="action" groups="hr_expense.group_hr_expense_user" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submit,approve,post,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box">
+                        <button name="action_get_attachment_view"
+                            class="oe_stat_button"
+                            icon="fa-book"
+                            type="object"
+                            attrs="{'invisible': [('attachment_number', '=', 0)]}">
+                            <field name="attachment_number" widget="statinfo" string="Documents"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Trip to NY"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="employees_id" invisible="1"/>
+                            <field name="payment_mode"/>
+                            <field name="user_id"/>
+                            <field name="address_id" invisible="1"/>
+                            <field name="department_id" invisible="1"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                     <notebook>
+                     <!-- ['|',('state', '=', 'draft'),('project_id', '=', 'project_id')] ('can_project', '=', True)-->
+                        <page string="Expense">
+                        <field name="expense_line_ids" nolabel="1" widget="many2many" domain="[('state', '=', 'draft'),('project_manager','=',user_id)]" options="{'reload_on_button': True}" context="{'form_view_ref' : 'hr_expense.hr_expense_view_form_without_header', 'expense_adding_line': True}">
+                            <tree decoration-danger="is_refused">
+                                <field name="date"/>
+                                <field name="name"/>
+                                <!-- <field name="partner_id"/> -->
+                                <field name="project_id"/>
+                                <field name="reference"/>
+                                <field name="unit_amount"/>
+                                <!-- <field name="quantity"/> -->
+                                <field name="tax_ids" widget="many2many_tags" groups="account.group_account_user"/>
+                                <!-- <field name="can_project" invisible="1"/> -->
+                                <field name="state" invisible="1"/>
+                                <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
+                                <field name="analytic_tag_ids" widget="many2many_tags" groups="analytic.group_analytic_tags"/>
+                                <field name="message_unread" invisible="1"/>
+                                <field name="attachment_number" string=" "/>
+                                <button name="action_get_attachment_view" string="View Attachments" type="object" icon="fa-paperclip"/>
+                                <!-- <field name="tax_ids" widget="many2many_tags" groups="account.group_account_user"/> -->
+                                <field name="currency_id" invisible="1"/>
+                                <field name="untaxed_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="total_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="company_currency_id" invisible="1"/>
+                                <field name="total_amount_company" groups="base.group_multi_currency"/>
+                                <field name="is_refused" invisible="True"/>
+                           </tree>
+                           <form >
+                            <group>
+                                <field name="date"/>
+                                <field name="name"/>
+                                <!-- <field name="partner_id"/> -->
+                                <field name="project_id"/>
+                                <field name="reference"/>
+                                <field name="unit_amount"/>
+                                <!-- <field name="quantity"/> -->
+                                <field name="tax_ids" widget="many2many_tags" groups="account.group_account_user"/>
+                                <!-- <field name="can_project" invisible="1"/> -->
+                                <field name="state" invisible="1"/>
+                                <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
+                                <field name="analytic_tag_ids" widget="many2many_tags" groups="analytic.group_analytic_tags"/>
+                            </group>
+                             <group>
+                                <field name="message_unread" invisible="1"/>
+                                <field name="attachment_number" string=" "/>
+                                <button name="action_get_attachment_view" string="View Attachments" type="object" icon="fa-paperclip"/>
+                                <!-- <field name="tax_ids" widget="many2many_tags" groups="account.group_account_user"/> -->
+                                <field name="currency_id" invisible="1"/>
+                                <field name="untaxed_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="total_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="company_currency_id" invisible="1"/>
+                                <field name="total_amount_company" groups="base.group_multi_currency"/>
+                                <field name="is_refused" invisible="True"/>
+                             </group>
+                          </form>
+                        </field>
+                        <field name="currency_id" invisible="1"/>
+                        <group class="oe_subtotal_footer oe_right" colspan="2" name="expense_total">
+                                <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                                    <label for="total_amount"/>
+                                </div>
+                                <field name="total_amount" nolabel="1" class="oe_subtotal_footer_separator"/>
+                            </group>
+                        </page>
+                        <page string="Other Info">
+                            <group>
+                                <group>
+                                    <field name="journal_id" domain="[('type', '=', 'purchase')]" options="{'no_open': True, 'no_create': True}" attrs="{'invisible': [('payment_mode', '!=', 'own_account')]}"/>
+                                    <field name="bank_journal_id" groups="account.group_account_user" options="{'no_open': True, 'no_create': True}" attrs="{'invisible': [('payment_mode', '!=', 'company_account')]}" domain="[('type', 'in', ['cash', 'bank'])]"/>
+                                    <field name="accounting_date" groups="account.group_account_user" attrs="{'invisible': [('state', 'not in', ['approve', 'post', 'done'])]}"/>
+                                </group>
+                                <group>
+                                    <field name="account_move_id" groups="account.group_account_user" attrs="{'invisible': [('state', 'not in', ['post', 'done'])]}" readonly="1"/>
+                                </group>
+                        </group>
+                        </page>
+                     </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+                </form>
+            </field>
+        </record>
+
+    <!--End Petty cash section  -->
+
+
+
+<!--Start Labour section  -->
+
+
+
+        <record id="labour_section_form" model="ir.ui.view">
+            <field name="name">labour.section.form</field>
+            <field name="model">labour.expense</field>
+            <field name="arch" type="xml">
+
+                <form string="Expenses" class="o_expense_form">
+                <header>
+                  <button name="action_submit_expenses" string="Create Report" type="object" class="oe_highlight o_expense_submit" attrs="{'invisible': ['|', ('attachment_number', '&lt;=', 0), ('sheet_id', '!=', False)]}"/>
+                  <widget name="attach_document" string="Attach Document" action="message_post" attrs="{'invisible': ['|', ('attachment_number', '&lt;', 1), ('id','=',False)]}"/>
+                  <widget name="attach_document" string="Attach Document" action="message_post" highlight="1" attrs="{'invisible': ['|',('attachment_number', '&gt;=', 1), ('id','=',False)]}"/>
+                  <button name="action_submit_expenses" string="Create Report" type="object" class="o_expense_submit" attrs="{'invisible': ['|', ('attachment_number', '&gt;=', 1), ('sheet_id', '!=', False)]}"/>
+                  <field name="state" widget="statusbar" statusbar_visible="draft,reported,approved,done,refused"/>
+                  <button name="action_view_sheet" type="object" string="View Report" class="oe_highlight" attrs="{'invisible': [('sheet_id', '=', False)]}"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box">
+                        <button name="action_get_attachment_view"
+                            class="oe_stat_button"
+                            icon="fa-book"
+                            type="object"
+                            attrs="{'invisible': [('attachment_number', '=', 0)]}">
+                            <field name="attachment_number" widget="statinfo" string="Documents" options="{'reload_on_button': true}"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Lunch with Customer"/>
+                        </h1>
+                       
+                    </div>
+
+                    <group>
+                        <group>
+                            <!-- <field name="product_id" /> -->
+                            <field name="partner_id" />
+                            <field name="no_of_helpers"/>
+                            <field name="labour_type" />
+                            <field name="time_in" widget="float_time" />
+                            <field name="time_out" widget="float_time" />
+                            <field name="total_hours" widget="float_time"/>
+                            <field name="break_hour" widget="float_time"/>
+                            <field name="travelling_hours" widget="float_time" />
+                            <field name="net_hours" widget="float_time"/>
+                            <field name="rate_per_hour" widget="float_time" />
+                            <field name="total_amount" />
+                            <!-- <field name="product_id" context="{'default_can_be_expensed': 1, 'tree_view_ref': 'hr_expense.product_product_expense_tree_view'}"/> -->
+                            <!-- <field name="unit_amount" required="1" widget="monetary" options="{'currency_field': 'currency_id'}"/> -->
+                            <!-- <label for="quantity"/>
+                            <div>
+                                <field name="quantity" class="oe_inline"/>
+                                <field name="product_uom_id" widget="selection" class="oe_inline" groups="uom.group_uom"/>
+                            </div> -->
+                            <!-- <field name="tax_ids" domain="[('type_tax_use', '=', 'purchase')]" widget="many2many_tags" groups="account.group_account_user"/> -->
+                        </group><group>
+                            <field name="reference"/>
+                            <field name="date"/>
+                            <!-- <field name="account_id" domain="[('internal_type', '=', 'other')]" groups="account.group_account_user"/> -->
+                            <field name="employee_id" groups="hr_expense.group_hr_expense_user"/>
+                            <field name="project_id" groups="hr_expense.group_hr_expense_user"/>
+                            <field name="sheet_id" invisible="1"/>
+                            <field name="currency_id" groups="base.group_multi_currency"/>
+                            <field name="analytic_account_id" invisible="1" groups="analytic.group_analytic_accounting"/>
+                            <field name="analytic_tag_ids" invisible="1" widget="many2many_tags" groups="analytic.group_analytic_tags"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group><group>
+                            <!-- <field name="untaxed_amount" widget='monetary' options="{'currency_field': 'currency_id'}"/> -->
+                            <!-- <field name="total_amount" widget='monetary' options="{'currency_field': 'currency_id'}"/> -->
+                            <!-- <label for="payment_mode"/>
+                            <div>
+                                <field name="payment_mode" />
+                            </div> -->
+                        </group>
+                        
+                    </group>
+                    <div>
+                        <field name="description" class="oe_inline" placeholder="Notes..."/>
+                    </div>
+                </sheet>
+                <div class="o_attachment_preview"/>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="labour_expense_tree" model="ir.ui.view">
+            <field name="name">labour.expense.tree</field>
+            <field name="model">labour.expense</field>
+            <field name="arch" type="xml">
+                <tree string="Expenses" decoration-bf="message_unread == True" class="o_expense_tree">
+                    <field name="currency_id" invisible="True"/>
+                    <field name="attachment_number" invisible="True"/>
+                    <field name="name"/>
+                    <!-- <field name="product_id"/> -->
+                    <field name="date"/>
+                    <field name="reference"/>
+                    <field name="partner_id"/>
+                    <field name="no_of_helpers"/>
+                    <field name="labour_type"/>
+                    <field name="time_in" widget="float_time"/>
+                    <field name="time_out" widget="float_time"/>
+                    <field name="total_hours" widget="float_time"/>
+                    <field name="break_hour" widget="float_time"/>
+                    <field name="travelling_hours" widget="float_time"/>
+                    <field name="net_hours"  widget="float_time"/>
+                    <field name="rate_per_hour"  widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    <field name="total_amount"  sum="Total Amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    <field name="project_id"/>
+                    <field name="state"/>
+                    <field name="sheet_id" invisible="not context.get('show_report', False)"/>
+                    <!-- <field name="payment_mode"/> -->
+                    <!-- <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
+                    <field name="analytic_tag_ids" widget="many2many_tags" groups="analytic.group_analytic_tags"/> -->
+                    <button name="action_get_attachment_view" string="View Attached Documents" type="object" icon="fa-paperclip" attrs="{'invisible': [('attachment_number', '=', 0)]}"/>
+                    <field name="message_unread" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record id="labour_section_menu_action" model="ir.actions.act_window">
+            <field name="name">Labour Claims</field>
+            <field name="res_model">labour.expense</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[]</field>
+        </record>
+        <!-- Labour section -->
+        <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ sum="Total Amount" -->
+
+
+        <!-- Labour section sheet -->
+        <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
+
+        <record id="view_labour_expense_sheet_tree" model="ir.ui.view">
+            <field name="name">view.labour.expense.sheet.tree</field>
+            <field name="model">labour.sheet</field>
+            <field name="arch" type="xml">
+                <tree string="Expense Reports" decoration-warning="state=='draft'" decoration-bf="message_unread == True" decoration-danger="state=='cancel'">
+                    <field name="name" string="Expense Report"/>
+                    <field name="employee_id"/>
+                    <field name="create_date"/>
+                    <field name="accounting_date" groups="account.group_account_manager"/>
+                    <field name="total_amount" sum="Total Amount"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="state"/>
+                    <field name="message_unread" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_labour_expense_sheet_form" model="ir.ui.view">
+            <field name="name">view.labour.expense.sheet.form</field>
+            <field name="model">labour.sheet</field>
+            <field eval="25" name="priority"/>
+            <field name="arch" type="xml">
+                <form string="Expense Reports" class="o_expense_sheet">
+                <field name="can_reset" invisible="1"/>
+                 <header>
+                    <button name="action_submit_sheet" states="draft" string="Submit to Manager" type="object" class="oe_highlight o_expense_sheet_submit"/>
+                    <button name="approve_expense_sheets" states="submit" string="Approve" type="object" groups="hr_expense.group_hr_expense_user" class="oe_highlight o_expense_sheet_approve"/>
+                    <button name="action_sheet_move_create" states="approve" string="Post Journal Entries" type="object" groups="account.group_account_manager" class="oe_highlight o_expense_sheet_post"/>
+                    <button name="%(marcom_expense_updates.labour_expense_sheet_register_payment_wizard_action)d" type="action" string="Register Payment" class="oe_highlight o_expense_sheet_pay" attrs="{'invisible': [('state', '!=', 'post')]}" context="{'default_amount': total_amount, 'partner_id': address_id}" groups="account.group_account_manager"/>
+                    <button name="reset_expense_sheets" string="Reset to Draft" type="object" attrs="{'invisible': ['|', ('can_reset', '=', False), ('state', 'not in', ['submit', 'cancel'])]}"/>
+                    <button name="%(marcom_expense_updates.labour_expense_refuse_wizard_action)d" states="submit,approve" context="{'hr_expense_refuse_model':'labour.sheet'}" string="Refuse" type="action" groups="hr_expense.group_hr_expense_user" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submit,approve,post,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box">
+                        <button name="action_get_attachment_view"
+                            class="oe_stat_button"
+                            icon="fa-book"
+                            type="object"
+                            attrs="{'invisible': [('attachment_number', '=', 0)]}">
+                            <field name="attachment_number" widget="statinfo" string="Documents"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Trip to NY"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="payment_mode"/>
+                            <field name="user_id"/>
+                            <field name="address_id" invisible="1"/>
+                            <field name="department_id" invisible="1"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                     <notebook>
+                     <!-- ['|',('state', '=', 'draft'),('project_id', '=', 'project_id')] ('can_project', '=', True)-->
+                        <page string="Expense">
+                        <field name="expense_line_ids" nolabel="1" widget="many2many" domain="[('state', '=', 'draft'),('project_manager','=',user_id)]" options="{'reload_on_button': True}" context="{'form_view_ref' : 'hr_expense.hr_expense_view_form_without_header', 'expense_adding_line': True}">
+                            <tree decoration-danger="is_refused">
+                                <field name="date"/>
+                                <field name="name"/>
+                                <!-- <field name="partner_id"/> -->
+                                <field name="project_id"/>
+                                <field name="reference"/>
+                                <field name="partner_id"/>
+                                <field name="no_of_helpers"/>
+                                <field name="time_in"/>
+                                <field name="time_out"/>
+                                <field name="break_hour"/>
+                                <field name="travelling_hours"/>
+                                <field name="net_hours"/>
+                                <field name="rate_per_hour" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="total_hours"/>
+                                <!-- <field name="unit_amount"/> -->
+                                <!-- <field name="quantity"/> -->
+                                <!-- <field name="tax_ids" widget="many2many_tags" groups="account.group_account_user"/> -->
+                                <!-- <field name="can_project" invisible="1"/> -->
+                                <field name="state" invisible="1"/>
+                                <!-- <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/> -->
+                                <!-- <field name="analytic_tag_ids" widget="many2many_tags" groups="analytic.group_analytic_tags"/> -->
+                                <field name="message_unread" invisible="1"/>
+                                <field name="attachment_number" string=" "/>
+                                <button name="action_get_attachment_view" string="View Attachments" type="object" icon="fa-paperclip"/>
+                                <!-- <field name="tax_ids" widget="many2many_tags" groups="account.group_account_user"/> -->
+                                <field name="currency_id" invisible="1"/>
+                                <!-- <field name="untaxed_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/> -->
+                                <!-- <field name="total_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/> -->
+                                <field name="company_currency_id" invisible="1"/>
+                                <field name="total_amount_company" groups="base.group_multi_currency"/>
+                                <field name="is_refused" invisible="True"/>
+                           </tree>
+                           <form >
+                            <group>
+                                <field name="date"/>
+                                <field name="name"/>
+                                <!-- <field name="partner_id"/> -->
+                                <field name="project_id"/>
+                                <field name="reference"/>
+                                <!-- <field name="unit_amount"/> -->
+                                <!-- <field name="quantity"/> -->
+                                <!-- <field name="tax_ids" widget="many2many_tags" groups="account.group_account_user"/> -->
+                                <!-- <field name="can_project" invisible="1"/> -->
+                                <field name="state" invisible="1"/>
+                                <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
+                                <field name="analytic_tag_ids" widget="many2many_tags" groups="analytic.group_analytic_tags"/>
+                            </group>
+                             <group>
+                                <field name="message_unread" invisible="1"/>
+                                <field name="attachment_number" string=" "/>
+                                <button name="action_get_attachment_view" string="View Attachments" type="object" icon="fa-paperclip"/>
+                                <!-- <field name="tax_ids" widget="many2many_tags" groups="account.group_account_user"/> -->
+                                <field name="currency_id" invisible="1"/>
+                                <!-- <field name="untaxed_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/> -->
+                                <!-- <field name="total_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/> -->
+                                <field name="company_currency_id" invisible="1"/>
+                                <field name="total_amount_company" groups="base.group_multi_currency"/>
+                                <field name="is_refused" invisible="True"/>
+                             </group>
+                          </form>
+                        </field>
+                        <field name="currency_id" invisible="1"/>
+                        <group class="oe_subtotal_footer oe_right" colspan="2" name="expense_total">
+                                <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                                    <label for="total_amount"/>
+                                </div>
+                                <field name="total_amount" nolabel="1" class="oe_subtotal_footer_separator"/>
+                            </group>
+                        </page>
+                        <page string="Other Info">
+                            <group>
+                                <group>
+                                    <field name="journal_id" domain="[('type', '=', 'purchase')]" options="{'no_open': True, 'no_create': True}" attrs="{'invisible': [('payment_mode', '!=', 'own_account')]}"/>
+                                    <field name="bank_journal_id" groups="account.group_account_user" options="{'no_open': True, 'no_create': True}" attrs="{'invisible': [('payment_mode', '!=', 'company_account')]}" domain="[('type', 'in', ['cash', 'bank'])]"/>
+                                    <field name="accounting_date" groups="account.group_account_user" attrs="{'invisible': [('state', 'not in', ['approve', 'post', 'done'])]}"/>
+                                </group>
+                                <group>
+                                    <field name="account_move_id" groups="account.group_account_user" attrs="{'invisible': [('state', 'not in', ['post', 'done'])]}" readonly="1"/>
+                                </group>
+                        </group>
+                        </page>
+                     </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+                </form>
+            </field>
+        </record>
+
+    <!--End Labour section  --> 
+
+
+        <menuitem
+            id="labour_section_menu"
+            name="Labour Expense"
+            parent="hr_expense.menu_hr_expense_my_expenses"
+            sequence="12"
+            action="labour_section_menu_action"/>
+
+
+        <menuitem
+            id="petty_cash_section_menu"
+            name="Petty cash Expense"
+            parent="hr_expense.menu_hr_expense_my_expenses"
+            sequence="12"
+            action="petty_cash_section_menu_action"/>
+
+
+        <menuitem
+                id="transportaion_section_menu"
+                name="Transportaion Expense"
+                parent="hr_expense.menu_hr_expense_my_expenses"
+                sequence="11"
+                action="transportaion_section_menu_action"/>
+
+        <menuitem
+                id="food_section_menu"
+                name="Food Expense"
+                parent="hr_expense.menu_hr_expense_my_expenses"
+                sequence="10"
+                action="food_section_menu_action2"/>
+
+
+    </data> 
+</odoo>

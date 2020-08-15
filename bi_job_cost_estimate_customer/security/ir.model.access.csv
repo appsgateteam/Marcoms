@@ -1,0 +1,6 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+job_estimate_user,job_estimate_name,bi_job_cost_estimate_customer.model_job_estimate,,1,1,1,1
+material_estimate_user,material_estimate_name,bi_job_cost_estimate_customer.model_material_estimate,,1,1,1,1
+labour_estimate_user,labour_estimate_name,bi_job_cost_estimate_customer.model_labour_estimate,,1,1,1,1
+overhead_estimate_user,overhead_estimate_name,bi_job_cost_estimate_customer.model_overhead_estimate,,1,1,1,1
+job_estimate_category_user,job_estimate_category_name,bi_job_cost_estimate_customer.model_job_estimate_category,,1,1,1,1

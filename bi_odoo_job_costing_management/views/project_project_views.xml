@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="inherit_bi_project_project_form" model="ir.ui.view">
+        <field name="name">inherit.bi.project.project.form</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project" />
+        <field name="arch" type="xml">
+            <div class="oe_button_box" name="button_box" position="inside">
+               <button name="button_view_issue" type="object" class="oe_stat_button" icon="fa-bug" attrs="{'invisible': [('issue_count', '=', 0)]}">
+                   <field name="issue_count" string="Issues" widget="statinfo"/>
+               </button>
+
+                <button class="oe_stat_button" name="project_job_order_button"
+                    type="object" icon="fa-address-book" attrs="{'invisible': [('job_order_count', '=', 0)]}">
+                    <field name="job_order_count" widget="statinfo" string="Job Order" />
+                </button>
+
+                <button class="oe_stat_button" name="purchase_order_count_button"
+                    type="object" icon="fa-address-book" attrs="{'invisible': [('purchase_order_count', '=', 0)]}">
+                    <field name="purchase_order_count" widget="statinfo" string="Purchase" />
+                </button>
+           </div>
+        </field>
+    </record>
+        
+</odoo>

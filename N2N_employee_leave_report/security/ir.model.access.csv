@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+n2n_leave_analysis_view_form,n2n_leave_analysis_view_user,model_n2n_leave_analysis_view,,1,1,1,1
+employee_leave_report_form,employee_leave_report_user,model_employee_leave_report,,1,1,1,1

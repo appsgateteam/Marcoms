@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="done_activity_tree" model="ir.ui.view">
+        <field name="name">done.activity.tree</field>
+        <field name="model">done.activity</field>
+        <field name="arch" type="xml">
+            <tree string="Done Activities">
+                <field name="name"/>
+                <field name="type" />
+                <field name="state" />
+                <field name="user" />
+                <field name="res_name" />
+                <field name="plan_date" />
+                <field name="close_date" />
+            </tree>
+        </field>
+    </record>
+    <!-- <record id="done_activity_form" model="ir.ui.view">
+        <field name="name">done.activity.form</field>
+        <field name="model">done.activity</field>
+        <field name="arch" type="xml">
+            <form string="Done Activities">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="type" />
+                        </group>
+                        <group>
+                            <field name="state" />
+                            <field name="user" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record> -->
+    <record id="done_activity_pivot" model="ir.ui.view">
+        <field name="name">done.activity.pivot</field>
+        <field name="model">done.activity</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <pivot string="Done Activities">
+                <field name="type" type="row"/>
+                <!-- <field name="the_month" type="col"/> -->
+                <field name="user" type="measure"/>
+                <field name="name" type="measure"/>
+                <field name="state" />
+                <field name="plan_date" type="measure"/>
+                <field name="close_date" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+        <record model="ir.actions.act_window" id="action_done_activity">
+            <field name="name">Done Activities</field>
+            <field name="res_model">done.activity</field>
+            <field name="view_mode">tree,pivot</field>
+        </record>
+
+
+        <menuitem
+            id="menu_done_activity"
+            name="Done Activities"
+            parent="crm.crm_menu_report"
+            sequence="20"
+            action="action_done_activity"/>
+</odoo>

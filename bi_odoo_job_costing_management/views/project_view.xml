@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data> 
+    	<record id="inherit_view_note_note_tree" model="ir.ui.view">
+            <field name="name">inherit.view.note.note.tree</field>
+            <field name="model">note.note</field>
+            <field name="inherit_id" ref="note.view_note_note_tree"/>
+            <field name="arch" type="xml">
+                <field name="tag_ids" position="after">
+	            	<field name="construction_proj_id"/>
+	            	<field name="responsible_user"/>
+	            </field>
+            </field>
+        </record>
+        
+        <record id="bi_view_note_note_form" model="ir.ui.view">
+            <field name="name">inherit.view.note.note.form</field>
+            <field name="model">note.note</field>
+            <field name="inherit_id" ref="note.view_note_note_form" />
+            <field name="arch" type="xml">
+	                <xpath expr="//sheet" position="inside">
+	                    <group>
+		                    <field name="construction_proj_id"/>
+		                    <field name="responsible_user"/>
+		                </group>
+		            </xpath>
+        	</field>
+        </record>
+        
+        <record id="bi_view_project_project_form" model="ir.ui.view">
+            <field name="name">inherit.view.project.project.form</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="project.edit_project" />
+            <field name="arch" type="xml">
+	            <div class="oe_button_box" name="button_box" position="inside">      
+	                <button class="oe_stat_button" name="project_job_cost_button" type="object" icon="fa-address-book" attrs="{'invisible': [('job_cost_count', '=', 0)]}"> 
+	                        <field name="job_cost_count" widget="statinfo" string="Job Cost"/>
+                    </button>
+                    <button class="oe_stat_button" name="project_note_button" type="object" icon="fa-list" attrs="{'invisible': [('note_count', '=', 0)]}"> 
+	                        <field name="note_count" widget="statinfo" string="Notes"/>
+                    </button>
+	            </div>
+        	</field>
+        </record>
+        
+        <record id="bi_view_purchase_order_line_form" model="ir.ui.view">
+            <field name="name">inherit.view.purchase.order.line.form</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="after">
+                    <field name="job_cost_sheet_id"/>
+                </xpath>
+        	</field>
+        </record>
+        
+        <record id="bi_view_invoice_line_form" model="ir.ui.view">
+            <field name="name">inherit.view.invoice.line.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_supplier_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='name']" position="after">
+                    <field name="job_cost_sheet_id"/>
+                </xpath>
+        	</field>
+        </record>
+        
+    </data>
+</odoo>

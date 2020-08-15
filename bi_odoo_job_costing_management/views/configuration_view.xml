@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    
+        <record id="job_type_form_view" model="ir.ui.view">
+            <field name="name">job.type.form.view</field>
+            <field name="model">job.type</field>
+            <field name="arch" type="xml">
+                <form string="Job Type">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                        </group>
+                        <group>
+                            <field name="job_type"/>
+                        </group>
+                    </group>
+                </sheet>
+                </form>    
+            </field>
+    	</record>
+    
+    	<record id="job_type_tree_view" model="ir.ui.view">
+            <field name="name">job.type.tree.view</field>
+            <field name="model">job.type</field>
+            <field name="arch" type="xml">
+                <tree string="Job Type">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="job_type"/>
+                </tree>
+            </field>
+        </record>
+    
+        <record id="action_job_type" model="ir.actions.act_window">
+            <field name="name">Job Type</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">job.type</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        
+        <menuitem name="Job Type"
+            id="sub_menu_job_type"
+            parent = "sub_menu_configuration"
+            action = "action_job_type"
+            sequence = '2'
+            />
+            
+    </data>
+</odoo>

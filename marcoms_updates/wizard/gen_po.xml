@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<odoo>
+
+        <record id="generate_po_form" model="ir.ui.view">
+            <field name="name">generate.po.form</field>
+            <field name="model">generate.po</field>
+            <field name="arch" type="xml">
+                <form string="Generate PO">
+                    <h2>Do you want to create Purchase Order?</h2>
+                    <footer>
+						<button name="Generate_Purchase_order" string="Create PO" type="object" class="btn-primary"/>
+						<button string="Cancel" class="btn-default" special="cancel"/>
+					</footer>		
+				</form>
+            </field>
+        </record>
+
+        <record id="generate_po_action" model="ir.actions.act_window">
+            <field name="name">Generate Purchase Order</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">generate.po</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="generate_po_form"/>
+            <field name="target">new</field>
+        </record>
+
+        <!-- <act_window id="action_generate_po"
+
+            name="Generate Purchase Order"
+
+            src_model="purchase.order.line"
+
+            res_model="generate.po"
+
+            view_type="form" view_mode="form"
+
+            key2="client_action_multi" target="new"
+
+            /> -->
+
+
+            <record id="cancel_po_form" model="ir.ui.view">
+                <field name="name">cancel.po.form</field>
+                <field name="model">cancel.po</field>
+                <field name="arch" type="xml">
+                    <form string="Generate PO">
+                        <h2>Are you sure you want to cancel this Purchase Order?</h2>
+                        <footer>
+                            <button name="cancel_Purchase_order" string="Yes" type="object" class="btn-primary"/>
+                            <button string="Cancel" class="btn-default" special="cancel"/>
+                        </footer>		
+                    </form>
+                </field>
+            </record>
+    
+            <record id="cancel_po_action" model="ir.actions.act_window">
+                <field name="name">Cancel Purchase Order</field>
+                <field name="type">ir.actions.act_window</field>
+                <field name="res_model">cancel.po</field>
+                <field name="view_mode">form</field>
+                <field name="view_id" ref="cancel_po_form"/>
+                <field name="target">new</field>
+            </record>
+    
+            <act_window id="action_cancel_po"
+    
+                name="Cancel Purchase Order"
+    
+                src_model="purchase.order"
+    
+                res_model="cancel.po"
+    
+                view_type="form" view_mode="form"
+    
+                key2="client_action_multi" target="new"
+    
+                />
+
+</odoo>

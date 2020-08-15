@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+       
+        <report 
+            id="action_report_petty_cash_expense"
+            string="Petty Cash Expense"
+            model="petty.cash.expense" 
+            report_type="qweb-pdf"
+            menu="False"
+            file="marcom_expense_updates.report_petty_cash_expense" 
+            name="marcom_expense_updates.report_petty_cash_expense"
+            print_report_name="'Petty Cash Expense - %s' % (object.name)"
+        />
+
+    </data>
+</odoo>

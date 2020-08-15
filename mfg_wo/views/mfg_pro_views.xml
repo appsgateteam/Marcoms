@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mrp_production_view_form_inherit_planning" model="ir.ui.view">
+        <field name="name">mrp.production.form.view.inherit.planning</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <button name="button_plan" position="attributes">
+                <attribute name="string">Plan</attribute>
+                <attribute name="attrs">{'invisible': ['|', ('state', 'not in', ('confirmed', 'planned')), '|', ('routing_id', '=', False), '|', ('date_planned_start_wo', '!=', False), ('date_planned_finished_wo', '!=', False)]}</attribute>
+            </button>
+            <button name="button_plan" position="after">
+                <button name="button_unplan" type="object" string="Unplan" attrs="{'invisible': ['|', '|', ('state', '!=', 'planned'), ('date_planned_start_wo', '=', False), ('date_planned_finished_wo', '=', False)]}"/>
+            </button>
+            <field name="date_planned_finished" position="after">
+                <label for="date_planned_start_wo" string="Scheduled Date" attrs="{'invisible': [('date_planned_start_wo', '=', False)]}"/>
+                <div class="o_row" attrs="{'invisible': [('date_planned_start_wo', '=', False)]}">
+                    <field name="date_planned_start_wo" attrs="{'readonly': [('move_raw_ids', '!=', [])]}"/>
+                    <label for="date_planned_finished_wo" string="to" attrs="{'invisible': [('date_planned_finished_wo', '=', False)]}"/>
+                    <field name="date_planned_finished_wo" attrs="{'readonly': [('move_raw_ids', '!=', [])]}"/>
+                </div>
+            </field>
+        </field>
+    </record>
+
+        <!-- Manufacturing Order for Planing view -->
+        <record id="mrp_production_tree_view_planning" model="ir.ui.view">
+            <field name="name">mrp.production.tree.inherit.planning</field>
+            <field name="model">mrp.production</field>
+            <field name="arch" type="xml">
+                <tree decoration-bf="message_needaction==True" default_order="date_planned_start asc" decoration-info="state=='confirmed'" decoration-danger="date_planned_start&lt;current_date and state not in ('done','cancel')" decoration-muted="state in ('done','cancel')" string="Manufacturing Orders" name="Production">
+                    <field name="message_needaction" invisible="1"/>
+                    <field name="name"/>
+                    <field name="date_planned_start"/>
+                    <field name="product_id"/>
+                    <field name="product_qty" sum="Total Qty" string="Quantity"/>
+                    <field name="product_uom_id" string="Unit of Measure" options="{'no_open':True,'no_create':True}" groups="uom.group_uom"/>
+                    <field name="availability"/>
+                    <field name="routing_id" groups="mrp.group_mrp_routings"/>
+                    <field name="origin"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+    <record id="mrp_production_view_search_inherit_planning" model="ir.ui.view">
+        <field name="name">mrp.production.search.view.inherit.planning</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.view_mrp_production_filter"/>
+        <field name="arch" type="xml">
+            <filter name="planned" position="attributes">
+                <attribute name="domain">[('state','=','planned'), ('date_planned_start_wo', '!=', False), ('date_planned_finished_wo', '!=', False)]</attribute>
+            </filter>
+        </field>
+    </record>
+
+    <record id="production_order_unplan_server_action" model="ir.actions.server">
+        <field name="name">Mrp: Unplan Production Orders</field>
+        <field name="model_id" ref="mrp.model_mrp_production"/>
+        <field name="binding_model_id" ref="mrp.model_mrp_production" />
+        <field name="state">code</field>
+        <field name="code">records.button_unplan()</field>
+    </record>
+
+    <record id="mrp.act_product_mrp_production_workcenter" model="ir.actions.act_window">
+        <field name="domain">[('routing_id', '!=', False), ('routing_id.operation_ids.workcenter_id','=', active_id), ('date_planned_start_wo', '!=', False), ('date_planned_finished_wo', '!=', False)]</field>
+        <field name="view_id" ref="mrp_production_tree_view_planning"/>
+    </record>
+
+    <menuitem id="mrp_workorder_menu_planning"
+        name="Work Orders"
+        sequence="2"
+        parent="mrp.mrp_planning_menu_root"
+        groups="mrp.group_mrp_routings"/>
+    <menuitem id="menu_mrp_workorder_production"
+        name="Planning by Production"
+        sequence="1"
+        action="mrp.action_mrp_workorder_production"
+        parent="mrp_workorder_menu_planning"/>
+    <menuitem id="menu_mrp_workorder_workcenter"
+        name="Planning by Workcenter"
+        sequence="2"
+        action="mrp.action_mrp_workorder_workcenter"
+        parent="mrp_workorder_menu_planning"/>
+</odoo>
