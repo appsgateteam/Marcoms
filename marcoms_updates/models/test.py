@@ -75,6 +75,35 @@ class crm_customize(models.Model):
     reason_for_cancel = fields.Text('Reason For Cancel')
     tag_ids = fields.Many2one('crm.lead.tag',string='Tags', help="Classify and analyze your lead/opportunity categories like: Training, Service")
     source_master = fields.Many2one('source.master',string="Source")
+    is_oppor = fields.Boolean('print lead form from oppourtunity',default=False)
+
+    @api.multi
+    def action_duplicate(self):
+        self.copy(default={'type':'opportunity'})
+        return {
+                'type': 'ir.actions.client',
+                'tag': 'reload',
+            }
+        # raise UserError('Duplicate is done')
+        # return 
+
+    @api.multi
+    def mark_as_lost(self):
+        for rec in self:
+            if rec.reason_for_lost:
+                rec.write({'stage_id':11})
+            else:
+                raise UserError(_("You should add the reason for lost field ,then click the button again"))
+
+    @api.multi
+    def mark_as_cancel(self):
+        for rec in self:
+            if rec.reason_for_cancel:
+                rec.write({'stage_id':12})
+            else:
+                raise UserError(_("You should add the reason for cancel field ,then click the button again"))
+            
+
 
     @api.multi
     def submit_lead(self):
@@ -145,9 +174,10 @@ class crm_customize(models.Model):
                         'state':'reject',
                     })
         if vals.get('stage_id') == 5:
-            vals['design_complete'] = date.today()
-            if not self.design_deadline:
-                raise ValidationError(_("You should add the Design Deadline Date"))
+            if not self.assign_to_designer.id == 80 : 
+                vals['design_complete'] = date.today()
+                if not self.design_deadline:
+                    raise ValidationError(_("You should add the Design Deadline Date"))
             if self.sale_number:
                 com = self.env['sale.order'].search([('opportunity_id','=',self.id)])
                 for l in com:
@@ -227,6 +257,34 @@ class crm_customize(models.Model):
                 'target': 'new'
             }
 
+    # @api.multi
+    # def handle_partner_assignation(self,  action='create', partner_id=False):
+    #     """ Handle partner assignation during a lead conversion.
+    #         if action is 'create', create new partner with contact and assign lead to new partner_id.
+    #         otherwise assign lead to the specified partner_id
+
+    #         :param list ids: leads/opportunities ids to process
+    #         :param string action: what has to be done regarding partners (create it, assign an existing one, or nothing)
+    #         :param int partner_id: partner to assign if any
+    #         :return dict: dictionary organized as followed: {lead_id: partner_assigned_id}
+    #     """
+    #     partner_ids = {}
+    #     for lead in self:
+    #         if lead.partner_id:
+    #             partner_ids[lead.id] = lead.partner_id.id
+    #             continue
+    #         if action == 'create':
+    #             partner = lead._create_lead_partner()
+    #             if partner.parent_id:
+    #                 partner_id = partner.parent_id.id
+    #             else:
+    #                 partner_id = partner.id
+    #             partner.team_id = lead.team_id
+    #         if partner_id:
+    #             lead.partner_id = partner_id
+    #         partner_ids[lead.id] = partner_id
+    #     return partner_ids
+
     @api.multi
     def handle_partner_assignation(self,  action='create', partner_id=False):
         """ Handle partner assignation during a lead conversion.
@@ -238,11 +296,18 @@ class crm_customize(models.Model):
             :param int partner_id: partner to assign if any
             :return dict: dictionary organized as followed: {lead_id: partner_assigned_id}
         """
+        Partners = self.env['res.partner']
         partner_ids = {}
         for lead in self:
             if lead.partner_id:
                 partner_ids[lead.id] = lead.partner_id.id
-                continue
+                # continue
+            # if lead.email_from:  # search through the existing partners based on the lead's email
+                
+            #     if Partners.search([('email', '=', lead.email_from)], limit=1):
+            #         continue
+            #     else:
+            #         partner = lead._create_lead_partnerss()
             if action == 'create':
                 partner = lead._create_lead_partner()
                 if partner.parent_id:
@@ -250,10 +315,44 @@ class crm_customize(models.Model):
                 else:
                     partner_id = partner.id
                 partner.team_id = lead.team_id
+            if action == 'exist':
+                if lead.contact_name :  # search through the existing partners based on the lead's email
+                    # raise UserError('test2 %s'% (lead.contact_name) )
+                    if Partners.search([('email', '=', lead.email_from)], limit=1):
+                        continue
+                    else:
+                        partner = lead._create_lead_partnerss()
+                        if partner.parent_id:
+                            partner_id = partner.parent_id.id
+                        else:
+                            partner_id = partner.id
+                        partner.team_id = lead.team_id
+            # else:
+                
             if partner_id:
                 lead.partner_id = partner_id
             partner_ids[lead.id] = partner_id
         return partner_ids
+
+    @api.multi
+    def _create_lead_partnerss(self):
+        """ Create a partner from lead data
+            :returns res.partner record
+        """
+        Partner = self.env['res.partner']
+        contact_name = self.contact_name
+        if not contact_name:
+            contact_name = Partner._parse_partner_name(self.email_from)[0] if self.email_from else False
+
+        # if self.partner_name:
+        #     partner_company = Partner.create(self._create_lead_partner_data(self.partner_name, True))
+        # elif self.partner_id:
+        #     partner_company = self.partner_id
+        # else:
+        #     partner_company = None
+        partner_company = Partner.browse(self.partner_id.id)
+        if contact_name:
+            return Partner.create(self._create_lead_partner_data(contact_name, False, partner_company.id if partner_company else False))
 
     @api.multi
     def document_view(self):
@@ -1656,6 +1755,23 @@ class SaleOrderLinecus(models.Model):
     #     for line in self:
     #         if not line.is_discount and not line.discount:
     #             line.price_reduce = line.price_unit * (1.0 - line.discount / 100.0)
+
+    @api.onchange('product_uom_qty')
+    def product_uom_change(self):
+        if not self.product_uom or not self.product_id:
+            self.price_unit = 0.0
+            return
+        if self.order_id.pricelist_id and self.order_id.partner_id:
+            product = self.product_id.with_context(
+                lang=self.order_id.partner_id.lang,
+                partner=self.order_id.partner_id,
+                quantity=self.product_uom_qty,
+                date=self.order_id.date_order,
+                pricelist=self.order_id.pricelist_id.id,
+                uom=self.product_uom.id,
+                fiscal_position=self.env.context.get('fiscal_position')
+            )
+            self.price_unit = self.env['account.tax']._fix_tax_included_price_company(self._get_display_price(product), product.taxes_id, self.tax_id, self.company_id)
 
     
             

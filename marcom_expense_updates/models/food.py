@@ -926,9 +926,10 @@ class Transportaion_expense_detals(models.Model):
     # product_uom_id = fields.Many2one('uom.uom', string='Unit of Measure', required=True, readonly=True, states={'draft': [('readonly', False)], 'refused': [('readonly', False)]}, default=_default_product_uom_id)
     # unit_amount = fields.Float("Unit Price", readonly=True, required=True, states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'refused': [('readonly', False)]}, digits=dp.get_precision('Product Price'))
     # quantity = fields.Float(required=True, readonly=True, states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'refused': [('readonly', False)]})
-    # tax_ids = fields.Many2many('account.tax','transportaion_expense_id', 'tax_id', string='Taxes',  readonly=True , states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'refused': [('readonly', False)]})
+    tax_ids = fields.Many2many('account.tax','transportaion_expense_id', 'tax_id', string='Taxes',  readonly=True , states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'refused': [('readonly', False)]})
     # untaxed_amount = fields.Float("Subtotal", store=True, compute='_compute_amount', digits=dp.get_precision('Account'))
     total_amount = fields.Monetary("Total Amount", compute='_compute_amount', store=True, currency_field='currency_id', digits=dp.get_precision('Account'))
+    total_amounts = fields.Monetary("Amount", compute='_compute_amount', store=True, currency_field='currency_id', digits=dp.get_precision('Account'))
     company_currency_id = fields.Many2one('res.currency', string="Report Company Currency", related='sheet_id.currency_id', store=True, readonly=False)
     total_amount_company = fields.Monetary("Total (Company Currency)", compute='_compute_total_amount_company', store=True, currency_field='company_currency_id', digits=dp.get_precision('Account'))
     company_id = fields.Many2one('res.company', string='Company', readonly=True, states={'draft': [('readonly', False)], 'refused': [('readonly', False)]}, default=lambda self: self.env.user.company_id)
@@ -1026,13 +1027,13 @@ class Transportaion_expense_detals(models.Model):
             else:
                 expense.state = "done"
 
-    @api.depends('rates', 'labour_charges', 'waiting_charges')
+    @api.depends('tax_ids','rates', 'labour_charges', 'waiting_charges')
     def _compute_amount(self):
         for expense in self:
-            expense.total_amount = (expense.rates + expense.labour_charges + expense.waiting_charges)
-            # expense.untaxed_amount = expense.unit_amount * expense.quantity
-            # taxes = expense.tax_ids.compute_all(expense.unit_amount, expense.currency_id, expense.quantity, expense.product_id, expense.employee_id.user_id.partner_id)
-            # expense.total_amount = taxes.get('total_included')
+            expense.total_amounts = (expense.rates + expense.labour_charges + expense.waiting_charges)
+            expense.untaxed_amount = expense.total_amounts
+            taxes = expense.tax_ids.compute_all(expense.total_amounts, expense.currency_id, 1, expense.product_id, expense.employee_id.user_id.partner_id)
+            expense.total_amount = taxes.get('total_included')
 
     @api.depends('date', 'total_amount', 'company_currency_id')
     def _compute_total_amount_company(self):
@@ -1220,18 +1221,18 @@ class Transportaion_expense_detals(models.Model):
             different_currency = expense.currency_id and expense.currency_id != company_currency
 
             move_line_values = []
-            # taxes = expense.tax_ids.with_context(round=True).compute_all(expense.unit_amount, expense.currency_id, expense.quantity, expense.product_id)
+            taxes = expense.tax_ids.with_context(round=True).compute_all(expense.total_amounts, expense.currency_id, 1, expense.product_id)
             total_amount = 0.0
             total_amount_currency = 0.0
             partner_id = expense.partner_id.id
 
 
             # source move line
-            amount = expense.total_amount
+            amount = taxes['total_excluded']
             amount_currency = False
             if different_currency:
                 amount = expense.currency_id._convert(amount, company_currency, expense.company_id, account_date)
-                amount_currency = 0
+                amount_currency = taxes['total_excluded']
             move_line_src = {
                 'name': move_line_name,
                 # 'quantity': expense.quantity or 1,
@@ -1253,27 +1254,27 @@ class Transportaion_expense_detals(models.Model):
             total_amount_currency -= move_line_src['amount_currency'] or move_line_src['debit']
 
             # # taxes move lines
-            # for tax in taxes['taxes']:
-            #     amount = tax['amount']
-            #     amount_currency = False
-            #     if different_currency:
-            #         amount = expense.currency_id._convert(amount, company_currency, expense.company_id, account_date)
-            #         amount_currency = tax['amount']
-            #     move_line_tax_values = {
-            #         'name': tax['name'],
-            #         # 'quantity': 1,
-            #         'debit': amount if amount > 0 else 0,
-            #         'credit': -amount if amount < 0 else 0,
-            #         'amount_currency': amount_currency if different_currency else 0.0,
-            #         'account_id': tax['account_id'] or move_line_src['account_id'],
-            #         'tax_line_id': tax['id'],
-            #         'transportaion_expense_id': expense.id,
-            #         'partner_id': partner_id,
-            #         'currency_id': expense.currency_id.id if different_currency else False,
-            #     }
-            #     total_amount -= amount
-            #     total_amount_currency -= move_line_tax_values['amount_currency'] or amount
-            #     move_line_values.append(move_line_tax_values)
+            for tax in taxes['taxes']:
+                amount = tax['amount']
+                amount_currency = False
+                if different_currency:
+                    amount = expense.currency_id._convert(amount, company_currency, expense.company_id, account_date)
+                    amount_currency = tax['amount']
+                move_line_tax_values = {
+                    'name': tax['name'],
+                    # 'quantity': 1,
+                    'debit': amount if amount > 0 else 0,
+                    'credit': -amount if amount < 0 else 0,
+                    'amount_currency': amount_currency if different_currency else 0.0,
+                    'account_id': tax['account_id'] or move_line_src['account_id'],
+                    'tax_line_id': tax['id'],
+                    'transportaion_expense_id': expense.id,
+                    'partner_id': partner_id,
+                    'currency_id': expense.currency_id.id if different_currency else False,
+                }
+                total_amount -= amount
+                total_amount_currency -= move_line_tax_values['amount_currency'] or amount
+                move_line_values.append(move_line_tax_values)
 
             # destination move line
             move_line_dst = {
@@ -2337,7 +2338,7 @@ class Petty_Cash_Sheet(models.Model):
         return self.env['account.journal'].search([('type', 'in', ['cash', 'bank'])], limit=1)
 
     name = fields.Char('Expense Report Summary', required=True , readonly=True , states={'draft': [('readonly', False)], 'submit': [('readonly', False)], 'cancel': [('readonly', False)]})
-    expense_line_ids = fields.One2many('petty.cash.expense', 'sheet_id', string='Expense Lines', states={'approve': [('readonly', True)], 'done': [('readonly', True)], 'post': [('readonly', True)]}, copy=False)
+    expense_line_ids = fields.One2many('petty.cash.expense', 'sheet_id', string='Expense Lines', states={'done': [('readonly', True)], 'post': [('readonly', True)]}, copy=False)
     state = fields.Selection([
         ('draft', 'Draft'),
         ('submit', 'Submitted'),
@@ -2658,7 +2659,7 @@ class Labour_detals(models.Model):
     # product_uom_id = fields.Many2one('uom.uom', string='Unit of Measure', required=True, readonly=True, states={'draft': [('readonly', False)], 'refused': [('readonly', False)]}, default=_default_product_uom_id)
     # unit_amount = fields.Float("Unit Price", readonly=True, currency_field='currency_id', required=True,states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'refused': [('readonly', False)]})
     quantity = fields.Float( string='Quantity' ,   readonly=True, compute='_quantity_one')
-    tax_ids = fields.Many2many('account.tax','pettycash_expense_id', 'tax_id', string='VAT',  readonly=True , states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'refused': [('readonly', False)]})
+    tax_ids = fields.Many2many('account.tax','pettylabour_expense_id', 'taxes_id', string='VAT',  readonly=True , states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'refused': [('readonly', False)]})
     untaxed_amount = fields.Float("Net Amount", store=True,  digits=dp.get_precision('Account'))
     # total_amount = fields.Monetary("Gross Amount",  store=True, currency_field='currency_id', digits=dp.get_precision('Account'))
     company_currency_id = fields.Many2one('res.currency', string="Report Company Currency", related='sheet_id.currency_id', store=True, readonly=False)
@@ -2699,7 +2700,8 @@ class Labour_detals(models.Model):
     net_hours = fields.Float(string='Net hours',  readonly=True,compute='_compute_net_hours')
     rate_per_hour = fields.Float(string='Rate per hour',  readonly=True, required=True, states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'refused': [('readonly', False)]})
     total_hours = fields.Float(string='Total hours',  readonly=True , compute='_compute_total_hours')
-    total_amount = fields.Monetary("Amount(AED)",  compute='_compute_total_amount', store=True, currency_field='currency_id', digits=dp.get_precision('Account'))
+    total_amounts = fields.Monetary("Amount(AED)",  compute='_compute_amount', store=True, currency_field='currency_id', digits=dp.get_precision('Account'))
+    total_amount = fields.Monetary("Total Amount",  compute='_compute_amount', store=True, currency_field='currency_id', digits=dp.get_precision('Account'))
     # amount = fields.Float(string='Amount (AED)',  readonly=True)
 
     
@@ -2727,11 +2729,12 @@ class Labour_detals(models.Model):
             rec.net_hours = (rec.total_hours - rec.break_hour) + rec.travelling_hours 
 
 
-    @api.multi
-    @api.depends('rate_per_hour','net_hours','no_of_helpers')
-    def _compute_total_amount(self):
-        for rec in self:
-            rec.total_amount = rec.rate_per_hour * rec.net_hours * rec.no_of_helpers   
+    # @api.multi
+    # @api.depends('rate_per_hour','net_hours','no_of_helpers')
+    # def _compute_total_amount(self):
+    #     for rec in self:
+    #         rec.total_amounts = rec.rate_per_hour * rec.net_hours * rec.no_of_helpers 
+    #         rec.untaxed_amount = rec.total_amounts
 
 
     @api.one
@@ -2853,11 +2856,12 @@ class Labour_detals(models.Model):
             else:
                 expense.state = "done"
 
-    @api.depends('quantity', 'tax_ids', 'currency_id')
+    @api.depends('quantity', 'tax_ids', 'currency_id','rate_per_hour','net_hours','no_of_helpers')
     def _compute_amount(self):
         for expense in self:
-            expense.untaxed_amount = expense.unit_amount * expense.quantity
-            taxes = expense.tax_ids.compute_all(expense.unit_amount, expense.currency_id, expense.quantity, expense.product_id, expense.employee_id.user_id.partner_id)
+            expense.total_amounts = expense.rate_per_hour * expense.net_hours * expense.no_of_helpers 
+            expense.untaxed_amount = expense.total_amounts
+            taxes = expense.tax_ids.compute_all(expense.total_amounts, expense.currency_id, 1, expense.product_id, expense.employee_id.user_id.partner_id)
             expense.total_amount = taxes.get('total_included')
 
     @api.depends('date', 'total_amount', 'company_currency_id')
@@ -3047,17 +3051,17 @@ class Labour_detals(models.Model):
             different_currency = expense.currency_id and expense.currency_id != company_currency
 
             move_line_values = []
-            # taxes = expense.tax_ids.with_context(round=True).compute_all(expense.currency_id, expense.quantity)
+            taxes = expense.tax_ids.with_context(round=True).compute_all(expense.total_amounts, expense.currency_id, 1, expense.product_id)
             total_amount = 0.0
             total_amount_currency = 0.0
             partner_id = expense.partner_id.id
 
             # source move line
-            amount = expense.total_amount
-            amount_currency = amount
+            amount = taxes['total_excluded']
+            amount_currency = False
             if different_currency:
                 amount = expense.currency_id._convert(amount, company_currency, expense.company_id, account_date)
-                amount_currency = amount
+                amount_currency = taxes['total_excluded']
             move_line_src = {
                 'name': move_line_name,
                 'quantity': expense.quantity or 1,
@@ -3079,27 +3083,27 @@ class Labour_detals(models.Model):
             total_amount_currency -= move_line_src['amount_currency'] or move_line_src['debit']
 
             # # taxes move lines
-            # for tax in taxes['taxes']:
-            #     amount = tax['amount']
-            #     amount_currency = False
-            #     if different_currency:
-            #         amount = expense.currency_id._convert(amount, company_currency, expense.company_id, account_date)
-            #         amount_currency = tax['amount']
-            #     move_line_tax_values = {
-            #         'name': tax['name'],
-            #         'quantity': 1,
-            #         'debit': amount if amount > 0 else 0,
-            #         'credit': -amount if amount < 0 else 0,
-            #         'amount_currency': amount_currency if different_currency else 0.0,
-            #         'account_id': tax['account_id'] or move_line_src['account_id'],
-            #         'tax_line_id': tax['id'],
-            #         'labour_expense_id': expense.id,
-            #         'partner_id': partner_id,
-            #         'currency_id': expense.currency_id.id if different_currency else False,
-            #     }
-            #     total_amount -= amount
-            #     total_amount_currency -= move_line_tax_values['amount_currency'] or amount
-            #     move_line_values.append(move_line_tax_values)
+            for tax in taxes['taxes']:
+                amount = tax['amount']
+                amount_currency = False
+                if different_currency:
+                    amount = expense.currency_id._convert(amount, company_currency, expense.company_id, account_date)
+                    amount_currency = tax['amount']
+                move_line_tax_values = {
+                    'name': tax['name'],
+                    'quantity': 1,
+                    'debit': amount if amount > 0 else 0,
+                    'credit': -amount if amount < 0 else 0,
+                    'amount_currency': amount_currency if different_currency else 0.0,
+                    'account_id': tax['account_id'] or move_line_src['account_id'],
+                    'tax_line_id': tax['id'],
+                    'labour_expense_id': expense.id,
+                    'partner_id': partner_id,
+                    'currency_id': expense.currency_id.id if different_currency else False,
+                }
+                total_amount -= amount
+                total_amount_currency -= move_line_tax_values['amount_currency'] or amount
+                move_line_values.append(move_line_tax_values)
 
             # destination move line
             move_line_dst = {
