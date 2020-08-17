@@ -1,0 +1,20 @@
+Date :- 23rd jan 2020
+Version 12.0.0.1
+	- remove _description warning
+
+Version 12.0.0.3
+
+	- Sub task page remove and sub task samart button counter updated parent id hide from form view, and widget added for time field.
+
+Version 12.0.0.4
+
+	- Create sub task button remove from module.
+
+Version 12.0.0.5 
+
+	- Create sub task button is displayed only in parent form view. 	
+
+Version 12.0.0.6
+
+	- On creating subtasks from parent, parent_id field is filled up automatically. 
+	- While manually creating a subtask, create subtasks button becomes invisible.	 

@@ -1,0 +1,3 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+n2n_stock_move_analysis_view_user,n2n_stock_move_analysis_view_name,N2N_stock_report.model_n2n_stock_move_analysis_view,,1,1,1,1
+n2n_st_move_analysis_wizard_user,n2n_st_move_analysis_wizard_name,N2N_stock_report.model_n2n_st_move_analysis_wizard,,1,1,1,1

@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 import logging
 _logger = logging.getLogger(__name__)
 from odoo.tools import html2plaintext
-from odoo.exceptions import except_orm, UserError, ValidationError
 
 class JobCostSheet(models.Model):
     _name = 'job.cost.sheet'
@@ -43,15 +42,6 @@ class JobCostSheet(models.Model):
     company_id = fields.Many2one('res.company',string="Company")
     sale_reference = fields.Text(string="Description Sale Reference")
     
-
-    @api.multi
-    def unlink(self):
-        for job in self:
-            if job.stage in ('done','approve'):
-                raise UserError(_('You can not delete a sheet after approved or been done.'))
-        return super(JobCostSheet, self).unlink()
-
-
     @api.multi
     def _get_purchase_order_line_count(self):
         count = 0.0

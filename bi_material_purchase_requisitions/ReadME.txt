@@ -21,3 +21,24 @@
 12.0.0.8
     change vendor field to required.
 
+Date 17th march 2020
+12.0.0.8
+	- purchase order operation select , thats required field vendor other wise its not required.
+	- vendor not given then internal transfer will generate.
+	- receive date readonly.
+
+
+Date 26th march 2020
+version 12.0.0.9
+issues and improvement:-
+	--> vendors field should be required field for the purchase order not for the internal picking in “material requisition” 
+	--> purchase requisition-->received date field should be non editable .
+	--> purchase order operation select , thats required field vendor other wise its not required.
+	--> vendor not given then internal transfer will generate.
+	--> vendors field should be required field for the purchase order not for the internal picking in “material requisition” 
+	--> purchase requisition-->received date field should be non editable .
+	--> Add Check Box in the cost sheet --> picking details tab(if the it is checked than manually visible source and destination field will be visible)
+	--> Source location is wrong passed(NOT IMPROVED)
+	--> purchase requisition smart button hide,if not available.
+	--> In Purchase Requisition "Construction project" field  should be fetched from cost sheet project name
+	--> internal picking and ref not given , select manully all fields

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <record id="n2n_stock_move_analysis_tree" model="ir.ui.view">
+            <field name="name">Move Analysis</field>
+            <field name="model">n2n.stock.move.analysis.view</field>
+            <field name="arch" type="xml">
+                <tree string="Move Analysis" create="false">
+                    <field name="date"/>
+                    <field name="partner_id"/>
+                    <field name="product_id"/>
+                    <field name="analytic_id"/>
+                    <field name="task_id"/>
+                    <field name="uom_id"/>
+                    <field name="location"/>
+                    <field name="type"/>
+                    <field name="batch_name"/>
+                    <field name="origin"/>
+                    <field name="source"/>
+                    <field name="destination"/>
+<!--                     <field name="warehouse_id"/> --> 
+                    <field name="categ_id"/>
+                    <!-- <field name="nn_pdt_group_id"/>
+                    <field name="nn_pdt_sub_group_id"/> -->                    
+                    <!-- <field name="nn_pdt_brand_id"/> -->
+                    <field name="qty"/>
+                    <field name="price_unit"/>
+                    <field name="value"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="n2n_stock_move_analysis_pivot" model="ir.ui.view">
+            <field name="name">Move Analysis</field>
+            <field name="model">n2n.stock.move.analysis.view</field>
+            <field name="arch" type="xml">
+                <pivot string="Move Analysis">
+                    <field name="date"/>
+                    <field name="product_id"/>
+                    <field name="location"/>
+                    <field name="qty" type="measure" />
+                    <field name="value"  type="measure" />
+                    <field name="origin"/>
+                    <field name="type"/>
+                    <field name="warehouse_id"/>
+                    <field name="batch_name"/>
+                    <field name="source"/>
+                    <field name="destination"/>
+                    <field name="categ_id"/>
+                    <!-- <field name="nn_pdt_brand_id"/> -->
+                  <!--   <field name="nn_pdt_group_id"/>
+                    <field name="nn_pdt_sub_group_id"/>   -->                  
+                    <field name="uom_id"/>
+                    
+                </pivot>
+            </field>
+        </record>
+
+        <record id="n2n_stock_move_analysis_graph" model="ir.ui.view">
+            <field name="name">Move Analysis</field>
+            <field name="model">n2n.stock.move.analysis.view</field>
+            <field name="arch" type="xml">
+                <graph string="Move Analysis">
+                    <field name="date"/>
+                    <field name="product_id"/>
+                    <field name="uom_id"/>
+                    <field name="location"/>
+                    <field name="type"/>
+                    <field name="batch_name"/>
+                    <field name="origin"/>
+                    <field name="source"/>
+                    <field name="destination"/>
+                    <field name="warehouse_id"/>
+                    <field name="categ_id"/>
+                    <!-- <field name="nn_pdt_brand_id"/> -->
+                 <!--    <field name="nn_pdt_group_id"/>
+                    <field name="nn_pdt_sub_group_id"/>       -->
+                    <field name="qty" type="measure" />
+                    <field name="value"  type="measure" />
+                </graph>
+            </field>
+        </record>
+
+        <record id="n2n_stock_move_analysis_search" model="ir.ui.view">
+        <field name="name">Move Analysis</field>
+        <field name="model">n2n.stock.move.analysis.view</field>
+        <field name="arch" type="xml">
+            <search string="Move Analysis">
+                <field name="product_id" string="Product"/>
+                <field name="location"/>
+                <field name="type"/>
+                <field name="categ_id"/>                  
+                <group expand="0" string="Group By">
+                  <!--   <filter string="Month" name="date" context="{'group_by':'date:day'}" help="Month Wise Report"/> -->
+                    <filter string="Product" name="product_id" context="{'group_by':'product_id'}" help="Product Wise Report"/>
+                    <filter string="Location" name="location" context="{'group_by':'location'}" help="Location Wise Report"/>
+                    <filter string="Source Location" name="source" context="{'group_by':'source'}" help="Source Location Wise Report"/>
+                    <filter string="Destination Location" name="destination" context="{'group_by':'destination'}" help="Destination Location Wise Report"/>
+                    <filter string="Type" name="type" context="{'group_by':'type'}" help="Type Wise Report"/>
+                    <filter string="Category" name="categ_id" context="{'group_by':'categ_id'}" help="Category Wise Report"/>
+                    
+                </group>
+            </search>
+        </field>
+        </record>
+
+        <record id="action_n2n_stock_move_analysis_new" model="ir.actions.act_window">
+            <field name="name">Move Analysis</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">n2n.stock.move.analysis.view</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,pivot,graph</field>
+            <field name="context">{'search_default_group_type': 1}</field>
+            <field name="view_id" ref="n2n_stock_move_analysis_tree"/>
+            <field name="search_view_id" ref="n2n_stock_move_analysis_search"/>
+        </record>
+
+
+
+</odoo>

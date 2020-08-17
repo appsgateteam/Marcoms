@@ -41,7 +41,7 @@
                         </group>
                         <group>
                             <field name="requisition_date" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
-                            <field name="received_date" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
+                            <field name="received_date" readonly="1"/>
                             <field name="requisition_deadline_date" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
                             <field name="company_id" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
                         </group>
@@ -55,19 +55,24 @@
                                     <field name="description" />
                                     <field name="qty" />
                                     <field name="uom_id" />
-                                    <field name="vendor_id" required="1" widget="many2many_tags" groups="bi_material_purchase_requisitions.group_purchase_requisition_user,bi_material_purchase_requisitions.group_requisition_department_manager"/>
+                                    <field name="vendor_id" attrs="{'required': [('requisition_action', '=', 'purchase_order')]}" widget="many2many_tags" groups="bi_material_purchase_requisitions.group_purchase_requisition_user,bi_material_purchase_requisitions.group_requisition_department_manager"/>
                                 </tree>
                             </field>
                         </page>
                         <page string="Picking Details" groups="bi_material_purchase_requisitions.group_purchase_requisition_user,bi_material_purchase_requisitions.group_requisition_department_manager">
                             <group>
+                                <field name="use_manual_locations"/>
+                            </group>
+                            <group string ="Purchase Order Configration">
                                 <group>
-                                    <field name="source_location_id" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
                                     <field name="picking_type_id" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
                                 </group>
+                            </group>
+                            <group string ="Internal Picking Configration">
                                 <group>
-                                    <field name="destination_location_id" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
-                                    <field name="internal_picking_id" required="1" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
+                                    <field name="source_location_id" attrs="{'readonly': [('state', 'in', ['cancel'])],'required':[('use_manual_locations' ,'=',True)],'invisible': [('use_manual_locations', '=', False)]}"/>
+                                    <field name="destination_location_id" attrs="{'readonly': [('state', 'in', ['cancel'])],'required':[('use_manual_locations' ,'=',True)],'invisible': [('use_manual_locations', '=', False)]}"/>
+                                    <field name="internal_picking_id" attrs="{'readonly': [('state', 'in', ['cancel'])],'invisible': [('use_manual_locations', '=', True)],'required':[('use_manual_locations' ,'=',False)]}"/>
                                 </group>
                             </group>
                         </page>
@@ -88,8 +93,8 @@
                             </group>
                         </page>
                     </notebook>
-                    <label for="reason_for_requisition"/>
-                    <field name="reason_for_requisition"/>
+                    <label for="reason_for_requisition" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
+                    <field name="reason_for_requisition" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
                 </sheet>
                 </form>    
             </field>
@@ -168,7 +173,6 @@
 
         <menuitem id="menu_requisition"
           name="Requisitions"
-          web_icon="bi_material_purchase_requisitions,static/description/icon.png"
           />
 
         <menuitem id="menu_purchase_requisition"

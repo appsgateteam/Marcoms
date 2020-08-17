@@ -10,6 +10,8 @@ from odoo.exceptions import Warning
 class MaterialPurchaseRequisition(models.Model):
     _name = "material.purchase.requisition"
     _rec_name = 'sequence'
+    _order = 'sequence desc'
+    _description = "Material Purchase Requisition"
 
     @api.model
     def create(self , vals):
@@ -162,105 +164,229 @@ class MaterialPurchaseRequisition(models.Model):
                 mail_mail_obj.send([msg_id])         
         return res 
 
-    @api.multi
     def create_picking_po(self):
         purchase_order_obj = self.env['purchase.order']
         purchase_order_line_obj = self.env['purchase.order.line']
-
-        for line in self.requisition_line_ids:
-            pro_id = ''
-            sea = self.env['product.product'].search([('default_code','=',line.product_id.default_code),('name','=',line.product_id.name)])
-            for n in sea:
-                pro_id = n.id
-            if line.requisition_action == 'purchase_order':
-                for vendor in line.vendor_id:
-                    pur_order = purchase_order_obj.search([('requisition_po_id','=',self.id),('partner_id','=',vendor.id)])
-                    if pur_order:
-                        po_line_vals = {
-                                        'product_id' : pro_id,
-                                        'product_qty': line.qty,
-                                        'name' : line.description,
-                                        'price_unit' : line.product_id.list_price,
-                                        'date_planned' : datetime.now(),
-                                        'product_uom' : line.uom_id.id,
-                                        'order_id' : pur_order.id,
-                        }
-                        purchase_order_line = purchase_order_line_obj.create(po_line_vals)
-                    else:
-                        vals = {
+        for requisition in self:
+            for line in requisition.requisition_line_ids:
+                if line.requisition_action == 'purchase_order':
+                    for vendor in line.vendor_id:
+                        pur_order = purchase_order_obj.search([('requisition_po_id','=',requisition.id),('partner_id','=',vendor.id)])
+                        if pur_order:
+                            po_line_vals = {
+                                'product_id' : line.product_id.id,
+                                'product_qty': line.qty,
+                                'name' : line.description,
+                                'price_unit' : line.product_id.list_price,
+                                'date_planned' : datetime.now(),
+                                'product_uom' : line.uom_id.id,
+                                'order_id' : pur_order.id,
+                            }
+                            purchase_order_line = purchase_order_line_obj.create(po_line_vals)
+                        else:
+                            vals = {
                                 'partner_id' : vendor.id,
-                                'origin':self.sequence,
                                 'date_order' : datetime.now(),
-                                'requisition_po_id' : self.id,
-                                'state' : 'draft'
-                        }
-                        purchase_order = purchase_order_obj.create(vals)
-                        po_line_vals = {
-                                        'product_id' : pro_id,
-                                        'product_qty': line.qty,
-                                        'name' : line.description,
-                                        'price_unit' : line.product_id.list_price,
-                                        'date_planned' : datetime.now(),
-                                        'product_uom' : line.uom_id.id,
-                                        'order_id' : purchase_order.id,
-                        }
-                        purchase_order_line = purchase_order_line_obj.create(po_line_vals)
-            else:
-                for vendor in line.vendor_id:
+                                'requisition_po_id' : requisition.id,
+                                'origin': requisition.sequence,
+                                'job_id':requisition.job_order_id.id,
+                                'state' : 'draft',
+                                'picking_type_id' : requisition.picking_type_id.id                                
+                            }
+                            purchase_order = purchase_order_obj.create(vals)
+                            po_line_vals = {
+                                'product_id' : line.product_id.id,
+                                'product_qty': line.qty,
+                                'name' : line.description,
+                                'price_unit' : line.product_id.list_price,
+                                'date_planned' : datetime.now(),
+                                'product_uom' : line.uom_id.id,
+                                'order_id' : purchase_order.id,
+                            }
+                            purchase_order_line = purchase_order_line_obj.create(po_line_vals)
+                else:
                     stock_picking_obj = self.env['stock.picking']
                     stock_move_obj = self.env['stock.move']
                     stock_picking_type_obj = self.env['stock.picking.type']
-                    picking_type_ids = stock_picking_type_obj.search([('code','=','internal')])
-                    if not picking_type_ids:
-                        raise Warning(_('Please define Internal Picking.'))
-                    #employee_id = self.env['hr.employee'].search('id','=',self.env.user.name)
-                    pur_order = stock_picking_obj.search([('requisition_picking_id','=',self.id),('partner_id','=',vendor.id)])
-                    if pur_order:
-                        pic_line_val = {
-                                        'name': line.product_id.name,
-                                        'product_id' : pro_id,
-                                        'product_uom_qty' : line.qty,
-                                        'picking_id' : stock_picking.id,
-                                        'product_uom' : line.uom_id.id,
-                                        'location_id': self.source_location_id.id,
-                                        'location_dest_id' : self.destination_location_id.id,
+                    picking_type_id = False
 
-                        }
-                        stock_move = stock_move_obj.create(pic_line_val)
-
+#                    if requisition.picking_type_id.id:
+#                        raise Warning(_('Please define Internal Picking.'))
+                    if not requisition.use_manual_locations:
+                        picking_type_id = requisition.internal_picking_id
                     else:
-                        val = {
-                                'partner_id' : vendor.id,
-                                'origin': self.sequence,
-                                'location_id'  : self.source_location_id.id,
-                                'location_dest_id' : picking_type_ids[0].default_location_dest_id.id,
-                                'picking_type_id' : picking_type_ids[0].id,
-                                'company_id': self.env.user.company_id.id,
-                                'requisition_picking_id' : self.id,
-				#'material_requisition_id':self.job_order_id and self.job_order_id.id,
-				#'job_order_user_id':self.job_order_user_id and self.job_order_user_id.id,
-				#'construction_project_id':self.construction_project_id and self.construction_project_id.id,
-				#'analytic_account_id':self.account_analytic_id and self.account_analytic_id.id,
-                        }
-                        stock_picking = stock_picking_obj.create(val)
+                        picking_type_id = stock.stock_picking_type_obj.search([('code','=','internal')], order="id desc", limit=1)
 
-                        pic_line_val = {
-                                        'partner_id' : vendor.id,
+                    if line.vendor_id:                    
+                        for vendor in line.vendor_id:
+                        
+                            #employee_id = self.env['hr.employee'].search('id','=',self.env.user.name)
+                            pur_order = stock_picking_obj.search([('requisition_picking_id','=',requisition.id),('partner_id','=',vendor.id)])
+                            
+                            if pur_order:
+                                if requisition.use_manual_locations:
+                                    pic_line_val = {
                                         'name': line.product_id.name,
-                                        'product_id' : pro_id,
+                                        'product_id' : line.product_id.id,
                                         'product_uom_qty' : line.qty,
+                                        'picking_id' : picking_type_id.id,
                                         'product_uom' : line.uom_id.id,
-                                        'location_id': self.source_location_id.id,
-                                        'location_dest_id' : picking_type_ids[0].default_location_dest_id.id,
-                                        'picking_id' : stock_picking.id
+                                        'location_id': requisition.source_location_id.id,
+                                        'location_dest_id' : requisition.destination_location_id.id,
+                                    }
+                                else:
+                                    pic_line_val = {
+                                        'name': line.product_id.name,
+                                        'product_id' : line.product_id.id,
+                                        'product_uom_qty' : line.qty,
+                                        'picking_id' : picking_type_id.id,
+                                        'product_uom' : line.uom_id.id,
+                                        'location_id': picking_type_id.default_location_src_id.id,
+                                        'location_dest_id' : picking_type_id.default_location_dest_id.id,
+                                    }                                    
 
-                        }
-                        stock_move = stock_move_obj.create(pic_line_val)
 
-        res = self.write({
-                            'state':'po_created',
-                        })
-        return res                 
+                                stock_move = stock_move_obj.create(pic_line_val)
+                            else:
+                                if requisition.use_manual_locations:
+                                    val = {
+                                        'partner_id' : vendor.id,
+                                        'location_id'  : requisition.source_location_id.id,
+                                        'location_dest_id' : requisition.destination_location_id.id,
+                                        'picking_type_id' : picking_type_id.id,
+                                        'material_requisition_id':requisition.job_order_id.id,
+                                        'construction_project_id' : requisition.construction_project_id.id,
+                                        'analytic_account_id' : requisition.analytic_id.id,                                        
+                                        'company_id': requisition.env.user.company_id.id,
+                                        'requisition_picking_id' : requisition.id,
+                                        'origin':requisition.sequence
+                                    }
+                                else:
+                                    val = {
+                                        'partner_id' : vendor.id,
+                                        'location_id'  : picking_type_id.default_location_src_id.id,
+                                        'location_dest_id' :picking_type_id.default_location_src_id.id,
+                                        'picking_type_id' : picking_type_id.id,
+                                        'material_requisition_id':requisition.job_order_id.id,
+                                        'construction_project_id' : requisition.construction_project_id.id,
+                                        'analytic_account_id' : requisition.analytic_id.id,                                        
+                                        'company_id': requisition.env.user.company_id.id,
+                                        'requisition_picking_id' : requisition.id,
+                                        'origin':requisition.sequence
+                                    }                                    
+
+                                stock_picking = stock_picking_obj.create(val)
+                                if requisition.use_manual_locations:
+                                    pic_line_val = {
+                                                    'partner_id' : vendor.id,
+                                                    'name': line.product_id.name,
+                                                    'product_id' : line.product_id.id,
+                                                    'product_uom_qty' : line.qty,
+                                                    'product_uom' : line.uom_id.id,
+                                                    'location_id': requisition.source_location_id.id,
+                                                    'location_dest_id' : requisition.destination_location_id.id,
+                                                    'picking_id' : stock_picking.id,
+                                                    'origin': requisition.sequence
+
+                                    }
+                                else:
+                                    pic_line_val = {
+                                                    'partner_id' : vendor.id,
+                                                    'name': line.product_id.name,
+                                                    'product_id' : line.product_id.id,
+                                                    'product_uom_qty' : line.qty,
+                                                    'product_uom' : line.uom_id.id,
+                                                    'location_id': picking_type_id.default_location_src_id.id,
+                                                    'location_dest_id' : picking_type_id.default_location_dest_id.id,
+                                                    'picking_id' : stock_picking.id,
+                                                    'origin': requisition.sequence
+
+                                    }                                    
+                                stock_move = stock_move_obj.create(pic_line_val)
+                    else:
+                        pur_order = stock_picking_obj.search([('requisition_picking_id','=',requisition.id)])                     
+
+                        if pur_order:
+                            if requisition.use_manual_locations:
+                                pic_line_val = {
+                                    'name': line.product_id.name,
+                                    'product_id' : line.product_id.id,
+                                    'product_uom_qty' : line.qty,
+                                    'picking_id' : stock_picking.id,
+                                    'product_uom' : line.uom_id.id,
+                                    'location_id': requisition.source_location_id.id,
+                                    'location_dest_id' : requisition.destination_location_id.id,
+                                }
+                            else:
+                                pic_line_val = {
+                                    'name': line.product_id.name,
+                                    'product_id' : line.product_id.id,
+                                    'product_uom_qty' : line.qty,
+                                    'picking_id' : stock_picking.id,
+                                    'product_uom' : line.uom_id.id,
+                                    'location_id': picking_type_id.default_location_src_id.id,
+                                    'location_dest_id' : picking_type_id.default_location_dest_id.id,
+                                }                                
+
+                            stock_move = stock_move_obj.create(pic_line_val)
+                        else:
+                            if requisition.use_manual_locations:
+                                val = {
+                                    'location_id'  : requisition.source_location_id.id,
+                                    'location_dest_id' : requisition.destination_location_id.id,
+                                    'picking_type_id' : picking_type_id.id,
+                                    'material_requisition_id':requisition.job_order_id.id,
+                                    'construction_project_id' : requisition.construction_project_id.id,
+                                    'analytic_account_id' : requisition.analytic_id.id,                                    
+                                    'company_id': requisition.env.user.company_id.id,
+                                    'requisition_picking_id' : requisition.id,
+                                    'origin':requisition.sequence
+                                }
+                            else:
+                                val = {
+                                    'location_id'  : picking_type_id.default_location_src_id.id,
+                                    'location_dest_id' : picking_type_id.default_location_dest_id.id,
+                                    'picking_type_id' : picking_type_id.id,
+                                    'material_requisition_id':requisition.job_order_id.id,
+                                    'construction_project_id' : requisition.construction_project_id.id,
+                                    'analytic_account_id' : requisition.analytic_id.id,
+                                    'company_id': requisition.env.user.company_id.id,
+                                    'requisition_picking_id' : requisition.id,
+                                    'origin':requisition.sequence
+                                }                                
+
+
+                            stock_picking = stock_picking_obj.create(val)
+                            if requisition.use_manual_locations:
+                                pic_line_val = {
+                                                'name': line.product_id.name,
+                                                'product_id' : line.product_id.id,
+                                                'product_uom_qty' : line.qty,
+                                                'product_uom' : line.uom_id.id,
+                                                'location_id': requisition.source_location_id.id,
+                                                'location_dest_id' : requisition.destination_location_id.id,
+                                                'picking_id' : stock_picking.id,
+                                                'origin': requisition.sequence
+
+                                }
+                            else:
+                                pic_line_val = {
+                                                'name': line.product_id.name,
+                                                'product_id' : line.product_id.id,
+                                                'product_uom_qty' : line.qty,
+                                                'product_uom' : line.uom_id.id,
+                                                'location_id': picking_type_id.default_location_src_id.id,
+                                                'location_dest_id' : picking_type_id.default_location_dest_id.id,
+                                                'picking_id' : stock_picking.id,
+                                                'origin': requisition.sequence
+
+                                }
+                            stock_move = stock_move_obj.create(pic_line_val)
+            requisition.write({
+                'state':'po_created',
+            }) 
+
+
 
     @api.multi
     def _get_internal_picking_count(self):
@@ -296,11 +422,11 @@ class MaterialPurchaseRequisition(models.Model):
             'domain': [('requisition_po_id', '=', self.id)],
         }
 
-    @api.multi
-    def _get_emp_destination(self):
-        if not self.employee_id.destination_location_id:
-            return 
-        self.destination_location_id = self.employee_id.destination_location_id
+    # @api.multi
+    # def _get_emp_destination(self):
+    #     if not self.employee_id.destination_location_id:
+    #         return 
+    #     self.destination_location_id = self.employee_id.destination_location_id
 
     @api.model
     def _default_picking_type(self):
@@ -331,29 +457,30 @@ class MaterialPurchaseRequisition(models.Model):
     state = fields.Selection([
                                 ('new','New'),
                                 ('department_approval','Waiting Department Approval'),
-                                ('ir_approve','Waiting IR Approved'),
+                                ('ir_approve','Waiting User Approved'),
                                 ('approved','Approved'),
                                 ('po_created','Purchase Order Created'),
                                 ('received','Received'),
                                 ('cancel','Cancel')],string='Stage',default="new")
     requisition_line_ids = fields.One2many('requisition.line','requisition_id',string="Requisition Line ID")    
-    confirmed_by_id = fields.Many2one('res.users',string="Confirmed By")
-    department_manager_id = fields.Many2one('res.users',string="Department Manager")
-    approved_by_id = fields.Many2one('res.users',string="Approved By")
-    rejected_by = fields.Many2one('res.users',string="Rejected By")
-    confirmed_date = fields.Date(string="Confirmed Date",readonly=True)
-    department_approval_date = fields.Date(string="Department Approval Date",readonly=True)
-    approved_date = fields.Date(string="Approved Date",readonly=True)
-    rejected_date = fields.Date(string="Rejected Date",readonly=True)
+    confirmed_by_id = fields.Many2one('res.users',string="Confirmed By", copy=False)
+    department_manager_id = fields.Many2one('res.users',string="Department Manager", copy=False)
+    approved_by_id = fields.Many2one('res.users',string="Approved By", copy=False)
+    rejected_by = fields.Many2one('res.users',string="Rejected By", copy=False)
+    confirmed_date = fields.Date(string="Confirmed Date",readonly=True , copy=False)
+    department_approval_date = fields.Date(string="Department Approval Date",readonly=True, copy=False)
+    approved_date = fields.Date(string="Approved Date",readonly=True, copy=False)
+    rejected_date = fields.Date(string="Rejected Date",readonly=True , copy=False)
     reason_for_requisition = fields.Text(string="Reason For Requisition")
-    source_location_id = fields.Many2one('stock.location',string="Source Location", related="internal_picking_id.default_location_dest_id")
+    source_location_id = fields.Many2one('stock.location',string="Source Location")
     destination_location_id = fields.Many2one('stock.location',string="Destination Location")
     internal_picking_id = fields.Many2one('stock.picking.type',string="Internal Picking", default=_default_picking_internal_type)
     internal_picking_count = fields.Integer('Internal Picking', compute='_get_internal_picking_count')
     purchase_order_count = fields.Integer('Purchase Order', compute='_get_purchase_order_count')
-    company_id = fields.Many2one('res.company',string="Company")
+    company_id = fields.Many2one('res.company',string="Company" , default=lambda self: self.env.user.company_id)
     picking_type_id = fields.Many2one('stock.picking.type', 'Deliver To', required=True, default=_default_picking_type)
-
+    use_manual_locations = fields.Boolean(string="Select Manual Locations")
+    
 
 
 
@@ -361,6 +488,7 @@ class MaterialPurchaseRequisition(models.Model):
 class RequisitionLine(models.Model):
     _name = "requisition.line"
     _rec_name = 'requisition_id'
+    _description = "Requisition Line"
 
     @api.multi
     @api.onchange('product_id')
@@ -372,12 +500,12 @@ class RequisitionLine(models.Model):
         self.description = self.product_id.name
 
 
-    product_id = fields.Many2one('product.template',string="Product")
+    product_id = fields.Many2one('product.template',string="Product",domain="[('type','not in',['service'])]")
     description = fields.Text(string="Description")
     qty = fields.Float(string="Quantity",default=1.0)
     uom_id = fields.Many2one('uom.uom',string="Unit Of Measure")
     requisition_id = fields.Many2one('material.purchase.requisition',string="Requisition Line")
-    requisition_action = fields.Selection([('purchase_order','Purchase Order'),('internal_picking','Internal Picking')],string="Requisition Action")
+    requisition_action = fields.Selection([('purchase_order','Purchase Order'),('internal_picking','Internal Picking')],string="Requisition Action" , default = "purchase_order")
     vendor_id = fields.Many2many('res.partner',string="Vendors")
 
 class StockPicking(models.Model):      
