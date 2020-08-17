@@ -19,53 +19,104 @@
                       <tr>
                           <td class="text-center" style="border: 1px solid black;align:center;background-color:transparent;" colspan="2"><h1 class="text-center">LEAD FORM</h1></td>
                       </tr>
-                      <tr style="margin-left:10px;">
-                          <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Company Name</span></td>
-                          <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span t-field="o.partner_name" style="margin-left:5px;"/></td>
-                      </tr>
-                      <tr style="margin-left:10px;">
-                          <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Salutation  Mr or Ms:</span></td>
-                          <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.title"/></td>
-                      </tr>
-                      <tr>
-                          <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Contact Name </span></td>
-                          <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;;background-color:transparent;"><span style="margin-left:5px;" t-field="o.contact_name"/></td>
-                      </tr>
-                      <tr>
-                          <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Position</span></td>
-                          <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.function"/></td>
-                      </tr>
-                      <tr>
-                          <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Telephone</span></td>
-                          <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.phone"/></td>
-                      </tr>
-                      <tr>
-                          <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Mobile</span></td>
-                          <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.mobile"/></td>
-                      </tr>
-                      <tr>
-                          <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Email</span></td>
-                          <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.email_from"/></td>
-                      </tr>
-                      <tr>
-                          <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Address</span></td>
-                          <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.country_id"/>&amp;nbsp;,&amp;nbsp;<span t-field="o.city"/></td>
-                      </tr>
-                      <tr>
-                          <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Website</span></td>
-                          <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.website"/></td>
-                      </tr>
-                      <tr>
-                          <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Type of client</span></td>
-                          <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><t t-foreach="o.tag_ids" t-as="l">
-                          <span style="margin-left:5px;" t-field="l.name"/>&amp;nbsp;&amp;nbsp;</t></td>
-                      </tr>
-                      <tr>
-                          <td class="text-left" colspan="2" style="border: 1px solid black;width:100%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;">General Comments</span></td>
-                      </tr>
-                      <tr>
-                          <td class="text-left" colspan="2" rowspan="4" style="border: 1px solid black;width:100%;font-size:17px;margin-left:12px;margin-left:10px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.description"/></td>
-                      </tr>
+                      <t t-if="o.is_oppor == False" >
+                        <tr style="margin-left:10px;">
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Company Name</span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span t-field="o.partner_name" style="margin-left:5px;"/></td>
+                        </tr>
+                        <tr style="margin-left:10px;">
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Salutation  Mr or Ms:</span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.title"/></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Contact Name </span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;;background-color:transparent;"><span style="margin-left:5px;" t-field="o.contact_name"/></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Position</span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.function"/></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Telephone</span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.phone"/></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Mobile</span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.mobile"/></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Email</span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.email_from"/></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Address</span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.country_id"/>&amp;nbsp;,&amp;nbsp;<span t-field="o.city"/></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Website</span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.website"/></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Type of client</span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><t t-foreach="o.tag_ids" t-as="l">
+                            <span style="margin-left:5px;" t-field="l.name"/>&amp;nbsp;&amp;nbsp;</t></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" colspan="2" style="border: 1px solid black;width:100%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;">General Comments</span></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" colspan="2" rowspan="4" style="border: 1px solid black;width:100%;font-size:17px;margin-left:12px;margin-left:10px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.description"/></td>
+                        </tr>
+                      </t>
+                      <t t-if="o.is_oppor == True" >
+                        <tr style="margin-left:10px;">
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Company Name</span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span t-field="o.partner_id.name" style="margin-left:5px;"/></td>
+                        </tr>
+                        <tr style="margin-left:10px;">
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Salutation  Mr or Ms:</span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.title"/></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Contact Name </span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;;background-color:transparent;"><span style="margin-left:5px;" t-field="o.contact_name"/></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Position</span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.partner_id.function"/></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Telephone</span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.phone"/></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Mobile</span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.partner_id.mobile"/></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Email</span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.email_from"/></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Address</span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.partner_id.country_id"/>&amp;nbsp;,&amp;nbsp;<span t-field="o.partner_id.city"/></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Website</span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.partner_id.website"/></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Type of client</span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><t t-foreach="o.tag_ids" t-as="l">
+                            <span style="margin-left:5px;" t-field="l.name"/>&amp;nbsp;&amp;nbsp;</t></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" colspan="2" style="border: 1px solid black;width:100%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;">General Comments</span></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" colspan="2" rowspan="4" style="border: 1px solid black;width:100%;font-size:17px;margin-left:12px;margin-left:10px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.description"/></td>
+                        </tr>
+                      </t>
                   </table>
                   <div class="oe_structure"/>
               </div>

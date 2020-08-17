@@ -6,7 +6,7 @@
         <field name="view_mode">kanban,tree,graph,pivot,form,calendar,activity</field>
         <field name="domain">[('type','=','opportunity')]</field>
         <field name="context">{
-                'default_type': 'opportunity',
+                'default_type': 'opportunity','search_default_all': 1
         }</field>
         <field name="search_view_id" ref="crm.view_crm_case_opportunities_filter"/>
     </record>
@@ -62,6 +62,9 @@ teams of the sales pipeline.</field>
             </xpath>
             <xpath expr="//div[hasclass('text-muted','o_kanban_record_subtitle')]" position="inside">
                 <br/><t t-if="record.quotation_value.raw_value"><span>Quotation Value: </span><field name="quotation_value" widget="monetary" options="{'currency_field': 'company_currency'}"/></t>
+            </xpath>
+            <xpath expr="//field[@name='active']" position="replace">
+                <!-- <field name="tag_ids" /> -->
             </xpath>
             <xpath expr="//field[@name='tag_ids']" position="replace">
                 <field name="tag_ids" />
@@ -361,6 +364,7 @@ if record:
     <record id="crm_lead_cus_form" model="ir.ui.view">
         <field name="name">crm.lead.cus.form</field>
         <field name="model">crm.lead</field>
+        <field name="context">{'default_is_oppor': True}</field>
         <field name="inherit_id" ref="crm.crm_case_form_view_oppor"/>
         <field name="arch" type="xml">
             <xpath expr="//form" position="attributes">
@@ -380,6 +384,9 @@ if record:
                                 attrs="{'invisible': [('active', '=', False),('probability', '&lt;', 100)]}"
                                 groups="sales_team.group_sale_manager,marcoms_updates.group_sale_top_manager,marcoms_updates.group_creative_coordinator"
                                 />
+                <button name="mark_as_lost" string="Mark Lost" type="object" class="oe_highlight" groups="sales_team.group_sale_manager,marcoms_updates.group_sale_top_manager,marcoms_updates.group_creative_coordinator"/>
+                <button name="mark_as_cancel" string="Mark Cancel" type="object" class="oe_highlight" groups="sales_team.group_sale_manager,marcoms_updates.group_sale_top_manager,marcoms_updates.group_creative_coordinator"/>
+                <button name="action_duplicate" confirm="Are sure you want to dublicate this Opportunity?" string="Duplicate" type="object" class="oe_highlight" groups="marcoms_updates.group_sale_top_manager"/>
                 <!-- <button string="Next Stage" name="next_stage_6" type="object" class="oe_highlight" attrs="{'invisible': [('stage_id', '!=', 7)]}" /> -->
             </xpath>
             <xpath expr="//button[@name='action_set_won_rainbowman']" position="replace">
@@ -415,6 +422,7 @@ if record:
                 <field name="tag_ids" string="Type of Client" />
                 <field name="Service_ids" string="Type of Service" widget="many2many_tags" />
                 <field name="source_master" />
+                <field name="is_oppor" />
 
             </xpath>
             <xpath expr="//group[2]" position="after">
@@ -605,7 +613,8 @@ if record:
             <xpath expr="//field[@name='tag_ids']" position="replace">
                 <field name="tag_ids" string="Type of Client"  />
                 <field name="Service_ids" string="Type of Service" widget="many2many_tags" />
-                <field name="source_master" />
+                <field name="source_master" required="1"/>
+                <!-- <field name="is_oppor"/> -->
                 <field name="lost_reason" attrs="{'invisible': [('active', '=', True)]}"/>
                 <field name="des_reason" attrs="{'invisible': [('active', '=', True)]}"/>
             </xpath>
@@ -1141,8 +1150,6 @@ if record:
                         }"
                         context="{'company_id': parent.company_id}"
                         groups="uom.group_uom"
-                        options='{"no_open": True,"no_create":True}'
-                        domain="[('show_sale','=',True)]"
                     />
                     <field
                         name="analytic_tag_ids"
@@ -1826,6 +1833,7 @@ if record:
         <field name="arch" type="xml">
             <xpath expr="//filter[@name='lost']" position="replace">
                 <filter string="Dropped" name="lost" domain="['&amp;', ('active', '=', False), ('probability', '=', 0)]"/>
+                <filter string="All" name="all" domain="['|', ('active', '=', False), ('active', '=', True)]"/>
             </xpath>
             <xpath expr="//filter[@name='message_needaction']" position="replace">
             </xpath>
@@ -1833,11 +1841,14 @@ if record:
             </xpath>
             <xpath expr="//filter[@name='compaign']" position="replace">
             </xpath>
+            <xpath expr="//filter[@name='lostreason']" position="replace">
+                <filter string="Lost Reason" name="lostreason" context="{'group_by':'reason_for_lost'}"/>
+            </xpath>
             <xpath expr="//filter[@name='source']" position="replace">
                 <filter string="Source" name="source" domain="[]" context="{'group_by':'source_master'}"/>
             </xpath>
             <xpath expr="//filter[@name='close_this_month']" position="replace">
-                <filter string="Expected Closing" name="close_this_month" date="show_date"/>
+                <!-- <filter string="Expected Closing" name="close_this_month" date="show_date"/> -->
             </xpath>
             <xpath expr="//filter[@name='overdue_opp']" position="replace">
                 <filter string="Overdue Opportunities" name="overdue_opp"
@@ -1846,6 +1857,21 @@ if record:
             </xpath>
             <xpath expr="//filter[@name='date_deadline']" position="replace">
             </xpath>
+        </field>
+    </record>
+    <record id="crm.crm_lost_reason_action" model="ir.actions.act_window">
+        <field name="name">Dropped Reasons</field>
+        <field name="res_model">crm.lost.reason</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Define a new lost reason
+          </p><p>
+            Use lost reasons to explain why an opportunity is lost.
+          </p><p>
+            Some examples of lost reasons: "We don't have people/skill", "Price too high"
+          </p>
         </field>
     </record>
     <!-- <record id="crm_opportunity_report_view_search2_cus2" model="ir.ui.view">
@@ -1944,8 +1970,8 @@ if record:
             <xpath expr="//button[@name='button_cancel']" position="replace">
                 <button name="button_cancel" states="draft,sent,purchase,sel" string="Cancel" type="object" />
             </xpath>
-            <xpath expr="//button[@id='draft_confirm']" position="replace">
-                <button name="button_confirm" type="object" states="draft,sel" string="Confirm Order" id="draft_confirm"/>            </xpath>
+            <!-- <xpath expr="//button[@id='draft_confirm']" position="replace">
+                <button name="button_confirm" type="object" states="draft,sel" string="Confirm Order" id="draft_confirm"/>            </xpath> -->
             <xpath expr="//div[hasclass('oe_button_box')]//button[@name='action_view_picking']" position="replace">
                 <button type="object" name="action_view_picking" class="oe_stat_button" icon="fa-truck" attrs="{'invisible':[('picking_ids','=',[])]}">
                     <field name="picking_count" widget="statinfo" string="GRN Receipts" help="Incoming Shipments"/>
@@ -2886,6 +2912,16 @@ if record:
                 <ul>
                     <li>Cost: <field name="standard_price" widget="monetary" options="{'currency_field': 'currency_id', 'field_digits': True}"/></li>
                 </ul>
+            </xpath>
+        </field>
+    </record>
+    <record id="product_template_formCus" model="ir.ui.view">
+        <field name="name">product.template.formCus</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='categ_id']" position="attributes">
+                <attribute name="options">{'no_create': True, 'no_create_edit':True}</attribute>
             </xpath>
         </field>
     </record>

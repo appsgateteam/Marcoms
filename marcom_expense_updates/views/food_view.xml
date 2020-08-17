@@ -419,7 +419,9 @@ if records:
                             <field name="rates" required="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="labour_charges" required="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="waiting_charges" required="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            <field name="total_amount" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                            <field name="total_amounts" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="tax_ids" domain="[('type_tax_use', '=', 'purchase')]" widget="many2many_tags" groups="account.group_account_user"/>
+                            <field name="total_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <!-- <label for="quantity"/>
                             <div>
                                 <field name="quantity" class="oe_inline"/>
@@ -1127,7 +1129,9 @@ if records:
                             <field name="travelling_hours" widget="float_time"/>
                             <field name="net_hours" widget="float_time"/>
                             <field name="rate_per_hour" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            <field name="total_amount"  widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="total_amounts" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="tax_ids" domain="[('type_tax_use', '=', 'purchase')]" widget="many2many_tags" groups="account.group_account_user"/>
+                            <field name="total_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <!-- <field name="product_id" context="{'default_can_be_expensed': 1, 'tree_view_ref': 'hr_expense.product_product_expense_tree_view'}"/> -->
                             <!-- <field name="unit_amount" required="1" widget="monetary" options="{'currency_field': 'currency_id'}"/> -->
                             <!-- <label for="quantity"/>
