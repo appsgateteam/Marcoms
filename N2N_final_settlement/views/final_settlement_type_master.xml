@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    <record model="ir.ui.view" id="final_settlement_type_master_tree">
+        <field name="name">final.settlement.type.master</field>
+        <field name="model">final.settlement.type.master</field>
+        <field name="arch" type="xml">
+            <tree>
+                  <field name="name"/>
+            </tree>
+       </field>
+    </record>
+  <record model="ir.ui.view" id="final_settlement_type_master_form">
+        <field name="name">final.settlement.type.master</field>
+        <field name="model">final.settlement.type.master</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                  <group>
+                      <group>
+                         <label for="name" class="oe_edit_only"/>
+                         <h2><field name="name"/></h2>
+                      </group>
+                      <group></group>
+                  </group>
+                  <group>
+                        <field name="journal_id"/> 
+						<field name="final_settlement" />
+						<field name="termination"/>
+                        <field name="remarks"/>
+                  </group>
+
+                   <field name="settlement_type_master_line">
+                        <tree editable="top">
+
+                            <field name="account_id"/>
+
+                        </tree>
+
+                    </field>
+		       </sheet>
+		    </form>
+		  </field>
+		 </record>
+<record model="ir.actions.act_window" id="action_final_settlement_type_master">
+        <field name="name">Settlement Type</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">final.settlement.type.master</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+         <field name="help" type="html">
+          <p class="oe_view_nocontent_create">
+            Click to add new Settlement Type. 
+          </p>
+        </field>
+    </record>
+
+<menuitem id="menu_od_final_settlement_type_master" name="Settlement Type" action="action_final_settlement_type_master" parent="hr_payroll.menu_hr_payroll_configuration" sequence="38"/>
+
+
+
+ </data>
+</odoo>

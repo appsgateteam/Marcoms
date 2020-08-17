@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <record id="n2n_st_move_analysis_wizard_form" model="ir.ui.view">
+            <field name="name">Move Analysis</field>
+            <field name="model">n2n.st.move.analysis.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Move Analysis">
+                 <group>
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="product_id"/> 
+                        <field name="analytic_id"/>
+                    </group>
+                    <group> 
+                        <field name="task_id"/>
+                        <field name="location_id"/>
+                        <field name="nn_type"/>                       
+                        <field name="categ_id"/>
+                        <!-- <field name="nn_pdt_group_id"/>
+                        <field name="nn_pdt_sub_group_id"/> 
+                        <field name="nn_pdt_type_id"/> -->
+                    </group>
+                </group>
+                <footer>
+                    <button name="generate" string="Generate" type="object"/>
+                    <button string="Cancel" class="btn-default" special="cancel"/>
+                </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_n2n_st_move_analysis_wizard" model="ir.actions.act_window">
+            <field name="name">Move Analysis</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">n2n.st.move.analysis.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+  <menuitem action="action_n2n_st_move_analysis_wizard" id="stock_move_analysis_menu_wizard" parent="stock.menu_warehouse_report" name="Move Analysis" sequence="137" />
+
+</odoo>

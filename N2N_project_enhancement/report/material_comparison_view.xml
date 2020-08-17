@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <record id="n2n_material_estimate_combine_tree" model="ir.ui.view">
+            <field name="name">N2N Material Combine View</field>
+            <field name="model">n2n.material.estimate.combine.view</field>
+            <field name="arch" type="xml">
+                <tree string="Estimation Comparison Analysis" create="false">
+                    <field name="product_id"/>
+                    <field name="task_id"/>
+                    <!-- <field name="project_id"/> -->
+                    <field name="estimate_qty"/>
+                    <field name="estimate_value"/>
+                    <field name="actual_qty"/>
+                    <field name="actual_value"/>
+                    <field name="deviation_qty"/>
+                    <field name="deviation_value"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="n2n_material_estimate_combine_pivot" model="ir.ui.view">
+            <field name="name">N2N Material Combine Pivot</field>
+            <field name="model">n2n.material.estimate.combine.view</field>
+            <field name="arch" type="xml">
+                <pivot string="Estimation Comparison Analysis">
+                    <field name="estimate_qty" type="measure"/>
+                    <field name="estimate_value" type="measure"/>
+                    <field name="actual_qty" type="measure"/>
+                    <field name="actual_value" type="measure"/>
+                    <field name="deviation_qty" type="measure"/>
+                    <field name="deviation_value" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+
+        <!-- <record id="n2n_material_estimate_combine_search" model="ir.ui.view">
+        <field name="name">N2N Material Combine</field>
+        <field name="model">n2n.material.estimate.combine.view</field>
+        <field name="arch" type="xml">
+            <search string="Esimation Analysis">
+                <field name="product_id" string="Product"/>
+                <field name="task_id"/>                   
+                <group expand="1" string="Group By">
+                    <filter string="Product" context="{'group_by':'product_id'}" help="Product Wise Report"/>
+                    <filter string="Task" context="{'group_by':'task_id'}" help="Task Wise Report"/>                    
+                </group>
+            </search>
+        </field>
+        </record> -->
+
+        <record id="action_n2n_material_estimate_combine" model="ir.actions.act_window">
+            <field name="name">Material Estimation Analysis</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">n2n.material.estimate.combine.view</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,pivot</field>
+            <!-- <field name="context">{'group_by': 'date:month'}</field> -->
+            <field name="view_id" ref="n2n_material_estimate_combine_tree"/>
+            <!-- <field name="search_view_id" ref="n2n_material_estimate_combine_search"/> -->
+        </record>
+
+</odoo>

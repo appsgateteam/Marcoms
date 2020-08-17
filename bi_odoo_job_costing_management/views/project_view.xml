@@ -18,12 +18,12 @@
             <field name="model">note.note</field>
             <field name="inherit_id" ref="note.view_note_note_form" />
             <field name="arch" type="xml">
-	                <xpath expr="//sheet" position="inside">
+	                <field name="memo" position="before">
 	                    <group>
 		                    <field name="construction_proj_id"/>
 		                    <field name="responsible_user"/>
 		                </group>
-		            </xpath>
+		            </field>
         	</field>
         </record>
         

@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    <record id="hr_contract_view_form_inherit" model="ir.ui.view">
+            <field name="name">hr.contract.form.inherit</field>
+            <field name="model">hr.contract</field>
+            <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+            <field name="arch" type="xml">
+            <field name="struct_id" position="after">
+                <field name="contract_type"/>
+            </field>
+            </field>
+    </record> 
+
+
+    <record model="ir.ui.view" id="final_settlement_tree_view">
+            <field name="name">Final Settlement</field>
+            <field name="model">final.settlement</field>
+            <field name="arch" type="xml">
+                <tree string="Final Settlement">
+                    <field name="employee_id"/>
+                    <field name="join_date"/>
+                    <field name="settlement_type_id"/>
+                </tree>
+          </field>
+    </record>
+
+
+
+
+
+
+
+
+<record model="ir.ui.view" id="final_settlement_form_view">
+        <field name="name">Final Settlement</field>
+        <field name="model">final.settlement</field>
+        <field name="arch" type="xml">
+            <form string="Final Settlement">
+                <header>
+                    <button name="action_generate" type="object" string="Generate" attrs="{'invisible':[('state','in',('progress','done'))]}"/>
+
+
+                    <button name="check_accounts_entry" type="object" string="Check Accounts Entry" attrs="{'invisible':[('state','in',('progress','done'))]}"/>
+
+                    <button name="action_validate" type="object" string="Validate" states="progress"/>
+
+                    <button name="set_to_draft" type="object" string="Set To Draft" states="progress,done"/>
+
+                    <button name="generate_gratuity_value" type="object" string="Gratuity Calculation"/>
+
+
+                   <field name="state" widget="statusbar" statusbar_visible="draft,progress,done" statusbar_colors='{"done":"blue"}'/>
+
+               </header>
+               <sheet>
+
+
+
+                <group>
+
+
+                      <group>
+
+                         <label for="employee_id" string="Employee" class="oe_edit_only"/>
+                         <h2><field name="employee_id" attrs="{'readonly':[('state','in', ('done'))]}"/></h2>
+                          <field name="settlement_type_id" attrs="{'readonly':[('state','in', ('done'))]}"/>
+<!--                         <field name="date_from"/>-->
+                         <field name="join_date" string="Join Date" attrs="{'readonly':[('state','in', ('done'))]}"/>
+                         <field name="resign_date" string="Resign Date" attrs="{'readonly':[('state','in', ('done'))]}"/>
+                      </group>
+                     <group>
+                        <!-- <field name="settlement_type_id" attrs="{'readonly':[('state','in', ('done'))]}"/> -->
+                        <field name="department_id" attrs="{'readonly':[('state','in', ('done'))]}"/>
+                        <field name="job_id" attrs="{'readonly':[('state','in', ('done'))]}"/>
+                         <field name="address_home_id" attrs="{'readonly':[('state','in', ('done'))]}"/>
+                        <field name="account_move_id" attrs="{'invisible':[('state','in', ('draft'))]}"/>
+                     </group>
+                </group>
+
+                <group>
+                 <field name="reason" class="oe_inline" placeholder="Reason" attrs="{'readonly':[('state','in', ('done'))]}"/>
+               </group>
+
+
+                <notebook>
+                <page string="Account Information">
+                <field name="account_line" attrs="{'readonly':[('state','in', ('done'))]}">
+                    <tree editable="top" create="false" delete="false">
+
+                         <field name="account_id"/>
+                        <field name="balance" string="Due" sum="Balance" readonly="1"/>
+                        <field name="amount" string="Amount" sum="Amount" attrs="{'readonly':[('final_settlement_flag','=', True)]}"/>
+                        <field name="final_settlement_flag" invisible="1"/>
+                     </tree>
+                </field>
+
+                <separator string="Adjustment"/>
+
+
+                <field name="account_new_line" attrs="{'readonly':[('state','in', ('done'))]}">
+                    <tree editable="top" >
+                         <field name="account_line_id" invisible="1"/>
+
+                         <field name="account_id" />
+                         <field name="due" invisible="1"/>
+
+                        <field name="debit" sum="Debit" />
+                        <field name="credit" sum="Credit"/>
+                        <field name="final_settlement" invisible="1"/>
+
+                     </tree>
+                </field>
+
+
+                </page>
+
+                <page string="Details">
+
+                <group>
+
+                    <group string="Working Days">
+                        <field name="join_date" readonly="1"/>
+                        <field name="total_working_days" readonly="1"/>
+                        <field name="leave_pending" readonly="1"/>
+                        <field name="unpaid_leaves" readonly="1"/>
+
+                    </group>
+
+                    </group>
+
+
+                    <group string="Salary Information">
+                        <field name="basic" readonly="1"/>
+                        <field name="total_salary" readonly="1"/>
+                    </group>
+                    <!-- <field name="allowance_rule_ids" readonly="1">
+                        <tree>
+                          <field name="rule_type" domain="[('category_id.code','in',('ALW','DED'))]"/>
+                            <field name="code"/>
+                            <field name="amt"/>
+                        </tree>
+                    </field> -->
+
+                </page>
+                <page string="Gratuity">
+
+               <field name="gratuity_line_id" attrs="{'readonly':[('state','in', ('done'))]}">
+                    <tree editable="top" create="false" delete="false">
+
+                        <field name="slab"/>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="no_of_days"/>
+                        <field name="termination_amount"/>
+                        <field name="resign_amount"/>
+                    </tree>
+                </field>
+
+
+                </page>
+
+                </notebook>
+               </sheet>
+            </form>
+        </field>
+</record>
+
+<record model="ir.ui.view" id="final_settlement_tree_view">
+        <field name="name">Final Settlement</field>
+        <field name="model">final.settlement</field>
+        <field name="arch" type="xml">
+            <tree string="Final Settlement">
+                <field name="employee_id"/>
+                <field name="join_date"/>
+                <field name="settlement_type_id"/>
+            </tree>
+      </field>
+</record>
+
+ <record model="ir.actions.act_window" id="action_final_settlement_view">
+        <field name="name">Settlement</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">final.settlement</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+         <field name="help" type="html">
+          <p class="oe_view_nocontent_create">
+            Click to add Settlement.
+          </p>
+        </field>
+</record>
+<menuitem id="final_settlement_view" name="Settlement" action="action_final_settlement_view" parent="hr_payroll.menu_hr_payroll_root" sequence="37"/>
+ </data>
+</odoo>

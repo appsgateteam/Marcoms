@@ -1,0 +1,95 @@
+@charset "utf-8";
+.openerp .oe_margin_top_4 {
+	margin-top: 4px;
+}
+
+@import url("https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,600");
+body, html {
+  padding: 0;
+  margin: 0;
+  font-family: 'Nunito Sans', sans-serif !important;
+  font-weight: 300 !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 300 !important;
+}
+
+.-sg-center {
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+}
+
+.-sg-frame {
+  padding: 2rem 0;
+}
+
+.-sg-shadow {
+  box-shadow: 0px 10px 10px -5px rgba(0, 0, 0, 0.75);
+}
+
+.-sg-seperator-line {
+  border-bottom: 1px solid #ccc;
+}
+
+ul, li {
+  list-style: none;
+  padding: 0;
+  margin-left: 0.5rem;
+}
+
+.-sg-icon-sm {
+  width: 50px;
+  height: 50px;
+}
+
+.-sg-icon-md {
+  width: 100px;
+  height: 100px;
+}
+
+.-sg-icon-lg {
+  width: 150px;
+  height: 150px;
+}
+
+.-oe-slogan {
+  color: #333333; 
+  font-family: "Lato", "Open Sans", "Helvetica", Sans; 
+  margin-top: 32px; 
+  margin-bottom: 32px; 
+  text-align: center;
+}
+
+.-oe-mt32 {
+    margin-top: 32px !important;
+}
+
+.-center-block {
+  display: block; 
+  margin: auto;
+}
+
+#loempia_tabs {
+  background-color: #fff;
+}
+
+#loempia_tabs #loempia_tabs_content {
+padding: 15px 0;
+}
+
+.center {
+	margin: auto;
+	width: 60%;
+	padding: 10px;
+}
+
+.img-center{
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	width: 40%;
+  }
+
+/*# sourceMappingURL=style.css.map */

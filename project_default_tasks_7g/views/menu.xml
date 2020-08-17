@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="default_task_action" model="ir.actions.act_window">
+    <field name="name">Default Tasks</field>
+    <field name="res_model">project.default_tasks</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+
+  <menuitem name="Default Tasks"
+            id="menu_default_tasks"
+            parent="project.menu_project_config"
+            sequence="12" action="default_task_action"/>
+
+</odoo>

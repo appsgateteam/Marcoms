@@ -1,0 +1,7 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+final_settlement_user,final_settlement_name,N2N_final_settlement.model_final_settlement,,1,1,1,1
+final_settlement_type_master_user,final_settlement_type_master_name,N2N_final_settlement.model_final_settlement_type_master,,1,1,1,1
+final_settlement_type_master_line_user,final_settlement_type_master_line_name,N2N_final_settlement.model_final_settlement_type_master_line,,1,1,1,1
+finals_ettlement_account_line_user,final_settlement_account_line_name,N2N_final_settlement.model_final_settlement_account_line,,1,1,1,1
+final_settlement_new_account_line_user,final_settlement_new_account_line_name,N2N_final_settlement.model_final_settlement_new_account_line,,1,1,1,1
+gratuity_employee_user,gratuity_employee_name,N2N_final_settlement.model_gratuity_employee,,1,1,1,1

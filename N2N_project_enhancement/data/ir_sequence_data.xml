@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="project_project_seq" model="ir.sequence">
+            <field name="name">Project Project</field>
+            <field name="code">project.project</field>
+            <field name="prefix">PRJ/%(range_year)s/00</field>
+            <field name="padding">3</field>
+        </record>
+
+    </data>
+</odoo>

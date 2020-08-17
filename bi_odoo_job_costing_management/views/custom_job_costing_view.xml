@@ -4,7 +4,6 @@
     
         <menuitem id="main_menu_job_estimates"
           name="Job Costing"
-          web_icon="bi_odoo_job_costing_management,static/description/icon.png"
           />
             
         <menuitem name="Job Costing"

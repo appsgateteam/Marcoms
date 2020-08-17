@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+
+		<record id="view_task_form2_inherit" model="ir.ui.view">
+            <field name="name">project.task.form</field>
+            <field name="model">project.task</field>
+			<field name="inherit_id" ref="project.view_task_form2" />
+            <field name="arch" type="xml">
+            	<xpath expr="//header" position="inside">
+            	<!-- <header> -->
+                    <button name="task_confirm" string="Confirm" type="object" class="btn-primary" attrs="{'invisible': [('state', 'in', ['confirmed','cancel'])]}"/>
+                    <button name="task_draft" string="Set as Draft" type="object" attrs="{'invisible': [('state', 'in', ['cancel','draft'])]}" class="btn-primary"/>
+                    <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': [('state', 'in', ['cancel','draft'])]}"/>
+				    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,cancel"/>
+                <!-- </header> -->
+            	</xpath>
+                <xpath expr="//form/sheet/div[@name='button_box']/button[@name='action_subtask']" position="after">
+                     <button class="oe_stat_button" icon="fa-tasks" type="object" name="open_estimation_comparison" string="Material Comparison" attrs="{'invisible' : [('parent_id', '!=', False)]}" />   
+                    <button class="oe_stat_button" icon="fa-tasks" type="object" name="open_labour_comparison" string="Labour Comparison" attrs="{'invisible' : [('parent_id', '!=', False)]}" /> 
+                    <button class="oe_stat_button" icon="fa-tasks" type="object" name="open_overhead_comparison" string="Overhead Comparison" attrs="{'invisible' : [('parent_id', '!=', False)]}"/>                   
+                </xpath>
+            	<notebook position='inside'>
+                    	<page string="Material Estimation">
+                    		<field name="material_estimation_ids" widget="one2many_list">
+                    			<tree string="Material Estimation" editable="bottom">
+                    				<field name="type" />
+                    				<field name="product_id" />
+                    				<field name="description" />
+                    				<field name="quantity" />
+                    				<field name="uom_id" />
+                    				<field name="unit_price" />
+                    				<!-- <field name="discount" /> -->
+                    				<field name="subtotal"  widget="monetary"/>
+                    			</tree>
+                    		</field>
+                    		<group class="oe_subtotal_footer oe_right" colspan="2" name="total_material_estimate">
+                                <field name="total_material_estimate" widget="monetary"/>
+                                <field name="total_labour_estimate" widget="monetary"/>
+                                <field name="total_overhead_estimate" widget="monetary"/>
+                                <field name="total_job_estimate" widget="monetary"/>
+                            </group>
+                            <group>
+                            <separator string="Description of Jobs Estimate"/>
+                            <field name="description" class="oe_inline"/>
+                        </group>
+                    	</page>
+                        <page string="Actual Material">
+                                <group>
+                                    <button name="actual_material" string="Update" type="object" class="btn-primary"/>
+                                </group>
+                                <field name="material_job_cost_line_ids" widget="one2many_list" context="{'default_job_type':'material'}">
+                                    <tree string="Material" editable="bottom">
+                                        <field name="date" />
+                                        <!-- <field name="job_type_id" domain="[('job_type', '=', 'material')]" options="{'no_create': True}"/> -->
+                                        <field name="product_id" />
+                                        <field name="description" />
+                                        <field name="reference"/>
+                                        <field name="quantity" sum="quantity"/>
+                                        <field name="uom_id" />
+                                        <field name="unit_price"/>
+                                        <field name="task_id" invisible="1"/>
+                                       <!--  <field name="actual_purchase_qty" sum="actual_purchase_qty"/>
+                                        <field name="actual_invoice_qty" sum="actual_invoice_qty"/> -->
+                                        <field name="subtotal" widget="monetary" sum="subtotal"/>
+                                        <field name="currency_id" invisible="1" />
+                                        <field name="job_type" invisible="1"/>
+                                    </tree>
+                                </field>
+                                <group class="oe_subtotal_footer oe_right" colspan="2"
+                                    name="total_material_cost">
+                                    <field name="total_material_cost" widget="monetary" />
+                                    <!-- <field name="total_labour_cost" widget="monetary" /> -->
+                                    <field name="total_overhead_cost" widget="monetary" />
+                                    <field name="total_cost" widget="monetary" />
+                                </group>
+                                <!-- <separator string="Job Cost Description" />
+                                <field name="job_cost_description" class="oe_inline" /> -->
+                            </page>
+                    	<page string="Labour Estimation">
+                    		<field name="labour_estimation_ids" widget="one2many_list">
+                    			<tree string="Labour Estimation" editable="bottom">
+                    				<field name="type" />
+                    				<field name="product_id" />
+                    				<field name="description" />
+                    				<field name="quantity" />
+                    				<field name="uom_id" />
+                    				<field name="unit_price" />
+                                    <field name="hours" widget="float_time" />
+                    				<!-- <field name="discount" /> -->
+                    				<field name="subtotal" widget="monetary"/>
+                    			</tree>
+                    		</field>
+                    		<group class="oe_subtotal_footer oe_right" colspan="2" name="total_material_estimate">
+                                <field name="total_material_estimate" widget="monetary"/>
+                                <field name="total_labour_estimate" widget="monetary"/>
+                                <field name="total_overhead_estimate" widget="monetary"/>
+                                <field name="total_job_estimate" widget="monetary"/>
+                            </group>
+                            <group>
+                            <separator string="Description of Jobs Estimate"/>
+                            <field name="description" class="oe_inline"/>
+                        </group>
+                    	</page>
+                    <field name="analytic_account_active" invisible="1"/>
+                    <field name="allow_timesheets" invisible="1"/>
+                    <page string="Actual Labour" attrs="{'invisible': [('allow_timesheets', '=', False)]}">
+                        <group>
+                            <group>
+                                <field name="planned_hours" widget="float_time"/>
+                                    <label for="subtask_planned_hours" groups="project.group_subtask_project" attrs="{'invisible': [('subtask_count', '=', 0)]}"/>
+                                    <div class="o_row" groups="project.group_subtask_project" attrs="{'invisible': [('subtask_count', '=', 0)]}">
+                                        <field name="subtask_planned_hours" widget="float_time"/><span> planned hours</span>
+                                    </div>
+                            </group>
+                            <group>
+                                <field name="progress" widget="progressbar"/>
+                            </group>
+                        </group>
+                        <group name="timesheet_error" attrs="{'invisible': [('analytic_account_active', '!=', False)]}">
+                            <div class="alert alert-warning" role="alert">
+                                You can not log timesheets on this project since is linked to an inactive analytic account. Please change it, or reactivate the current one to timesheet on the project.
+                            </div>
+                        </group>
+                    <field name="timesheet_ids" mode="tree,kanban" attrs="{'invisible': [('analytic_account_active', '=', False)]}" context="{'default_project_id': project_id, 'default_name':''}">
+                        <tree editable="bottom" string="Timesheet Activities" default_order="date">
+                            <field name="date"/>
+                            <!-- <field name="lab_type"/> -->
+                            <field name="user_id" invisible="1"/>
+                            <field name="employee_id" required="1"/>
+                            <field name="product_id" required="1"/>
+                            <field name="name"/>
+                            <field name="unit_amount" widget="timesheet_uom"/>
+                            <field name="project_id" invisible="1"/>
+                        </tree>
+                        <kanban class="o_kanban_mobile">
+                            <field name="date"/>
+                            <field name="user_id"/>
+                            <field name="employee_id"/>
+                            <field name="name"/>
+                            <field name="unit_amount"/>
+                            <field name="project_id"/>
+                            <templates>
+                                <t t-name="kanban-box">
+                                    <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <strong><span><t t-esc="record.employee_id.value"/></span></strong>
+                                            </div>
+                                            <div class="col-6 pull-right text-right">
+                                                <strong><t t-esc="record.date.value"/></strong>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6 text-muted">
+                                                <span><t t-esc="record.name.value"/></span>
+                                            </div>
+                                            <div class="col-6">
+                                                <span class="pull-right text-right">
+                                                    <field name="unit_amount" widget="float_time"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                            </templates>
+                        </kanban>
+                        <form  string="Timesheet Activities">
+                            <sheet>
+                                 <group>
+                                    <field name="date"/>
+                                    <field name="user_id" invisible="1"/>
+                                    <field name="employee_id" required="1"/>
+                                    <field name="name"/>
+                                    <field name="unit_amount" string="Duration" widget="float_time"/>
+                                    <field name="project_id" invisible="1"/>
+                                </group>
+                            </sheet>
+                        </form>
+                    </field>
+                    <group attrs="{'invisible': [('analytic_account_active', '=', False)]}">
+                        <group class="oe_subtotal_footer oe_right" name="project_hours">
+                            <field name="effective_hours" widget="float_time" />
+                            <field name="subtask_effective_hours" widget="float_time" attrs="{'invisible' : [('subtask_effective_hours', '=', 0.0)]}" />
+                            <field name="total_hours_spent" widget="float_time" class="oe_subtotal_footer_separator" attrs="{'invisible' : [('subtask_effective_hours', '=', 0.0)]}" />
+                            <field name="remaining_hours" widget="float_time" class="oe_subtotal_footer_separator"/>
+                        </group>
+                    </group>
+                </page>
+                    	<page string="Overhead Estimation">
+                    		<field name="overhead_estimation_ids" widget="one2many_list">
+                    			<tree string="Overhead Estimation" editable="bottom">
+                    				<field name="type" />
+                    				<field name="product_id" />
+                    				<field name="description" />
+                    				<field name="quantity" />
+                    				<field name="uom_id" />
+                    				<field name="unit_price" />
+                    				<!-- <field name="discount" /> -->
+                    				<field name="subtotal" widget="monetary"/>
+                    			</tree>
+                    		</field>
+                    		<group class="oe_subtotal_footer oe_right" colspan="2" name="total_material_estimate">
+                                <field name="total_material_estimate" widget="monetary"/>
+                                <field name="total_labour_estimate" widget="monetary"/>
+                                <field name="total_overhead_estimate" widget="monetary"/>
+                                <field name="total_job_estimate" widget="monetary"/>
+                            </group>
+                            <group>
+                            <separator string="Description of Jobs Estimate"/>
+                            <field name="description" class="oe_inline"/>
+                            </group>
+                    	</page>
+                         <page string="Actual Overhead">
+                                <field name="overhead_line_ids" widget="one2many_list" context="{'tree_view_ref': 'N2N_project_enhancement.account_analytic_line_tree'}"/>
+                        </page>
+                </notebook>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_task_form2_inherited_inherit">
+            <field name="name">project.task.form.inherited.inherit</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="hr_timesheet.view_task_form2_inherited" />
+            <field name="arch" type="xml">
+                <xpath expr="//page[2]" position="replace">
+                </xpath>
+            </field>
+        </record>
+
+        <record id="project_project_form_inherit" model="ir.ui.view">
+            <field name="name">inherit.project.project.form</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="project.edit_project" />
+            <field name="arch" type="xml">
+            <div class="oe_button_box" name="button_box" position="inside">
+                 <!-- <button class="oe_stat_button" icon="fa-tasks" type="object" name="open_pro_estimation_comparison" string="Estimation Comparison"/>  -->
+                <button type="object" name="purchase_order_button" class="oe_stat_button" icon="fa-book" attrs="{'invisible': [('purchase_order_count_1', '=', 0)]}">
+                    <field name="purchase_order_count_1" widget="statinfo" string="Purchase Order" />
+                </button>  
+                <button type="object" name="bill_order_button" class="oe_stat_button" icon="fa-pencil-square-o" attrs="{'invisible': [('bill_order_count', '=', 0)]}">
+                    <field name="bill_order_count" widget="statinfo" string="Vendor Bills" />
+                </button>   
+                <button type="object" name="invoice_order_button" class="oe_stat_button" icon="fa-pencil-square-o" attrs="{'invisible': [('invoice_count', '=', 0)]}">
+                    <field name="invoice_count" widget="statinfo" string="Invoices" />
+                </button>                     
+            </div>
+            <xpath expr="//notebook/page[@name='settings']/group/field[@name='privacy_visibility']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//notebook/page[@name='settings']/group/field[@name='subtask_project_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//notebook/page[@name='settings']/group[@name='misc']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+             <xpath expr="//notebook/page[@name='settings']" position="inside">
+                <group>
+                    <group string="Build Up Dates" name="buildup">
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group string="Show Dates" name="show">
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                </group>
+                <group>
+                    <group string="Dismantling Dates" name="dismantling">
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                </group>
+            </xpath>
+            <field name="name" position="before">
+                <group>
+                    <field name="sequence" string="Code"/>
+                </group>
+            </field>
+        </field>
+        </record>
+
+        <record id="project_invoice_form" model="ir.ui.view">
+            <field name="name">Inherit project form : Invoicing Data inherit</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="hr_timesheet.project_invoice_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='analytic_account_id']" position="after">
+                    <field name="stand_name"/>
+                    <field name="venue"/>
+                </xpath>
+            </field>
+        </record>
+       <!--  <record id="view_account_analytic_line_form_inherit" model="ir.ui.view">
+            <field name="name">account.analytic.line.form.inherit</field>
+            <field name="model">account.analytic.line</field>
+            <field name="inherit_id" ref="analytic.view_account_analytic_line_form"/>
+            <field name="arch" type="xml">
+            <field name="date" position="after">
+                <field name="lab_type"/>
+            </field>
+            </field>
+        </record> -->
+
+       <!-- <record id="invoice_supplier_form_inherit" model="ir.ui.view">
+            <field name="name">account.invoice.supplier.form.inherit</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_supplier_form"/>
+            <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_invoice']" position="after">
+                <field name="analytic_id"/>
+                <field name="task_id"/>
+            </xpath>
+            </field>
+        </record> --> 
+
+        <record id="project.act_project_project_2_project_task_all" model="ir.actions.act_window">
+            <field name="name">Tasks</field>
+            <field name="res_model">project.task</field>
+            <field name="view_mode">kanban,tree,form,calendar,pivot,graph,activity</field>
+            <field name="domain">[('parent_id','=', False)]</field>
+            <field name="context">{
+                'search_default_project_id': [active_id],
+                'default_project_id': active_id,
+            }</field>
+            <field name="search_view_id" ref="project.view_task_search_form"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Click <i>Create</i> to start a new task.
+                </p><p>
+                    To get things done, use activities and status on tasks.<br/>
+                    Chat in real time or by email to collaborate efficiently.
+                </p>
+            </field>
+        </record>
+
+        <record id="project.action_view_task" model="ir.actions.act_window">
+            <field name="name">Tasks</field>
+            <field name="res_model">project.task</field>
+            <field name="view_mode">kanban,tree,form,calendar,pivot,graph,activity</field>
+            <field name="domain">[('parent_id','=', False)]</field>
+            <field name="context">{'search_default_my_tasks': 1}</field>
+            <field name="search_view_id" ref="project.view_task_search_form"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new task
+                </p><p>
+                    Odoo's project management allows you to manage the pipeline of your tasks efficiently.<br/>
+                    You can track progress, discuss on tasks, attach documents, etc.
+                </p>
+            </field>
+        </record>
+      
+    </data>
+</odoo>
