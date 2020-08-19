@@ -294,7 +294,7 @@ class MaterialRequisition(models.Model):
 			req_line_vals = purchase_req_line_obj.create({
 				'product_id':line.product_id.id,
 				'name':line.description, 
-
+				'account_analytic_id':res.analytic_id.id,
 				'product_qty':line.qty,
 				'product_uom_id':line.uom_id.id,
 				'requisition_id':req_vals.id,

@@ -470,15 +470,15 @@ if record:
                     <group>
                         <group>
                             <!-- <field name="project_date" readonly="1"/> -->
-                            <field name="design_deadline"/>
-                            <field name="design_complete"/>
+                            <field name="design_deadline" attrs="{'required': [('assign_to_designer', '!=', 80)]}"/>
+                            <field name="design_complete" attrs="{'required': [('assign_to_designer', '!=', 80)]}"/>
                             <field name="remaining_dates_design"/>
-                            <field name="brief_type"/>
-                            <field name="stand_size"/>
+                            <field name="brief_type" required="1"/>
+                            <field name="stand_size" required="1"/>
                         </group>
                         <group>
-                            <field name="quotation_deadline"/>
-                            <field name="quotation_complete"/>
+                            <field name="quotation_deadline" required="1"/>
+                            <field name="quotation_complete" required="1"/>
                             <field name="remaining_dates"/>
                             <field name="brief_status" invisible="1" />
                         </group>
@@ -607,7 +607,7 @@ if record:
                 <div class="badge-pill badge-danger float-right" attrs="{'invisible': ['|', ('probability', '&gt;', 0), ('active', '=', True)]}">Dropped</div>    
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="replace">
-                <field name="partner_id" string="Customer" invisible="0" widget="res_partner_many2one" context="{'default_name': contact_name, 'default_street': street, 'default_city': city, 'default_state_id': state_id, 'default_zip': zip, 'default_country_id': country_id, 'default_function': function, 'default_phone': phone, 'default_mobile': mobile, 'default_email': email_from, 'default_user_id': user_id, 'default_team_id': team_id, 'default_website': website, 'show_vat': True}" groups="base.group_no_one"/>
+                <field name="partner_id" string="Customer" invisible="0" widget="res_partner_many2one" context="{'default_name': contact_name, 'default_street': street, 'default_city': city, 'default_state_id': state_id, 'default_zip': zip, 'default_country_id': country_id, 'default_function': function, 'default_phone': phone, 'default_mobile': mobile, 'default_email': email_from, 'default_user_id': user_id, 'default_team_id': team_id, 'default_website': website, 'show_vat': True}"/>
                 <field name="submit_leadd" invisible="1" />
             </xpath>
             <xpath expr="//field[@name='tag_ids']" position="replace">
@@ -891,6 +891,8 @@ if record:
             <xpath expr="//field[@name='validity_date']" position="before">
                 <field name="date_order" />
             </xpath>
+            <xpath expr="//field[@name='analytic_account_id']" position="replace">
+            </xpath>
             <xpath expr="//field[@name='payment_term_id']" position="replace">
                 <field name="image_product" />
                 <field name="lead_id"  readonly="1" invisible="1"/>
@@ -898,6 +900,8 @@ if record:
                 <field name="opportunity_id" />
                 <field name="remaining_dates"  invisible="1"/>
                 <field name="sign_man" groups="sales_team.group_sale_manager"/>
+                <field name="analytic_account_id" string="Project" context="{'default_partner_id':partner_invoice_id, 'default_name':name}" attrs="{'readonly': [('invoice_count','!=',0),('state','=','sale')]}" groups="analytic.group_analytic_accounting" force_save="1"/>
+                <field name="lpo_number" />
                 <field name="quo_optional" />
                 <field name="sec_subtotal" />
             </xpath>
@@ -923,6 +927,7 @@ if record:
             </xpath>
             <xpath expr="//button[@name='preview_sale_order']" position="replace">
             </xpath>
+            
             <xpath expr="//field[@name='partner_id']" position="replace">
                 <field name="partner_id" widget="res_partner_many2one" domain="[('customer','=',True),('parent_id','=',False)]" context="{'search_default_customer':1, 'show_address': 1, 'show_vat': True}" options="{&quot;always_reload&quot;: True}"/>
                 <field name="partner_no" string=" "/>
@@ -1994,10 +1999,13 @@ if record:
             <xpath expr="//field[@name='date_planned']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="//field[@name='payment_term_id']" position="replace">
+            </xpath>
             <xpath expr="//field[@name='company_id']" position="after">
                 <field name="date_planned" string="Delivery Date" attrs="{'readonly': [('state', 'not in', ('draft', 'sent'))]}"/>
                 <field name="received_by" />
                 <field name="delivery_location" />
+                <field name="payment_term_id" options="{'no_open': True, 'no_create': True}" attrs="{'readonly': ['|', ('invoice_status','=', 'invoiced'), ('state', '=', 'done')]}"/>
             </xpath>
             <xpath expr="//field[@name='amount_untaxed']" position="attributes">
                 <attribute name="string">Total Amount</attribute>
@@ -2072,7 +2080,7 @@ if record:
                 
                 <field name="LPO"/>
                 <field name="project_name"/>
-                <field name="project" invisible="1"/>
+                <field name="project" />
                 <!-- <field name="has_outstanding" invisible="1"/> -->
             </xpath>
             <xpath expr="//div[1]" position="replace">

@@ -136,12 +136,14 @@
         </div>
     </template>
 
+    
+
     <template id="external_layout_boxed_po_without_seal">
         <div class="header">
             <div class="">
             <div class="row">
                 <div class="col-8">
-                    <img t-if="res_company.logo" t-att-src="image_data_uri(res_company.logo)" alt="Logo" style="width:350px; height:200px;"/>
+                    <!-- <img t-if="res_company.logo" t-att-src="image_data_uri(res_company.logo)" alt="Logo" style="width:350px; height:200px;"/> -->
                 </div>
                 <div class="col-6 text-left mb4" style="font-size:17px;">
                     <h4 class="mt0" t-field="res_company.report_header"/>
