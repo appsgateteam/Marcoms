@@ -693,7 +693,8 @@ class SaleOrder_customize(models.Model):
     optional_total_name = fields.Char('Optionals',default="Optional elements")
     venue_total_name = fields.Char('Venue Charges',default="Venue charges")
     date_order = fields.Datetime(string='Order Date', required=True,readonly=False, index=True, copy=False, default=fields.Datetime.now)
-    
+    lpo_number = fields.Char('LPO Number')
+
     @api.onchange('partner_id','project_name')
     def pro_show_view(self):
         for rec in self:
@@ -771,6 +772,7 @@ class SaleOrder_customize(models.Model):
             'transaction_ids': [(6, 0, self.transaction_ids.ids)],
             'project_name': self.project_name,
             'project': self.analytic_account_id.id,
+            'LPO': self.lpo_number,
             # 'ks_global_discount_rate': self.ks_global_discount_rate,
             # 'ks_global_discount_type': self.ks_global_discount_type,
             # 'ks_amount_discount': self.ks_amount_discount,
@@ -1323,10 +1325,18 @@ Sincerely,"""  % (rec.partner_id.name, rec.project_name, rec.remaining_dates)
         if self.env['ir.config_parameter'].sudo().get_param('sale.auto_done_setting'):
             self.action_done()
 
+        sale_order = self.env['sale.order'].search([('opportunity_id','=',self.opportunity_id.id)])
         job_obj = self.env['crm.lead'].search([('id','=',self.opportunity_id.id)])
         if job_obj:
-            for k in job_obj:
-                k.write({'stage_id': 9})
+            for sale in sale_order:
+                if sale.state == 'sale':
+                    for k in job_obj:
+                        k.write({'stage_id': 9})
+                else:
+                    for l in job_obj:
+                        l.write({'stage_id': 13,'probability':70})
+
+
         channel_all_employees = self.env.ref('marcoms_updates.channel_all_confirmed_sales').read()[0]
         template_new_employee = self.env.ref('marcoms_updates.email_template_data_confirm_sales').read()[0]
         # raise ValidationError(_(template_new_employee))
