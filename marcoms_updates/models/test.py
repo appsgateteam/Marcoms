@@ -319,7 +319,11 @@ class crm_customize(models.Model):
                 if lead.contact_name :  # search through the existing partners based on the lead's email
                     # raise UserError('test2 %s'% (lead.contact_name) )
                     if Partners.search([('email', '=', lead.email_from)], limit=1):
-                        continue
+                        if lead.partner_id.parent_id:
+                            partner_id = lead.partner_id.parent_id.id
+                        else:
+                            partner_id = lead.partner_id.id
+                        # continue
                     else:
                         partner = lead._create_lead_partnerss()
                         if partner.parent_id:
