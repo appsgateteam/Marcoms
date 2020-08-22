@@ -1185,6 +1185,7 @@ if record:
                     <field name="price_tax" invisible="1"/>
                     <field name="is_discount"/>
                     <button string="Duplicate" icon="fa-pencil-square-o" name="action_duplicate" aria-label="Sort" type="object"/>
+                    <button string="Add Space" icon="fa-long-arrow-right" name="add_space" aria-label="Sort" type="object"/>
                 </tree>
             </xpath>
             <xpath expr="//page[@name='order_lines']//field[@name='order_line']/form//field[@name='price_subtotal']" position="after">

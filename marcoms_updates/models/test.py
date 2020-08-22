@@ -1750,6 +1750,11 @@ class SaleOrderLinecus(models.Model):
     sale_order_venue_ids = fields.One2many('sale.order.venue', 'line_id', 'Venue Lines')
     # price_subtotal = fields.Monetary(compute='_compute_amount', string='Subtotal',readonly=False,  store=True)
 
+
+    @api.multi
+    def add_space(self):
+        self.create({'order_id':self.order_id.id,'display_type':'line_section','is_space':True})
+
     # @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id')
     # def _compute_amount(self):
     #     """
