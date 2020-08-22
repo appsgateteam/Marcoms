@@ -273,6 +273,7 @@
                                         <span t-field="line.name"/>
                                     </td>
                                 </t>
+                            </t>
                             <t t-if="line.display_type == 'line_note'">
                                 <t t-set="i" t-value="i-1"/>
                                 <td colspan="99" style="border: 1px solid black;vertical-align: top;">
