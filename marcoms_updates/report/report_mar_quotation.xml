@@ -256,17 +256,23 @@
                                 </t>
                             </t>
                             <t t-if="line.display_type == 'line_section'">
-                              <t t-set="i" t-value="i-1"/>
-                                <td colspan="3" class="text-center" style="border-left: 1px solid black;font-size:20px;vertical-align: top;">
-                                    <span t-field="line.name"/>
-                                </td>
-                                <td colspan="4" class="text-center" style="border-right: 1px solid black;vertical-align: top;">
-                                    <t t-if="line.image_pro"><img t-attf-src="data:image/*;base64,{{line.image_pro}}" style="width:90%;height:200px;margin-left:10px;"/></t>
-                                </td>
-                                <t t-set="current_section" t-value="line"/>
-                                <t t-set="sec_name" t-value="line.name"/>
-                                <t t-set="current_subtotal" t-value="0"/>
-                            </t>
+                                <t t-if="line.is_space == False" >
+                                    <t t-set="i" t-value="i-1"/>
+                                    <td colspan="3" class="text-center" style="border-left: 1px solid black;font-size:20px;vertical-align: top;">
+                                        <span t-field="line.name"/>
+                                    </td>
+                                    <td colspan="4" class="text-center" style="border-right: 1px solid black;vertical-align: top;">
+                                        <t t-if="line.image_pro"><img t-attf-src="data:image/*;base64,{{line.image_pro}}" style="width:90%;height:200px;margin-left:10px;"/></t>
+                                    </td>
+                                    <t t-set="current_section" t-value="line"/>
+                                    <t t-set="sec_name" t-value="line.name"/>
+                                    <t t-set="current_subtotal" t-value="0"/>
+                                </t>
+                                <t t-else="">
+                                    <td colspan="99" class="text-center" style="border-left: 0;border-right: 0;border-top: 0;border-bottom: 0;height:20px;">
+                                        <span t-field="line.name"/>
+                                    </td>
+                                </t>
                             <t t-if="line.display_type == 'line_note'">
                                 <t t-set="i" t-value="i-1"/>
                                 <td colspan="99" style="border: 1px solid black;vertical-align: top;">

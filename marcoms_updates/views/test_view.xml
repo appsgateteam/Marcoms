@@ -1189,9 +1189,11 @@ if record:
             </xpath>
             <xpath expr="//page[@name='order_lines']//field[@name='order_line']/form//field[@name='price_subtotal']" position="after">
                 <field name="image_pro" />
+                <field name="is_space" />
             </xpath>
             <xpath expr="//page[@name='order_lines']//field[@name='order_line']/tree//field[@name='name']" position="after">
                 <field name="image_pro" />
+                <field name="is_space" />
             </xpath>
             <!-- <xpath expr="//group[1]" position="after">
                 
