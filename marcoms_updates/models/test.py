@@ -1743,6 +1743,7 @@ class SaleOrderLinecus(models.Model):
     product_id = fields.Many2one('product.product', string='Product', domain=[('sale_ok', '=', True)], default=2, ondelete='restrict')
     product_name = fields.Char(string='Product')
     image_pro = fields.Binary('Product Image')
+    is_space = fields.Boolean('Is space')
     name = fields.Text(string='Description', required=False)
     is_discount = fields.Boolean(string='Is Discount')
     # select = fields.Boolean('Select',default=False)
