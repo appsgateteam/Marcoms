@@ -1194,6 +1194,10 @@ if record:
             </xpath>
             <xpath expr="//page[@name='order_lines']//field[@name='order_line']/tree//field[@name='name']" position="after">
                 <field name="image_pro" />
+                <!-- <field name="is_space" /> -->
+            </xpath>
+            <xpath expr="//page[@name='order_lines']//field[@name='order_line']/tree//field[@name='is_discount']" position="after">
+                <!-- <field name="image_pro" /> -->
                 <field name="is_space" />
             </xpath>
             <!-- <xpath expr="//group[1]" position="after">
