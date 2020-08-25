@@ -17,7 +17,7 @@
                 <!-- <button name="action_management_rej" type="object" string="Reject" class="btn-danger" attrs="{'invisible': [('state', 'not in', 'top')]}" groups="product_requisition.group_top_management"/> -->
                 <button name="set_to_draft" type="object" string="Set to Draft" attrs="{'invisible': [('state', 'not in', ['cancel'])]}" groups="base.group_user"/>
                 <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': [('state', 'in', ['cancel'])]}" groups="base.group_user"/>
-                <field name="state" widget="statusbar" statusbar_visible="new,po_created,account,back,top"/>
+                <field name="state" widget="statusbar" statusbar_visible="new,po_created,back,top"/>
             </header>
             <sheet>
                 <div class="oe_button_box" name="button_box">
@@ -55,6 +55,7 @@
                     <group>
                         <field name="requisition_date" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
                         <field name="pro_requi" invisible="1" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
+                        <field name="project_manager" invisible="1"/>
                         <field name="requisition_dead" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
                         <field name="co_box" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
                         <!-- <field name="requisition_deadline_date" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
@@ -151,6 +152,17 @@
                 <button name="action_reject" type="object" string="Reject" class="btn-danger" attrs="{'invisible': [('state', 'not in', 'account')]}" groups="product_requisition.group_Accounts"/>
                 
             </xpath>
+            <xpath expr="//button[@id='bid_confirm']" position="after">
+                <button name="button_confirm" type="object" attrs="{'invisible': ['|',('state','not in',['draft','sel']),'|',('test_requester','=',False),('check_man', '=',True)]}" string="Confirm Order" id="new_confirm"/>
+            </xpath>
+            <xpath expr="//button[@id='bid_confirm']" position="replace">
+                <button name="button_confirm" type="object" attrs="{'invisible': ['|',('state','not in',['sent']),'|',('project_manager', '=',True),('hide_button', '=',False)]}" string="Confirm Order" class="oe_highlight" id="bid_confirm"/>
+                <!-- <attribute name="attrs"></attribute> -->
+            </xpath>
+            <xpath expr="//button[@id='draft_confirm']" position="replace">
+                <button name="button_confirm" type="object" attrs="{'invisible': ['|',('state','not in',['draft','sel']),'|',('project_manager', '=',True),('hide_button', '=',False)]}" string="Confirm Order" id="draft_confirm"/>
+                <!-- <attribute name="attrs">{'invisible': ['|',('state','not in',['draft','sel']),('project_manager', '=',True)]}</attribute> -->
+            </xpath>
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="pro_requi" invisible="1"/>
                 <field name="pr_sequence" invisible="1"/>
@@ -159,8 +171,28 @@
                 <field name="creator_name_id" invisible="1"/>
                 <field name="test_requester" invisible="1"/>
                 <field name="co_box" invisible="1"/>
+                <field name="hide_button" invisible="1"/>
                 <field name="req_name" invisible="1"/>
+                <field name="project_manager" invisible="1"/>
+                <field name="check_man" invisible="1"/>
             </xpath>
+        </field>
+    </record>
+
+    <record id="purchase_requisition_tree_cus2" model="ir.ui.view">
+        <field name="name">purchase.requisition.tree.cus2</field>
+        <field name="model">purchase.requisition</field>
+        <field name="arch" type="xml">
+            <tree create="false" decoration-bf="message_needaction==True" decoration-muted="state == 'cancel'" decoration-danger="date_end and date_end&lt;current_date" string="Purchase Agreements">
+                <field name="message_needaction" invisible="1"/>
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                <field name="ordering_date"/>
+                <field name="date_end"/>
+                <field name="origin"/>
+                <field name="state"/>
+            </tree>
         </field>
     </record>
 
@@ -181,7 +213,9 @@
                 <field name="task_id" invisible="1"/>-->
                 <field name="co_box" invisible="1"/>
                 <field name="req_name" invisible="1"/>
+                <field name="project_manager" invisible="1"/>
             </field>
+            
             <!-- <field name="vendor_id" position="after">
                 
             </field> -->
@@ -206,12 +240,12 @@
                 
             </xpath>
             <xpath expr="//button[1]" position="replace">
-                
+                <!-- 'default_task_id':task_id  'default_analytic_id':analytic_id  -->
             </xpath>
             <xpath expr="//button[@name='%(purchase_requisition.action_purchase_requisition_list)d']" position="replace">
                 <button name="%(purchase_requisition.action_purchase_requisition_list)d" type="action" class="oe_stat_button" icon="fa-list-alt"
                         attrs="{'invisible': [('state', '=', 'draft')]}"
-                        context="{'default_pro_requi': pro_requi,'default_pr_sequence_id': pr_sequence_id,'default_pr_sequence': pr_sequence,'default_creator_name_id':creator_name_id,'default_req_name':req_name,'default_co_box':co_box}">
+                        context="{'default_pro_requi': pro_requi,'default_pr_sequence_id': pr_sequence_id,'default_pr_sequence': pr_sequence,'default_creator_name_id':creator_name_id,'default_req_name':req_name,'default_co_box':co_box,'default_project_manager':project_manager}">
                         <field name="order_count" widget="statinfo" string="RFQs/Orders"/>
                 </button>
             </xpath>

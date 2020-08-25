@@ -24,6 +24,8 @@ class PurchaseRequisitionCus2(models.Model):
     reason_for_requisition = fields.Text(string="Reason For Requisition")
     co_box = fields.Boolean(string="Actionable by Coordinator",default=False)
     req_name = fields.Many2one('hr.employee',string='Requester Name')
+    project_manager = fields.Boolean('Created by project manager',default=False)
+    
 
     @api.multi
     def _get_id(self):
@@ -90,11 +92,40 @@ class PurchaseorderCus2(models.Model):
         ('done', 'Locked'),
         ('cancel', 'Cancelled')
     ], string='Status', readonly=True, index=True, copy=False, default='draft', track_visibility='onchange')
-    test_requester = fields.Boolean('Test2',compute='_req_count',default=True)
+    test_requester = fields.Boolean('Test2',compute='_req_count',default=False)
     pr_sequence_id = fields.Integer(string='Sequence')
     creator_name_id = fields.Integer(string='Requester Name')
     co_box = fields.Boolean(string="Actionable by Coordinator",default=False)
     req_name = fields.Many2one('hr.employee',string='Requester Name')
+    project_manager = fields.Boolean('Created by project manager',default=False)
+    check_man = fields.Boolean('Check',compute='_req_count',default=True)
+    hide_button = fields.Boolean('Hide',default=False)
+
+    @api.model
+    def create(self,vals):
+        res = super(PurchaseorderCus2, self).create(vals)
+        if res.project_manager == False:
+            res.hide_button = True
+
+        return res
+
+    # @api.multi
+    @api.onchange('order_line')
+    def _change_price(self):
+        for rec in self:
+            if rec.project_manager == True:
+                channel_all_employees = self.env.ref('product_requisition.channel_all_pro_project_manager').read()[0]
+                template_new_employee = self.env.ref('product_requisition.email_template_data_pro_project_manager').read()[0]
+                # raise ValidationError(_(template_new_employee))
+                if template_new_employee:
+                    # MailTemplate = self.env['mail.template']
+                    body_html = template_new_employee['body_html']
+                    subject = template_new_employee['subject']
+                    # raise ValidationError(_('%s %s ') % (body_html,subject))
+                    ids = channel_all_employees['id']
+                    channel_id = self.env['mail.channel'].search([('id', '=', ids)])
+                    message = """Hello, the Purchase team edit the price for this RFQ %s that the requisition created by %s"""  % (rec.name, rec.req_name.name)
+                    channel_id.message_post(body=message, subject=subject,subtype='mail.mt_comment')
 
     @api.multi
     @api.onchange('pr_sequence_id','creator_name_id')
@@ -113,27 +144,48 @@ class PurchaseorderCus2(models.Model):
                     rec.test_requester = True
                 else:
                     rec.test_requester = False
+            if rec.project_manager == True and rec.test_requester == True:
+                rec.check_man = False
+            else:
+                rec.check_man = True
 
     @api.multi
     def button_confirm(self):
         for order in self:
             if order.pro_requi == True:
-                order.write({'state': 'account'})
-                channel_all_employees = self.env.ref('product_requisition.channel_all_pro_requisi').read()[0]
-                template_new_employee = self.env.ref('product_requisition.email_template_data_pro_requisi').read()[0]
-                # raise ValidationError(_(template_new_employee))
-                if template_new_employee:
-                    # MailTemplate = self.env['mail.template']
-                    body_html = template_new_employee['body_html']
-                    subject = template_new_employee['subject']
-                    # raise ValidationError(_('%s %s ') % (body_html,subject))
-                    ids = channel_all_employees['id']
-                    channel_id = self.env['mail.channel'].search([('id', '=', ids)])
-                    message = """Hello, the Purchase team assign this PO %s from product requisition no %s to accounts team
-                                To approve it and send it to the Requster approval"""  % (order.name, order.pr_sequence.sequence)
-                    channel_id.message_post(body=message, subject=subject,subtype='mail.mt_comment')
-                com = self.env['product.requisition'].search([('id', '=', order.pr_sequence.id)])
-                com.write({'state': 'account'})
+                if self.user_has_groups('product_requisition.group_project_manager'):
+                    order.write({'state': 'top'})
+                    channel_all_employees = self.env.ref('product_requisition.channel_all_pro_requisi').read()[0]
+                    template_new_employee = self.env.ref('product_requisition.email_template_data_pro_requisi').read()[0]
+                    # raise ValidationError(_(template_new_employee))
+                    if template_new_employee:
+                        # MailTemplate = self.env['mail.template']
+                        body_html = template_new_employee['body_html']
+                        subject = template_new_employee['subject']
+                        # raise ValidationError(_('%s %s ') % (body_html,subject))
+                        ids = channel_all_employees['id']
+                        channel_id = self.env['mail.channel'].search([('id', '=', ids)])
+                        message = """Hello, this PO number %s from product requisition No %s confirmed by project manager %s and now waiting for management approve"""  % (order.name, order.pr_sequence.sequence,self.env.user.name)
+                        channel_id.message_post(body=message, subject=subject,subtype='mail.mt_comment')
+                    com = self.env['product.requisition'].search([('id', '=', order.pr_sequence.id)])
+                    com.write({'state': 'top'})
+                else:
+                    order.write({'state': 'account'})
+                    channel_all_employees = self.env.ref('product_requisition.channel_all_pro_requisi').read()[0]
+                    template_new_employee = self.env.ref('product_requisition.email_template_data_pro_requisi').read()[0]
+                    # raise ValidationError(_(template_new_employee))
+                    if template_new_employee:
+                        # MailTemplate = self.env['mail.template']
+                        body_html = template_new_employee['body_html']
+                        subject = template_new_employee['subject']
+                        # raise ValidationError(_('%s %s ') % (body_html,subject))
+                        ids = channel_all_employees['id']
+                        channel_id = self.env['mail.channel'].search([('id', '=', ids)])
+                        message = """Hello, the Purchase team assign this PO %s from product requisition no %s to accounts team
+                                    To approve it and send it to the Requster approval"""  % (order.name, order.pr_sequence.sequence)
+                        channel_id.message_post(body=message, subject=subject,subtype='mail.mt_comment')
+                    com = self.env['product.requisition'].search([('id', '=', order.pr_sequence.id)])
+                    com.write({'state': 'account'})
             else:  
                 if order.state not in ['draft', 'sent','sel']:
                     continue
@@ -218,7 +270,19 @@ class PurchaseorderCus2(models.Model):
         for order in self:
             com = self.env['product.requisition'].search([('id', '=', order.pr_sequence.id)])
             com.write({'state': 'app'})
-            order.button_approve() 
+            order.button_approve()
+            channel_all_employees = self.env.ref('product_requisition.channel_all_pro_requisi').read()[0]
+            template_new_employee = self.env.ref('product_requisition.email_template_data_pro_requisi').read()[0]
+            # raise ValidationError(_(template_new_employee))
+            if template_new_employee:
+                # MailTemplate = self.env['mail.template']
+                body_html = template_new_employee['body_html']
+                subject = template_new_employee['subject']
+                # raise ValidationError(_('%s %s ') % (body_html,subject))
+                ids = channel_all_employees['id']
+                channel_id = self.env['mail.channel'].search([('id', '=', ids)])
+                message = """Hello All, %s approve the PO %s that coming from requisition %s ,now purchase team can continue the process"""  % (self.env.user.name,order.name,order.pr_sequence.sequence)
+                channel_id.message_post(body=message, subject=subject,subtype='mail.mt_comment')
 
 
 class productRequisitionFromsales(models.Model):
@@ -256,6 +320,7 @@ class productRequisitionFromsales(models.Model):
     test_requester = fields.Boolean('Test2',compute='_req_count',default=True)
     pro_requi = fields.Boolean('product Requisition',default=True)
     co_box = fields.Boolean(string="Actionable by Coordinator",default=False)
+    project_manager = fields.Boolean('Created by project manager',default=False)
 
     @api.constrains('requisition_date','requisition_dead')
     def check_inv_date(self):
@@ -404,7 +469,11 @@ class productRequisitionFromsales(models.Model):
             # raise ValidationError(_('%s %s ') % (body_html,subject))
             ids = channel_all_employees['id']
             channel_id = self.env['mail.channel'].search([('id', '=', ids)])
-            channel_id.message_post(body='Hello, there is New Product requisition assigned to purchase team with number '+str(self.sequence), subject=subject,subtype='mail.mt_comment')
+            if self.user_has_groups('product_requisition.group_project_manager'):
+                message = """Hello, there is New Product requisition assigned to purchase team that was created by a project manager(%s) with number %s"""  % (self.req_name.name,self.sequence)
+            else:
+                message = """Hello, there is New Product requisition assigned to purchase team with number %s"""  % (self.sequence)
+            channel_id.message_post(body=message, subject=subject,subtype='mail.mt_comment')
             
         self.create_purchase_requisition()
         res = self.write({
@@ -443,29 +512,58 @@ class productRequisitionFromsales(models.Model):
         purchase_req_obj = self.env['purchase.requisition']
         # purchase_req_line_obj = self.env['purchase.requisition.line']
         for res in self:
-            for line in res.requisition_line_ids:  
-                data = {
-                            'product_id':line.product_id.id,
-                            'name':line.description,
-                            'product_qty':line.qty,
-                            'product_uom_id':line.uom_id.id,    
-                        }
-                task_ids.append((0,0,data))
-            purchase_req_obj.create({
-                                            'requisition_pr_id':res.id,
-                                            'state':'draft',
-                                            'origin':res.sequence,
-                                            'line_ids':task_ids,
-                                            'analytic_id':res.oppor_id.id,
-                                            'task_id':res.task_id.id,
-                                            'pro_requi':res.pro_requi,
-                                            'pr_sequence':res.id,
-                                            'creator_name':res.creator_name.id,
-                                            'reason_for_requisition':res.reason_for_requisition,
-                                            'co_box':res.co_box,
-                                            'req_name':res.req_name.id,
-                                            'user_id':res.req_name.user_id.id,
-                                            })
+            if self.user_has_groups('product_requisition.group_project_manager'):
+                for line in res.requisition_line_ids:  
+                    data = {
+                                'product_id':line.product_id.id,
+                                'name':line.description,
+                                'account_analytic_id':res.oppor_id.id,
+                                'product_qty':line.qty,
+                                'product_uom_id':line.uom_id.id,    
+                            }
+                    task_ids.append((0,0,data))
+                purchase_req_obj.create({
+                                                'requisition_pr_id':res.id,
+                                                'state':'draft',
+                                                'origin':res.sequence,
+                                                'line_ids':task_ids,
+                                                'analytic_id':res.oppor_id.id,
+                                                'task_id':res.task_id.id,
+                                                'pro_requi':res.pro_requi,
+                                                'pr_sequence':res.id,
+                                                'creator_name':res.creator_name.id,
+                                                'reason_for_requisition':res.reason_for_requisition,
+                                                'co_box':res.co_box,
+                                                'req_name':res.req_name.id,
+                                                'user_id':False,
+                                                'project_manager':True,
+                                                })
+            else:
+                for line in res.requisition_line_ids:  
+                    data = {
+                                'product_id':line.product_id.id,
+                                'name':line.description,
+                                'account_analytic_id':res.oppor_id.id,
+                                'product_qty':line.qty,
+                                'product_uom_id':line.uom_id.id,    
+                            }
+                    task_ids.append((0,0,data))
+                purchase_req_obj.create({
+                                                'requisition_pr_id':res.id,
+                                                'state':'draft',
+                                                'origin':res.sequence,
+                                                'line_ids':task_ids,
+                                                'analytic_id':res.oppor_id.id,
+                                                'task_id':res.task_id.id,
+                                                'pro_requi':res.pro_requi,
+                                                'pr_sequence':res.id,
+                                                'creator_name':res.creator_name.id,
+                                                'reason_for_requisition':res.reason_for_requisition,
+                                                'co_box':res.co_box,
+                                                'req_name':res.req_name.id,
+                                                'user_id':False,
+                                                'project_manager':False,
+                                                })
         # for line in self.requisition_line_ids:  
         #     req_line_vals = purchase_req_line_obj.create({
         #         'product_id':line.product_id.id,
@@ -482,38 +580,73 @@ class productRequisitionFromsales(models.Model):
         self.ensure_one()
         task_ids = []
         for res in self:
-            for line in res.requisition_line_ids:  
-                data = {
-                            'product_id':line.product_id.id,
-                            'product_qty':line.qty,
-                            'name':line.description,
-                            'product_uom_id':line.uom_id.id,    
-                        }
-                task_ids.append((0,0,data))
-            datas = {
-                                            'default_requisition_pr_id':res.id,
-                                            'default_user_id':res.req_name.user_id.id,
-                                            'default_state':'draft',
-                                            'default_origin':res.sequence,
-                                            'task_id':res.task_id.id,
-                                            'default_line_ids':task_ids,
-                                            'default_analytic_id':res.oppor_id.id,
-                                            'default_pro_requi':res.pro_requi,
-                                            'default_pr_sequence':res.id,
-                                            'default_creator_name':res.creator_name.id,
-                                            'default_reason_for_requisition':res.reason_for_requisition,
-                                            'default_co_box':res.co_box,
-                                            'default_req_name':res.req_name.id,
-                                            }
-            domain = [
-                ('requisition_pr_id', '=', res.id)]
+            if self.user_has_groups('product_requisition.group_project_manager'):
+                for line in res.requisition_line_ids:  
+                    data = {
+                                'product_id':line.product_id.id,
+                                'product_qty':line.qty,
+                                'name':line.description,
+                                'account_analytic_id':res.oppor_id.id,
+                                'product_uom_id':line.uom_id.id,    
+                            }
+                    task_ids.append((0,0,data))
+                datas = {
+                                                'default_requisition_pr_id':res.id,
+                                                'default_user_id':False,
+                                                'default_state':'draft',
+                                                'default_origin':res.sequence,
+                                                'task_id':res.task_id.id,
+                                                'default_line_ids':task_ids,
+                                                'default_analytic_id':res.oppor_id.id,
+                                                'default_pro_requi':res.pro_requi,
+                                                'default_pr_sequence':res.id,
+                                                'default_creator_name':res.creator_name.id,
+                                                'default_reason_for_requisition':res.reason_for_requisition,
+                                                'default_co_box':res.co_box,
+                                                'default_req_name':res.req_name.id,
+                                                'default_project_manager':True,
+                                                }
+                domain = [
+                    ('requisition_pr_id', '=', res.id)]
+            else:
+                for line in res.requisition_line_ids:  
+                    data = {
+                                'product_id':line.product_id.id,
+                                'product_qty':line.qty,
+                                'name':line.description,
+                                'account_analytic_id':res.oppor_id.id,
+                                'product_uom_id':line.uom_id.id,    
+                            }
+                    task_ids.append((0,0,data))
+                datas = {
+                                                'default_requisition_pr_id':res.id,
+                                                'default_user_id':False,
+                                                'default_state':'draft',
+                                                'default_origin':res.sequence,
+                                                'task_id':res.task_id.id,
+                                                'default_line_ids':task_ids,
+                                                'default_analytic_id':res.oppor_id.id,
+                                                'default_pro_requi':res.pro_requi,
+                                                'default_pr_sequence':res.id,
+                                                'default_creator_name':res.creator_name.id,
+                                                'default_reason_for_requisition':res.reason_for_requisition,
+                                                'default_co_box':res.co_box,
+                                                'default_req_name':res.req_name.id,
+                                                'default_project_manager':False,
+                                                }
+                domain = [
+                    ('requisition_pr_id', '=', res.id)]
+        view_tree_id = self.env.ref('product_requisition.purchase_requisition_tree_cus2').id
+        view_form_id = self.env.ref('purchase_requisition.view_purchase_requisition_form').id
         return {
             'name': _('Purchase Tender'),
             'domain': domain,
             'res_model': 'purchase.requisition',
             'type': 'ir.actions.act_window',
-            'view_id': False,
+            # 'view_id': False,
             'view_mode': 'tree,form',
+            'views' : [(view_tree_id, 'tree'),
+					  (view_form_id, 'form')],
             'view_type': 'form',
             'help': _('''<p class="oe_view_nocontent_create">
                            there is no Purchase tender for this requisition
