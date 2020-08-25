@@ -37,6 +37,12 @@
             <field name="implied_ids" eval="[(4, ref('group_channel_access'))]"/>
         </record>
 
+        <record id="group_project_manager" model="res.groups">
+            <field name="name">Project Manager</field>
+            <field name="category_id" ref="product_requisition.module_product_requisition_category"/>
+            <field name="implied_ids" eval="[(4, ref('group_channel_access'))]"/>
+        </record>
+
         <record id="group_top_management" model="res.groups">
             <field name="name">Top Management</field>
             <field name="category_id" ref="product_requisition.module_product_requisition_category"/>

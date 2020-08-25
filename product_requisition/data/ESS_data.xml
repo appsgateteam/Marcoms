@@ -32,6 +32,24 @@
       <field name="description">General announcements for all Product Requisitions.</field>
     </record>
 
+    <record id="email_template_data_pro_project_manager" model="mail.template">
+      <field name="name">Applicant: Requisitions By Project Managers</field>
+      <field name="model_id" ref="product_requisition.model_product_requisition"/>
+      <field name="email_from">${object.user_id.login}</field>
+      <field name="subject">Product Requisiton Status</field>
+      <field name="body_html" type="html"><p>
+          Hello there are New Purchase Tender Created Please Check
+          Purchase Requisition ${object.requisition_mat_po_id}</p>
+      </field>
+    </record>
+
+
+    <record model="mail.channel" id="channel_all_pro_project_manager">
+      <field name="name">Requisitions By Project Managers</field>
+      <field name="group_ids" eval="[(4, ref('product_requisition.group_project_manager'))]"/>
+      <field name="description">General announcements for all Product Requisitions created by project managers.</field>
+    </record>
+
     <record id="email_template_data_pro_approve" model="mail.template">
       <field name="name">Applicant: PO Approve</field>
       <field name="model_id" ref="product_requisition.model_product_requisition"/>
