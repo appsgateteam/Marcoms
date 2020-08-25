@@ -607,7 +607,7 @@ if record:
                 <div class="badge-pill badge-danger float-right" attrs="{'invisible': ['|', ('probability', '&gt;', 0), ('active', '=', True)]}">Dropped</div>    
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="replace">
-                <field name="partner_id" string="Customer" invisible="0" widget="res_partner_many2one" context="{'default_name': contact_name, 'default_street': street, 'default_city': city, 'default_state_id': state_id, 'default_zip': zip, 'default_country_id': country_id, 'default_function': function, 'default_phone': phone, 'default_mobile': mobile, 'default_email': email_from, 'default_user_id': user_id, 'default_team_id': team_id, 'default_website': website, 'show_vat': True}" />
+                <field name="partner_id" string="Customer" groups="sales_team.group_sale_salesman" invisible="0" widget="res_partner_many2one" context="{'default_name': contact_name, 'default_street': street, 'default_city': city, 'default_state_id': state_id, 'default_zip': zip, 'default_country_id': country_id, 'default_function': function, 'default_phone': phone, 'default_mobile': mobile, 'default_email': email_from, 'default_user_id': user_id, 'default_team_id': team_id, 'default_website': website, 'show_vat': True}" />
                 <field name="submit_leadd" invisible="1" />
             </xpath>
             <xpath expr="//field[@name='tag_ids']" position="replace">
