@@ -945,11 +945,16 @@ class Transportaion_expense_detals(models.Model):
     attachment_number = fields.Integer('Number of Attachments', compute='_compute_attachment_number')
     state = fields.Selection([
         ('draft', 'To Submit'),
+        ('Department approval', 'Department manager Approval'),
+        ('HR Approve', 'HR Approval'),
+        ('co-ordinator approve', 'Project Co-ordinator Approval'),
+        ('Purchase Approval', 'Purchase Manager Approval'),
+        ('wait', 'Waiting for Submit'),
         ('reported', 'Submitted'),
         ('approved', 'Approved'),
         ('done', 'Paid'),
         ('refused', 'Refused')
-    ], compute='_compute_state', string='Status', copy=False, index=True, readonly=True, store=True, help="Status of the Food expense.")
+    ], string='Status', copy=False, index=True, readonly=True, store=True,default='draft', help="Status of the Transportion expense.")
     sheet_id = fields.Many2one('transportaion.expense.sheet', string="Food Expense Report", readonly=True, copy=False)
     reference = fields.Char("Receipt No"  , readonly=True , states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'refused': [('readonly', False)]})
     is_refused = fields.Boolean("Explicitely Refused by manager or acccountant", readonly=True, copy=False)
@@ -974,6 +979,7 @@ class Transportaion_expense_detals(models.Model):
     rates = fields.Monetary("Rates", store=True , currency_field='currency_id', digits=dp.get_precision('Account'), readonly=True  , states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'refused': [('readonly', False)]})
     labour_charges = fields.Monetary("Labour Charges", store=True , currency_field='currency_id', digits=dp.get_precision('Account') , readonly=True , states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'refused': [('readonly', False)]})
     waiting_charges  = fields.Monetary("Waiting Charges", store=True , currency_field='currency_id', digits=dp.get_precision('Account') , readonly=True , states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'refused': [('readonly', False)]})
+    
     # product_id_transpotaion = fields.Many2one('product.transpotaion', string='Product', readonly=True, states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'refused': [('readonly', False)]})
 
     # food_seq = fields.Char('Sequnce', required=True, copy=False, readonly=True, default='New')
@@ -989,6 +995,81 @@ class Transportaion_expense_detals(models.Model):
 
     #     return result
     project_manager = fields.Many2one('res.users',string="Project Manager")
+    
+
+    # New approval levels 
+    creator = fields.Many2one('res.users',string="Requester")
+    creator_manager = fields.Many2one('res.users',string="Requester manager")
+    is_requester = fields.Boolean('Is Requester',compute="_get_requ")
+    is_requester_man = fields.Boolean('Is Requester Manager',compute="_get_requ")
+    department_comment = fields.Text('Department Manager Remarks')
+    hr_comment = fields.Text('HR Remarks')
+    co_comment = fields.Text('Co-ordinator Remarks')
+    purchase_comment = fields.Text('Purchase Remarks')
+
+    @api.multi
+    def _get_requ(self):
+        for rec in self:
+            if rec.creator.id == self.env.uid:
+                rec.is_requester = True
+            else:
+                rec.is_requester = False
+            if rec.creator_manager.id == self.env.uid:
+                rec.is_requester_man = True
+            else:
+                rec.is_requester_man = False
+
+
+    @api.model
+    def create(self,vals):
+        vals['creator'] = self.env.uid
+        com = self.env['hr.employee'].search([('user_id','=',self.env.uid)], limit=1)
+        for rec in com:
+            vals['creator_manager'] = rec.parent_id.user_id.id
+        return super(Transportaion_expense_detals, self).create(vals)
+
+    @api.multi
+    def action_send_to_approve(self):
+        self.write({'state':'Department approval'})
+
+    @api.multi
+    def action_department_approval(self):
+        self.write({'state':'HR Approve'})
+
+    @api.multi
+    def action_hr_approval(self):
+        self.write({'state':'co-ordinator approve'})
+
+    @api.multi
+    def action_co_approval(self):
+        self.write({'state':'Purchase Approval'})
+
+    @api.multi
+    def action_purchase_approval(self):
+        self.write({'state':'wait'})
+
+    @api.multi
+    def action_department_reject(self):
+        self.write({'state':'refused'})
+
+    @api.multi
+    def action_hr_reject(self):
+        self.write({'state':'refused'})
+
+    @api.multi
+    def action_co_reject(self):
+        self.write({'state':'refused'})
+
+    @api.multi
+    def action_purchase_reject(self):
+        self.write({'state':'refused'})
+
+    @api.multi
+    def set_to_draft(self):
+        self.write({'state':'draft'})
+
+
+    # New approval levels 
 
     @api.onchange('project_id')
     def _compute_man_project(self):
@@ -1013,19 +1094,19 @@ class Transportaion_expense_detals(models.Model):
             raise Warning(_('Rates should not be zero.'))
 
 
-    @api.depends('sheet_id', 'sheet_id.account_move_id', 'sheet_id.state')
-    def _compute_state(self):
-        for expense in self:
-            if not expense.sheet_id or expense.sheet_id.state == 'draft':
-                expense.state = "draft"
-            elif expense.sheet_id.state == "cancel":
-                expense.state = "refused"
-            elif expense.sheet_id.state == "approve" or expense.sheet_id.state == "post":
-                expense.state = "approved"
-            elif not expense.sheet_id.account_move_id:
-                expense.state = "reported"
-            else:
-                expense.state = "done"
+    # @api.depends('sheet_id', 'sheet_id.account_move_id', 'sheet_id.state')
+    # def _compute_state(self):
+    #     for expense in self:
+    #         if not expense.sheet_id or expense.sheet_id.state == 'draft':
+    #             expense.state = "draft"
+    #         elif expense.sheet_id.state == "cancel":
+    #             expense.state = "refused"
+    #         elif expense.sheet_id.state == "approve" or expense.sheet_id.state == "post":
+    #             expense.state = "approved"
+    #         elif not expense.sheet_id.account_move_id:
+    #             expense.state = "reported"
+    #         else:
+    #             expense.state = "done"
 
     @api.depends('tax_ids','rates', 'labour_charges', 'waiting_charges')
     def _compute_amount(self):
@@ -1112,7 +1193,7 @@ class Transportaion_expense_detals(models.Model):
 
     @api.multi
     def action_submit_expenses(self):
-        if any(expense.state != 'draft' or expense.sheet_id for expense in self):
+        if any(expense.state != 'wait' or expense.sheet_id for expense in self):
             raise UserError(_("You cannot report twice the same line!"))
         # if len(self.mapped('employee_id')) != 1:
         #     raise UserError(_("You cannot report expenses for different employees in the same report."))
@@ -1599,8 +1680,12 @@ class Transportaion_Sheet(models.Model):
 
         if self.payment_mode == 'own_account' and expense_line_ids:
             self.write({'state': 'post'})
+            for rec in self.expense_line_ids:
+                rec.write({'state':'done'})
         else:
             self.write({'state': 'done'})
+            for rec in self.expense_line_ids:
+                rec.write({'state':'done'})
         self.activity_update()
         return res
 
@@ -1645,10 +1730,13 @@ class Transportaion_Sheet(models.Model):
     @api.multi
     def set_to_paid(self):
         self.write({'state': 'done'})
+        don
 
     @api.multi
     def action_submit_sheet(self):
         self.write({'state': 'submit'})
+        for rec in self.expense_line_ids:
+            rec.write({'state':'reported'})
         self.activity_update()
 
     @api.multi
@@ -1666,11 +1754,15 @@ class Transportaion_Sheet(models.Model):
 
         responsible_id = self.user_id.id or self.env.user.id
         self.write({'state': 'approve', 'user_id': responsible_id})
+        for rec in self.expense_line_ids:
+            rec.write({'state':'approved'})
         self.activity_update()
 
     @api.multi
     def paid_expense_sheets(self):
         self.write({'state': 'done'})
+        for rec in self.expense_line_ids:
+            rec.write({'state':'done'})
 
     @api.multi
     def refuse_sheet(self, reason):
@@ -1686,6 +1778,8 @@ class Transportaion_Sheet(models.Model):
                 raise UserError(_("You can only refuse your department expenses"))
 
         self.write({'state': 'cancel'})
+        for rec in self.expense_line_ids:
+            rec.write({'state':'refused'})
         for sheet in self:
             sheet.message_post_with_view('hr_expense.hr_expense_template_refuse_reason', values={'reason': reason, 'is_sheet': True, 'name': self.name})
         self.activity_update()
