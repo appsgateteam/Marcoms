@@ -5659,3 +5659,65 @@ class AssetsCus(models.Model):
     _inherit = 'account.asset.asset'
 
     tracking_id = fields.One2many('asset.tracking','asset_name',string="Tracking Line")
+
+class PaymentRequest(models.Model):
+    _name = 'payment.request'
+    _inherit = 'mail.thread'
+
+    name = fields.Char('Sequence' ,required=True, copy=False, readonly=True, index=True, default=lambda self: _('New'),track_visibility="onchange")    
+    lpo_num = fields.Many2one('purchase.order',string="LPO")
+    company = fields.Many2one('res.partner',string="Company")
+    payment_term = fields.Many2one('account.payment.term',string="Payment Term")
+    amount = fields.Float('Amount')
+    prepared = fields.Many2one('res.users',string="Prepared By")
+    approved = fields.Many2one('res.users',string="Approved By")
+    account_approve = fields.Many2one('res.users',string="Accounts Approved By")
+    project = fields.Many2one('account.analytic.account',string="Projects")
+    department_manager_comment = fields.Text(string="Department Manager Comment")
+    account_comment = fields.Text(string="Accounts Comment")
+    state = fields.Selection([
+        ('Draft', 'Draft'),
+        ('Department Approval', 'Department Manager Approval'),
+        ('Accounts Approval', 'Accounts Approval'),
+        ('Department Reject', 'Department Manager Rejected'),
+        ('Accounts Reject', 'Accounts Rejected'),
+        ('Approved', 'Approved'),
+        ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', track_sequence=3, default='Draft')
+
+    @api.model
+    def create(self, vals):
+        if vals.get('name', _('New')) == _('New'):
+            vals['name'] = self.env['ir.sequence'].next_by_code('payment.request') or 'New'   
+        return super(PaymentRequest, self).create(vals)
+
+    @api.onchange('lpo_num')
+    def _get_data(self):
+        for rec in self:
+            rec.company = rec.lpo_num.partner_id.id
+            rec.payment_term = rec.lpo_num.payment_term_id.id
+            rec.amount = rec.lpo_num.amount_total
+            rec.project = rec.lpo_num.analytic_id.id
+
+    @api.multi
+    def action_confirm(self):
+        self.write({'state':'Department Approval','prepared':self.env.user.id})
+
+    @api.multi
+    def action_department_approve(self):
+        self.write({'state':'Accounts Approval','approved':self.env.user.id})
+
+    @api.multi
+    def action_department_reject(self):
+        self.write({'state':'Department Reject'})
+
+    @api.multi
+    def action_accounts_approve(self):
+        self.write({'state':'Approved','account_approve':self.env.user.id})
+
+    @api.multi
+    def action_accounts_reject(self):
+        self.write({'state':'Accounts Reject'})
+
+    @api.multi
+    def set_to_draft(self):
+        self.write({'state':'Draft','account_approve':False,'approved':False})

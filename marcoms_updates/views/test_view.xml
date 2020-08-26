@@ -3226,4 +3226,85 @@ if record:
     
     <!-- document type and cost center masters -->
 
+
+    <record id="payment_request_form_view" model="ir.ui.view">
+        <field name="name">payment.request.form.view</field>
+        <field name="model">payment.request</field>
+        <field name="arch" type="xml">
+            <form string="Payment Request">
+            <header>
+                <button name="action_confirm" states="Draft" string="Confirm" type="object" groups="purchase.group_purchase_manager,purchase.group_purchase_user" class="oe_highlight"/>
+                <button name="action_department_approve" states="Department Approval" string="Approve" groups="purchase.group_purchase_manager" type="object" class="oe_highlight"/>
+                <button name="action_department_reject" states="Department Approval" string="Reject" groups="purchase.group_purchase_manager" type="object" class="oe_highlight"/>
+                <button name="action_accounts_approve" states="Accounts Approval" string="Approve" groups="account.group_account_manager" type="object" class="oe_highlight"/>
+                <button name="action_accounts_reject" states="Accounts Approval" string="Reject" groups="account.group_account_manager" type="object" class="oe_highlight"/>
+                <button name="set_to_draft" states="Department Reject,Accounts Reject" groups="purchase.group_purchase_manager,purchase.group_purchase_user" string="Set To Draft" type="object" class="oe_highlight"/>
+
+                <field name="state" widget="statusbar" statusbar_visible="Draft,Approved"/>
+            </header>
+            <sheet>
+                <label for="name" />
+                <h2><field name="name"/></h2>
+                <group>
+                    <group>
+                        <field name="lpo_num" attrs="{'readonly': [('state', 'not in', ['Draft'])]}"/>
+                        <field name="payment_term" attrs="{'readonly': [('state', 'not in', ['Draft'])]}"/>
+                        <field name="project" attrs="{'readonly': [('state', 'not in', ['Draft'])]}"/>
+                    </group>
+                    <group>
+                        <field name="company" attrs="{'readonly': [('state', 'not in', ['Draft'])]}"/>
+                        <field name="amount" attrs="{'readonly': [('state', 'not in', ['Draft'])]}"/>
+                    </group>
+
+                </group>
+                <group>
+                    <group>
+                        <field name="prepared" readonly="1"/>
+                        <field name="approved" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="account_approve" readonly="1"/>
+                    </group>
+                </group>
+                <label for="department_manager_comment" />
+                <field name="department_manager_comment" attrs="{'readonly': [('state', 'not in', ['Department Approval'])],'required': [('state', 'in', ['Department Approval'])]}"/><br />
+                <label for="account_comment" />
+                <field name="account_comment" attrs="{'readonly': [('state', 'not in', ['Accounts Approval'])],'required': [('state', 'in', ['Accounts Approval'])]}"/>
+            </sheet>
+            <div class="oe_chatter">
+                <field name="message_follower_ids" widget="mail_followers"/>
+                <field name="message_ids" widget="mail_thread"/>
+            </div>
+            </form>    
+        </field>
+    </record>
+
+    <record id="payment_request_tree_view" model="ir.ui.view">
+        <field name="name">payment.request.tree.view</field>
+        <field name="model">payment.request</field>
+        <field name="arch" type="xml">
+            <tree string="Payment Request">
+                <field name="name"/>
+                <field name="lpo_num"/>
+                <field name="company"/>
+                <field name="payment_term"/>
+                <field name="amount"/>
+            </tree>
+        </field>
+    </record>
+    <record id="payment_request_action" model="ir.actions.act_window">
+        <field name="name">Payment Request</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">payment.request</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+            id="payment_request_action_menuitem"
+            name="Payment Request"
+            sequence="21"
+            parent="purchase.menu_procurement_management"
+            action="payment_request_action"/>
+
 </odoo>
