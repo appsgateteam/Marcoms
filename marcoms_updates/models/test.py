@@ -76,6 +76,7 @@ class crm_customize(models.Model):
     tag_ids = fields.Many2one('crm.lead.tag',string='Tags', help="Classify and analyze your lead/opportunity categories like: Training, Service")
     source_master = fields.Many2one('source.master',string="Source")
     is_oppor = fields.Boolean('print lead form from oppourtunity',default=False)
+    email_from_contact = fields.Char('Contact Person Email', help="Email address of the contact", track_visibility='onchange', track_sequence=4, index=True)
 
     @api.multi
     def action_duplicate(self):
@@ -299,6 +300,7 @@ class crm_customize(models.Model):
         Partners = self.env['res.partner']
         partner_ids = {}
         for lead in self:
+            lead.email_from_contact = lead.email_from
             if lead.partner_id:
                 partner_ids[lead.id] = lead.partner_id.id
                 # continue

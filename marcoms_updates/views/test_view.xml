@@ -370,6 +370,9 @@ if record:
             <xpath expr="//form" position="attributes">
                 <attribute name="create">0</attribute>
             </xpath>
+            <label for="email_from" position="replace">
+                <label for="email_from" string="Company Email" class="oe_inline"/>
+            </label>
             <xpath expr="//button[@name='%(sale_crm.sale_action_quotations_new)d']" position="replace">
                 <!-- <button string="New Job Estimation" name="create_job_estemation" type="object" class="oe_highlight"
                         attrs="{'invisible': [('stage_id', '!=', 7)]}"/> -->
@@ -541,6 +544,9 @@ if record:
             </xpath>
             <xpath expr="//field[@name='partner_address_phone']" position="attributes">
                 <attribute name="readonly">0</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_address_phone']" position="before">
+                <field name="email_from_contact" widget="email"/>
             </xpath>
             <xpath expr="//notebook/page[1]" position="inside">
                 <label for="reason_for_lost"/>
