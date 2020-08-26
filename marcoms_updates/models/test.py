@@ -5701,22 +5701,82 @@ class PaymentRequest(models.Model):
     @api.multi
     def action_confirm(self):
         self.write({'state':'Department Approval','prepared':self.env.user.id})
+        channel_all_employees = self.env.ref('marcoms_updates.channel_all_payment_request').read()[0]
+        template_new_employee = self.env.ref('marcoms_updates.email_template_data_payment_request').read()[0]
+        # raise ValidationError(_(template_new_employee))
+        if template_new_employee:
+            # MailTemplate = self.env['mail.template']
+            body_html = template_new_employee['body_html']
+            subject = template_new_employee['subject']
+            # raise ValidationError(_('%s %s ') % (body_html,subject))
+            ids = channel_all_employees['id']
+            channel_id = self.env['mail.channel'].search([('id', '=', ids)])
+            body = """Hello, Payment Request with number %s Sending to purchase department approval"""% (self.name)
+            channel_id.message_post(body=body, subject='Payment Request',subtype='mail.mt_comment')
 
     @api.multi
     def action_department_approve(self):
         self.write({'state':'Accounts Approval','approved':self.env.user.id})
+        channel_all_employees = self.env.ref('marcoms_updates.channel_all_to_approve_payment_request').read()[0]
+        template_new_employee = self.env.ref('marcoms_updates.email_template_data_to_approve_payment_request').read()[0]
+        # raise ValidationError(_(template_new_employee))
+        if template_new_employee:
+            # MailTemplate = self.env['mail.template']
+            body_html = template_new_employee['body_html']
+            subject = template_new_employee['subject']
+            # raise ValidationError(_('%s %s ') % (body_html,subject))
+            ids = channel_all_employees['id']
+            channel_id = self.env['mail.channel'].search([('id', '=', ids)])
+            body = """This payment request %s waiting for accounts approval"""% (self.name)
+            channel_id.message_post(body=body, subject='Payment Request',subtype='mail.mt_comment')
 
     @api.multi
     def action_department_reject(self):
         self.write({'state':'Department Reject'})
+        channel_all_employees = self.env.ref('marcoms_updates.channel_all_payment_request').read()[0]
+        template_new_employee = self.env.ref('marcoms_updates.email_template_data_payment_request').read()[0]
+        # raise ValidationError(_(template_new_employee))
+        if template_new_employee:
+            # MailTemplate = self.env['mail.template']
+            body_html = template_new_employee['body_html']
+            subject = template_new_employee['subject']
+            # raise ValidationError(_('%s %s ') % (body_html,subject))
+            ids = channel_all_employees['id']
+            channel_id = self.env['mail.channel'].search([('id', '=', ids)])
+            body = """This payment request %s get rejected by the purchase department manager"""% (self.name)
+            channel_id.message_post(body=body, subject='Payment Request',subtype='mail.mt_comment')
 
     @api.multi
     def action_accounts_approve(self):
         self.write({'state':'Approved','account_approve':self.env.user.id})
+        channel_all_employees = self.env.ref('marcoms_updates.channel_all_payment_request').read()[0]
+        template_new_employee = self.env.ref('marcoms_updates.email_template_data_payment_request').read()[0]
+        # raise ValidationError(_(template_new_employee))
+        if template_new_employee:
+            # MailTemplate = self.env['mail.template']
+            body_html = template_new_employee['body_html']
+            subject = template_new_employee['subject']
+            # raise ValidationError(_('%s %s ') % (body_html,subject))
+            ids = channel_all_employees['id']
+            channel_id = self.env['mail.channel'].search([('id', '=', ids)])
+            body = """This payment request %s is approved by the accounts team"""% (self.name)
+            channel_id.message_post(body=body, subject='Payment Request',subtype='mail.mt_comment')
 
     @api.multi
     def action_accounts_reject(self):
         self.write({'state':'Accounts Reject'})
+        channel_all_employees = self.env.ref('marcoms_updates.channel_all_payment_request').read()[0]
+        template_new_employee = self.env.ref('marcoms_updates.email_template_data_payment_request').read()[0]
+        # raise ValidationError(_(template_new_employee))
+        if template_new_employee:
+            # MailTemplate = self.env['mail.template']
+            body_html = template_new_employee['body_html']
+            subject = template_new_employee['subject']
+            # raise ValidationError(_('%s %s ') % (body_html,subject))
+            ids = channel_all_employees['id']
+            channel_id = self.env['mail.channel'].search([('id', '=', ids)])
+            body = """This payment request %s is rejected by the accounts team"""% (self.name)
+            channel_id.message_post(body=body, subject='Payment Request',subtype='mail.mt_comment')
 
     @api.multi
     def set_to_draft(self):

@@ -3234,8 +3234,8 @@ if record:
             <form string="Payment Request">
             <header>
                 <button name="action_confirm" states="Draft" string="Confirm" type="object" groups="purchase.group_purchase_manager,purchase.group_purchase_user" class="oe_highlight"/>
-                <button name="action_department_approve" states="Department Approval" string="Approve" groups="purchase.group_purchase_manager" type="object" class="oe_highlight"/>
-                <button name="action_department_reject" states="Department Approval" string="Reject" groups="purchase.group_purchase_manager" type="object" class="oe_highlight"/>
+                <button name="action_department_approve" states="Department Approval" string="Approve" groups="marcoms_updates.group_purchase_top_manager" type="object" class="oe_highlight"/>
+                <button name="action_department_reject" states="Department Approval" string="Reject" groups="marcoms_updates.group_purchase_top_manager" type="object" class="oe_highlight"/>
                 <button name="action_accounts_approve" states="Accounts Approval" string="Approve" groups="account.group_account_manager" type="object" class="oe_highlight"/>
                 <button name="action_accounts_reject" states="Accounts Approval" string="Reject" groups="account.group_account_manager" type="object" class="oe_highlight"/>
                 <button name="set_to_draft" states="Department Reject,Accounts Reject" groups="purchase.group_purchase_manager,purchase.group_purchase_user" string="Set To Draft" type="object" class="oe_highlight"/>

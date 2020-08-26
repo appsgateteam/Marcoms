@@ -140,7 +140,8 @@
         <div class="header">
             <div class="">
             <div class="row">
-                <div class="text-center">
+                <div class="col-3"></div>
+                <div class="col-6">
                     <img t-if="res_company.logo" t-att-src="image_data_uri(res_company.logo)" alt="Logo" style="width:350px; height:200px;"/>
                 </div>
                 <!-- <div class="col-6 text-left mb4" style="font-size:17px;">
