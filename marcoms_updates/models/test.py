@@ -633,7 +633,7 @@ class SaleAdvancePaymentInv(models.TransientModel):
             for order in sale_orders:
                 if self.advance_payment_method == 'percentage':
                     amount = order.amount_untaxed * self.amount / 100
-                    invoicename = """Invoice %s %: %s""" % (self.amount,time.strftime('%m %Y'))
+                    invoicename = """Invoice %s % : %s""" % (self.amount,time.strftime('%m %Y'))
                 else:
                     amount = self.amount
                     invoicename = """Invoice : %s""" % (time.strftime('%m %Y'))
