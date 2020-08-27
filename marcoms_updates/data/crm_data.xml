@@ -26,18 +26,6 @@
         </record>
     </data>
     <data noupdate="1"> 
-        <record id="payment_request_seq_name" model="ir.sequence">
-            <field name="name">Payment Request Sequence Number</field>
-            <field name="code">payment.request</field>
-            <field name="active">True</field>
-            <field name="prefix">%(y)s-</field>
-            <field name="number_increment">1</field>
-            <field name="number_next">1</field>
-            <field name="padding">4</field>
-            <field name="implementation">standard</field>
-        </record>
-    </data>
-    <data noupdate="1"> 
         <record id="seq_asset_tracking" model="ir.sequence">
             <field name="name">Asset Tracking</field>
             <field name="code">asset.tracking</field>
