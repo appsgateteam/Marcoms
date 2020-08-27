@@ -3,7 +3,6 @@ from odoo.exceptions import except_orm, ValidationError ,UserError
 import odoo.addons.decimal_precision as dp
 from datetime import datetime, timedelta , date
 import math
-import time
 from num2words import num2words
 from odoo.exceptions import Warning
 from odoo.tools import float_utils, float_compare ,pycompat ,email_re, email_split, email_escape_char, float_is_zero, date_utils
@@ -77,7 +76,6 @@ class crm_customize(models.Model):
     tag_ids = fields.Many2one('crm.lead.tag',string='Tags', help="Classify and analyze your lead/opportunity categories like: Training, Service")
     source_master = fields.Many2one('source.master',string="Source")
     is_oppor = fields.Boolean('print lead form from oppourtunity',default=False)
-    email_from_contact = fields.Char('Contact Person Email', help="Email address of the contact", track_visibility='onchange', track_sequence=4, index=True)
 
     @api.multi
     def action_duplicate(self):
@@ -301,7 +299,6 @@ class crm_customize(models.Model):
         Partners = self.env['res.partner']
         partner_ids = {}
         for lead in self:
-            lead.email_from_contact = lead.email_from
             if lead.partner_id:
                 partner_ids[lead.id] = lead.partner_id.id
                 # continue
@@ -611,62 +608,7 @@ class Uom(models.Model):
 
     show_sale = fields.Boolean('To Show in Sales')
 
-class SaleAdvancePaymentInv(models.TransientModel):
-    _inherit = "sale.advance.payment.inv"
     
-    @api.multi
-    def create_invoices(self):
-        sale_orders = self.env['sale.order'].browse(self._context.get('active_ids', []))
-
-        if self.advance_payment_method == 'delivered':
-            sale_orders.action_invoice_create()
-        elif self.advance_payment_method == 'all':
-            sale_orders.action_invoice_create(final=True)
-        else:
-            # Create deposit product if necessary
-            if not self.product_id:
-                vals = self._prepare_deposit_product()
-                self.product_id = self.env['product.product'].create(vals)
-                self.env['ir.config_parameter'].sudo().set_param('sale.default_deposit_product_id', self.product_id.id)
-            invoicename = ''
-            sale_line_obj = self.env['sale.order.line']
-            for order in sale_orders:
-                if self.advance_payment_method == 'percentage':
-                    amount = order.amount_untaxed * self.amount / 100
-                    invoicename = """Invoice %s %s : %s""" % (self.amount,'%',time.strftime('%m %Y'))
-                else:
-                    amount = self.amount
-                    invoicename = """Invoice : %s""" % (time.strftime('%m %Y'))
-                if self.product_id.invoice_policy != 'order':
-                    raise UserError(_('The product used to invoice a down payment should have an invoice policy set to "Ordered quantities". Please update your deposit product to be able to create a deposit invoice.'))
-                if self.product_id.type != 'service':
-                    raise UserError(_("The product used to invoice a down payment should be of type 'Service'. Please use another product or update this product."))
-                taxes = self.product_id.taxes_id.filtered(lambda r: not order.company_id or r.company_id == order.company_id)
-                if order.fiscal_position_id and taxes:
-                    tax_ids = order.fiscal_position_id.map_tax(taxes, self.product_id, order.partner_shipping_id).ids
-                else:
-                    tax_ids = taxes.ids
-                context = {'lang': order.partner_id.lang}
-                analytic_tag_ids = []
-                for line in order.order_line:
-                    analytic_tag_ids = [(4, analytic_tag.id, None) for analytic_tag in line.analytic_tag_ids]
-                so_line = sale_line_obj.create({
-                    'name': invoicename,
-                    'price_unit': amount,
-                    'product_uom_qty': 0.0,
-                    'order_id': order.id,
-                    'discount': 0.0,
-                    'product_uom': self.product_id.uom_id.id,
-                    'product_id': self.product_id.id,
-                    'analytic_tag_ids': analytic_tag_ids,
-                    'tax_id': [(6, 0, tax_ids)],
-                    'is_downpayment': True,
-                })
-                del context
-                self._create_invoice(order, so_line, amount)
-        if self._context.get('open_invoices', False):
-            return sale_orders.action_view_invoice()
-        return {'type': 'ir.actions.act_window_close'}
 
 
 class SaleOrder_customize(models.Model):
@@ -1089,8 +1031,6 @@ class SaleOrder_customize(models.Model):
             'limit': 80,
             'context': vals,
         }
-
-    
 
     @api.multi
     def create_purchase_requisition_from_sales(self):
@@ -5716,125 +5656,3 @@ class AssetsCus(models.Model):
     _inherit = 'account.asset.asset'
 
     tracking_id = fields.One2many('asset.tracking','asset_name',string="Tracking Line")
-
-class PaymentRequest(models.Model):
-    _name = 'payment.request'
-    _inherit = 'mail.thread'
-
-    name = fields.Char('Sequence' ,required=True, copy=False, readonly=True, index=True, default=lambda self: _('New'),track_visibility="onchange")    
-    lpo_num = fields.Many2one('purchase.order',string="LPO")
-    company = fields.Many2one('res.partner',string="Company")
-    payment_term = fields.Many2one('account.payment.term',string="Payment Term")
-    amount = fields.Float('Amount')
-    prepared = fields.Many2one('res.users',string="Prepared By")
-    approved = fields.Many2one('res.users',string="Approved By")
-    account_approve = fields.Many2one('res.users',string="Accounts Approved By")
-    project = fields.Many2one('account.analytic.account',string="Projects")
-    department_manager_comment = fields.Text(string="Department Manager Comment")
-    account_comment = fields.Text(string="Accounts Comment")
-    state = fields.Selection([
-        ('Draft', 'Draft'),
-        ('Department Approval', 'Department Manager Approval'),
-        ('Accounts Approval', 'Accounts Approval'),
-        ('Department Reject', 'Department Manager Rejected'),
-        ('Accounts Reject', 'Accounts Rejected'),
-        ('Approved', 'Approved'),
-        ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', track_sequence=3, default='Draft')
-
-    @api.model
-    def create(self, vals):
-        if vals.get('name', _('New')) == _('New'):
-            vals['name'] = self.env['ir.sequence'].next_by_code('payment.request') or 'New'   
-        return super(PaymentRequest, self).create(vals)
-
-    @api.onchange('lpo_num')
-    def _get_data(self):
-        for rec in self:
-            rec.company = rec.lpo_num.partner_id.id
-            rec.payment_term = rec.lpo_num.payment_term_id.id
-            rec.amount = rec.lpo_num.amount_total
-            rec.project = rec.lpo_num.analytic_id.id
-
-    @api.multi
-    def action_confirm(self):
-        self.write({'state':'Department Approval','prepared':self.env.user.id})
-        channel_all_employees = self.env.ref('marcoms_updates.channel_all_payment_request').read()[0]
-        template_new_employee = self.env.ref('marcoms_updates.email_template_data_payment_request').read()[0]
-        # raise ValidationError(_(template_new_employee))
-        if template_new_employee:
-            # MailTemplate = self.env['mail.template']
-            body_html = template_new_employee['body_html']
-            subject = template_new_employee['subject']
-            # raise ValidationError(_('%s %s ') % (body_html,subject))
-            ids = channel_all_employees['id']
-            channel_id = self.env['mail.channel'].search([('id', '=', ids)])
-            body = """Hello, Payment Request with number %s Sending to purchase department approval"""% (self.name)
-            channel_id.message_post(body=body, subject='Payment Request',subtype='mail.mt_comment')
-
-    @api.multi
-    def action_department_approve(self):
-        self.write({'state':'Accounts Approval','approved':self.env.user.id})
-        channel_all_employees = self.env.ref('marcoms_updates.channel_all_to_approve_payment_request').read()[0]
-        template_new_employee = self.env.ref('marcoms_updates.email_template_data_to_approve_payment_request').read()[0]
-        # raise ValidationError(_(template_new_employee))
-        if template_new_employee:
-            # MailTemplate = self.env['mail.template']
-            body_html = template_new_employee['body_html']
-            subject = template_new_employee['subject']
-            # raise ValidationError(_('%s %s ') % (body_html,subject))
-            ids = channel_all_employees['id']
-            channel_id = self.env['mail.channel'].search([('id', '=', ids)])
-            body = """This payment request %s waiting for accounts approval"""% (self.name)
-            channel_id.message_post(body=body, subject='Payment Request',subtype='mail.mt_comment')
-
-    @api.multi
-    def action_department_reject(self):
-        self.write({'state':'Department Reject'})
-        channel_all_employees = self.env.ref('marcoms_updates.channel_all_payment_request').read()[0]
-        template_new_employee = self.env.ref('marcoms_updates.email_template_data_payment_request').read()[0]
-        # raise ValidationError(_(template_new_employee))
-        if template_new_employee:
-            # MailTemplate = self.env['mail.template']
-            body_html = template_new_employee['body_html']
-            subject = template_new_employee['subject']
-            # raise ValidationError(_('%s %s ') % (body_html,subject))
-            ids = channel_all_employees['id']
-            channel_id = self.env['mail.channel'].search([('id', '=', ids)])
-            body = """This payment request %s get rejected by the purchase department manager"""% (self.name)
-            channel_id.message_post(body=body, subject='Payment Request',subtype='mail.mt_comment')
-
-    @api.multi
-    def action_accounts_approve(self):
-        self.write({'state':'Approved','account_approve':self.env.user.id})
-        channel_all_employees = self.env.ref('marcoms_updates.channel_all_payment_request').read()[0]
-        template_new_employee = self.env.ref('marcoms_updates.email_template_data_payment_request').read()[0]
-        # raise ValidationError(_(template_new_employee))
-        if template_new_employee:
-            # MailTemplate = self.env['mail.template']
-            body_html = template_new_employee['body_html']
-            subject = template_new_employee['subject']
-            # raise ValidationError(_('%s %s ') % (body_html,subject))
-            ids = channel_all_employees['id']
-            channel_id = self.env['mail.channel'].search([('id', '=', ids)])
-            body = """This payment request %s is approved by the accounts team"""% (self.name)
-            channel_id.message_post(body=body, subject='Payment Request',subtype='mail.mt_comment')
-
-    @api.multi
-    def action_accounts_reject(self):
-        self.write({'state':'Accounts Reject'})
-        channel_all_employees = self.env.ref('marcoms_updates.channel_all_payment_request').read()[0]
-        template_new_employee = self.env.ref('marcoms_updates.email_template_data_payment_request').read()[0]
-        # raise ValidationError(_(template_new_employee))
-        if template_new_employee:
-            # MailTemplate = self.env['mail.template']
-            body_html = template_new_employee['body_html']
-            subject = template_new_employee['subject']
-            # raise ValidationError(_('%s %s ') % (body_html,subject))
-            ids = channel_all_employees['id']
-            channel_id = self.env['mail.channel'].search([('id', '=', ids)])
-            body = """This payment request %s is rejected by the accounts team"""% (self.name)
-            channel_id.message_post(body=body, subject='Payment Request',subtype='mail.mt_comment')
-
-    @api.multi
-    def set_to_draft(self):
-        self.write({'state':'Draft','account_approve':False,'approved':False})
