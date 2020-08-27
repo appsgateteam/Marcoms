@@ -475,7 +475,7 @@ if records:
                     <label for="hr_comment"/>
                     <field name="hr_comment" attrs="{'readonly': [('state', 'not in', ['HR Approve'])],'required': [('state', 'in', ['HR Approve'])]}"/><br/>
                     <label for="co_comment"/>
-                    <field name="co_comment" attrs="{'readonly': [('state', 'not in', ['co-ordinator approve])],'required': [('state', 'in', ['co-ordinator approve'])]}"/><br/>
+                    <field name="co_comment" attrs="{'readonly': [('state', 'not in', ['co-ordinator approve'])],'required': [('state', 'in', ['co-ordinator approve'])]}"/><br/>
                     <label for="purchase_comment"/>
                     <field name="purchase_comment" attrs="{'readonly': [('state', 'not in', ['Purchase Approval'])],'required': [('state', 'in', ['Purchase Approval'])]}"/><br/>
 
