@@ -99,7 +99,13 @@ class PurchaseorderCus2(models.Model):
     req_name = fields.Many2one('hr.employee',string='Requester Name')
     project_manager = fields.Boolean('Created by project manager',default=False)
     check_man = fields.Boolean('Check',compute='_req_count',default=True)
-    hide_button = fields.Boolean('Hide',default=False)
+    hide_button = fields.Boolean('Hide',compute="_get_hide_button",default=False)
+
+    @api.multi
+    def _get_hide_button(self):
+        for rec in self:
+            if rec.project_manager == False:
+                rec.hide_button = True
 
     @api.model
     def create(self,vals):
