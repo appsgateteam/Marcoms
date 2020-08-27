@@ -11,6 +11,7 @@
         'report/report_temp.xml',
         'report/report_templates.xml',
         'report/report_lead_form.xml',
+        'report/payment_request.xml',
         'report/report_mar_quotation.xml',
         'report/report_pending_supporting_doc.xml',
         'report/report_invoice.xml',
