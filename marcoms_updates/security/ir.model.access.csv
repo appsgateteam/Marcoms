@@ -1,6 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_evaluation_sheet_manager,evaluation.sheet,model_evaluation_sheet,base.group_user,1,1,0,1
 access_details_sheet_manager,details.sheet,model_details_sheet,base.group_user,1,1,1,1
+access_payment_request_manager,payment.request,model_payment_request,base.group_user,1,1,1,1
 access_hr_allowance_line_manager,hr.allowance.line,model_hr_allowance_line,base.group_user,1,1,1,1
 access_hr_payroll_transactions_manager,hr.payroll.transactions,model_hr_payroll_transactions,hr_payroll.group_hr_payroll_manager,1,1,1,1
 access_hr_payroll_transactions_line_manager,hr.payroll.transactions.line,model_hr_payroll_transactions_line,hr_payroll.group_hr_payroll_manager,1,1,1,1

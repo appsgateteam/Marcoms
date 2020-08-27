@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="report_payment_request_document">
+    <t t-call="marcoms_updates.external_layout_boxed_pay">
+        <div class="page" style="font-size:13px;color:Black;">
+            <div class="oe_structure"/>
+            <br/><br/>
+            <h2 class="text-center">PURCHASE PAYMENT REQUEST</h2>
+            <br/>
+            <br/>
+            <table class="table table-sm o_main_table">
+                <thead>
+                    <tr>
+                        <th class="text-left" style="border: 1px solid black;width:5%;background-color:#fcba03;"><strong>Item</strong></th>
+                        <th class="text-left" style="border: 1px solid black;width:8%;background-color:#fcba03;"><strong>SN</strong></th>
+                        <th class="text-left" style="border: 1px solid black;width:10%;background-color:#fcba03;"><strong>LPO</strong></th>
+                        <th class="text-left" style="border: 1px solid black;width:25%;background-color:#fcba03;"><strong>Company</strong></th>
+                        <th class="text-left" style="border: 1px solid black;width:19%;background-color:#fcba03;"><strong>Payment Term</strong></th>
+                        <th class="text-left" style="border: 1px solid black;width:13%;background-color:#fcba03;"><strong>Amount</strong></th>
+                        <th class="text-left" style="border: 1px solid black;width:20%;background-color:#fcba03;"><strong>Projects</strong></th>
+                    </tr>
+                </thead>
+                <tbody>
+                        <t t-set="j" t-value="1"/>
+                        <t t-foreach="docs" t-as="o">
+                            
+                            <tr style="color:Black;">
+                                <td class="text-center" style="border: 1px solid black;width:5%;">
+                                    <span t-esc="j"/>
+                                </td>
+                                <td class="text-left" style="border: 1px solid black;width:8%;">
+                                    <span t-field="o.name"/>
+                                </td>
+                                <td class="text-left" style="border: 1px solid black;width:10%;">
+                                    <span t-field="o.lpo_num.name"/>
+                                </td>
+                                <td class="text-left" style="border: 1px solid black;width:25%;">
+                                    <span t-field="o.company.name"/>
+                                </td>
+                                <td class="text-left" style="border: 1px solid black;width:19%;">
+                                    <span t-field="o.payment_term.name"/>
+                                </td>
+                                <td class="text-center" style="border: 1px solid black;width:13%;">
+                                    <span t-field="o.amount" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
+                                </td>
+                                <td class="text-left" style="border: 1px solid black;width:20%;">
+                                    <span><t t-if="o.project.code">[<span t-field="o.project.code"/>]</t><span t-field="o.project.name"/></span>
+                                </td>
+                                
+                                
+                            <!-- </t> -->
+                            </tr>
+                            
+                            <t t-set="j" t-value="j+1"/>
+                        </t>
+                        
+                    
+                    
+                </tbody>
+            </table>
+            <br />
+            <span >PREPARED  :</span><br /><br />
+            <span >APPROVED  :</span>
+            <div class="oe_structure"/>
+        </div>
+    </t>
+</template>
+
+<template id="report_payment_request">
+    <t t-call="web.html_container">
+            <t t-call="marcoms_updates.report_payment_request_document" />
+    </t>
+</template>
+</odoo>
