@@ -757,9 +757,6 @@ class SaleOrder_customize(models.Model):
     date_order = fields.Datetime(string='Order Date', required=True,readonly=False, index=True, copy=False, default=fields.Datetime.now)
     lpo_number = fields.Char('LPO Number')
 
-
-    
-
     @api.onchange('partner_id','project_name')
     def pro_show_view(self):
         for rec in self:
