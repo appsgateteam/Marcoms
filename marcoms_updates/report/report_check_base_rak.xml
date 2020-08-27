@@ -6,23 +6,44 @@
             <div class="header"/>
             <div class="article">
                 <t t-foreach="docs" t-as="o">
-                    <div class="page">
+                    <div class="page" style="font-size:13px;">
                         <div class="oe_structure"/>
-                        <div style="padding-top: 16mm;">
-                            <b><span style="margin-left:80%;margin-bottom:100px;" t-field="o.payment_date" t-options="{&quot;format&quot;: &quot;dd-MMM-yyyy&quot;}"/></b>
+                        <!--<div style="padding-top: 16mm;">-->
+                        <!--    <b><span style="margin-left:80%;margin-bottom:100px;" t-field="o.payment_date" t-options="{&quot;format&quot;: &quot;dd-MMM-yyyy&quot;}"/></b>-->
+                        <!--        <b><span style="border-bottom: 1px solid black;border-top: 1px solid black;margin-left:40%;">A/c Payee</span></b>-->
+                        <!--    <br/>-->
+                        <!--</div>-->
+                        <div style="padding-top: 18mm;"><b><span style="margin-left:80%;" t-field="o.payment_date" t-options="{&quot;format&quot;: &quot;dd-MMM-yyyy&quot;}"/></b></div>
+                        <div >
+                            
                                 <b><span style="border-bottom: 1px solid black;border-top: 1px solid black;margin-left:40%;">A/c Payee</span></b>
                             <br/>
                         </div>
-                        <div style="padding-top: 9mm;">
+                        <div style="padding-top: 10mm;">
                             
                             <div class="">
+                                <!--<b><span t-field="o.partner_id.name" style="margin-left:20%;"/></b>-->
                                 <b><span t-field="o.partner_id.name" style="margin-left:20%;"/></b>
 
                                 
-                                <br/><br/>
-                                <b><span><span t-esc="o.check_amount_in_words" style="margin-left:10%;"/>   Only</span></b>
+                                <!--<br/><br/>-->
+                                <!--<b><span><span t-esc="o.check_amount_in_words" style="margin-left:10%;"/>   Only</span></b>-->
+                                <t t-set="num" t-value="len(o.check_amount_in_words)"/> 
                                 <br/>
-                                <b><span style="margin-left:80%;">**<span t-field="o.amount" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></span></b>
+                                <div style="width:65%;margin-left:12%;line-height:250%;margin-top:15px;"><b><span t-esc="o.check_amount_in_words"/>   Only</b></div>
+                                <!--<br/>-->
+                                <t t-if="num &lt;= 45">
+                                  <!--<br />-->
+                                  <div style="margin-top:10px;">
+                                  <b><span style="margin-left:80%;">**<span t-field="o.amount" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></span></b>
+                                  </div>
+                                </t>
+                                <t t-else="">
+                                  <div style="margin-top:-3.5%;">
+                                  <b><span style="margin-left:80%;">**<span t-field="o.amount" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></span></b>
+                                  </div>
+                                </t>
+                                <!--<b><span style="margin-left:80%;">**<span t-field="o.amount" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></span></b>-->
                                 <!-- <br/>
                                 <span><span t-esc="o.currency_id.currency_subunit_label" style="margin-left:20%;"/> Only</span> -->
                             </div>
