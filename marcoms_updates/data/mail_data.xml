@@ -173,42 +173,6 @@
             <field name="description">General announcements for all New Leads.</field>
         </record>
 
-        <record id="email_template_data_payment_request" model="mail.template">
-            <field name="name">Applicant: Payment Requests</field>
-            <field name="model_id" ref="marcoms_updates.model_payment_request"/>
-            <field name="email_from">${object.user_id.login}</field>
-            <field name="subject">New Payment Requests Generated</field>
-            <field name="body_html" type="html"><p>
-                Hello there are New lead generated Please Check
-                it ${object.name}</p>
-            </field>
-        </record>
-
-
-        <record model="mail.channel" id="channel_all_payment_request">
-            <field name="name">Payment Requests</field>
-            <field name="group_ids" eval="[(4, ref('purchase.group_purchase_user'))]"/>
-            <field name="description">General announcements for all payment requests.</field>
-        </record>
-
-        <record id="email_template_data_to_approve_payment_request" model="mail.template">
-            <field name="name">Applicant: Payment Requests</field>
-            <field name="model_id" ref="marcoms_updates.model_payment_request"/>
-            <field name="email_from">${object.user_id.login}</field>
-            <field name="subject">New Payment Requests Generated</field>
-            <field name="body_html" type="html"><p>
-                Hello there are New lead generated Please Check
-                it ${object.name}</p>
-            </field>
-        </record>
-
-
-        <record model="mail.channel" id="channel_all_to_approve_payment_request">
-            <field name="name">Payment Requests Need Approve</field>
-            <field name="group_ids" eval="[(4, ref('account.group_account_invoice'))]"/>
-            <field name="description">General announcements for all payment requests.</field>
-        </record>
-
         <record id="email_template_data_pending_approvals" model="mail.template">
             <field name="name">Applicant: Sales Pending Approvals</field>
             <field name="model_id" ref="crm.model_crm_lead"/>
