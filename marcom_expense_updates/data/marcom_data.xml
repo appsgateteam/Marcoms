@@ -15,4 +15,62 @@
     </record>
   </data>
 
+  <data>
+    <record id="email_template_data_transportaion_expense" model="mail.template">
+      <field name="name">Applicant: Transportion Expenses</field>
+      <field name="model_id" ref="marcom_expense_updates.model_transportaion_expense"/>
+      <field name="email_from">${object.user_id.login}</field>
+      <field name="subject">Transportion Expenses Generated</field>
+      <field name="body_html" type="html"><p>
+          Hello there are New lead generated Please Check
+          it ${object.name}</p>
+      </field>
+    </record>
+
+
+    <record model="mail.channel" id="channel_all_transportaion_expense">
+        <field name="name">Transportion Expenses</field>
+        <field name="group_ids" eval="[(4, ref('hr_expense.group_hr_expense_user'))]"/>
+        <field name="description">General announcements for all Transportion Expenses .</field>
+    </record>
+
+    <record id="email_template_data_transportaion_expense_po" model="mail.template">
+      <field name="name">Applicant: Transportion Expenses</field>
+      <field name="model_id" ref="marcom_expense_updates.model_transportaion_expense"/>
+      <field name="email_from">${object.user_id.login}</field>
+      <field name="subject">Transportion Expenses Generated</field>
+      <field name="body_html" type="html"><p>
+          Hello there are New lead generated Please Check
+          it ${object.name}</p>
+      </field>
+    </record>
+
+
+    <record model="mail.channel" id="channel_all_transportaion_expense_po">
+        <field name="name">Transportion Expenses Purchase Department</field>
+        <field name="group_ids" eval="[(4, ref('purchase.group_purchase_user'))]"/>
+        <field name="description">General announcements for all Transportion Expenses .</field>
+    </record>
+
+    <record id="email_template_data_transportaion_expense_co" model="mail.template">
+      <field name="name">Applicant: Transportion Expenses</field>
+      <field name="model_id" ref="marcom_expense_updates.model_transportaion_expense"/>
+      <field name="email_from">${object.user_id.login}</field>
+      <field name="subject">Transportion Expenses Generated</field>
+      <field name="body_html" type="html"><p>
+          Hello there are New lead generated Please Check
+          it ${object.name}</p>
+      </field>
+    </record>
+
+
+    <record model="mail.channel" id="channel_all_transportaion_expense_co">
+        <field name="name">Transportion Expenses Co-ordinator Approvals</field>
+        <field name="group_ids" eval="[(4, ref('product_requisition.group_coordinator'))]"/>
+        <field name="description">General announcements for all Transportion Expenses .</field>
+    </record>
+
+    
+  </data>
+
 </odoo>

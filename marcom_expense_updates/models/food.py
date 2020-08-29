@@ -1030,22 +1030,106 @@ class Transportaion_expense_detals(models.Model):
 
     @api.multi
     def action_send_to_approve(self):
+        channel_all_employees = self.env.ref('marcom_expense_updates.channel_all_transportaion_expense').read()[0]
+        template_new_employee = self.env.ref('marcom_expense_updates.email_template_data_transportaion_expense').read()[0]
+        # raise ValidationError(_(template_new_employee))
+        if template_new_employee:
+            # MailTemplate = self.env['mail.template']
+            body_html = template_new_employee['body_html']
+            subject = template_new_employee['subject']
+            # raise ValidationError(_('%s %s ') % (body_html,subject))
+            ids = channel_all_employees['id']
+            channel_id = self.env['mail.channel'].search([('id', '=', ids)])
+            body = """Hello, One transportion expense with description %s  Send to be approved by %s"""% (self.name,self.creator_manager.name)
+            channel_id.message_post(body=body, subject='Transportion Expenses Pending Approval',subtype='mail.mt_comment')
         self.write({'state':'Department approval'})
 
     @api.multi
     def action_department_approval(self):
+        channel_all_employees = self.env.ref('marcom_expense_updates.channel_all_transportaion_expense').read()[0]
+        template_new_employee = self.env.ref('marcom_expense_updates.email_template_data_transportaion_expense').read()[0]
+        # raise ValidationError(_(template_new_employee))
+        if template_new_employee:
+            # MailTemplate = self.env['mail.template']
+            body_html = template_new_employee['body_html']
+            subject = template_new_employee['subject']
+            # raise ValidationError(_('%s %s ') % (body_html,subject))
+            ids = channel_all_employees['id']
+            channel_id = self.env['mail.channel'].search([('id', '=', ids)])
+            body = """Hello, One transportion expense with description %s  Send to HR approval"""% (self.name)
+            channel_id.message_post(body=body, subject='Transportion Expenses Pending Approval',subtype='mail.mt_comment')
         self.write({'state':'HR Approve'})
 
     @api.multi
     def action_hr_approval(self):
+        channel_all_employees = self.env.ref('marcom_expense_updates.channel_all_transportaion_expense').read()[0]
+        template_new_employee = self.env.ref('marcom_expense_updates.email_template_data_transportaion_expense').read()[0]
+        # raise ValidationError(_(template_new_employee))
+        if template_new_employee:
+            # MailTemplate = self.env['mail.template']
+            body_html = template_new_employee['body_html']
+            subject = template_new_employee['subject']
+            # raise ValidationError(_('%s %s ') % (body_html,subject))
+            ids = channel_all_employees['id']
+            channel_id = self.env['mail.channel'].search([('id', '=', ids)])
+            body = """Hello, One transportion expense with description %s  Send to Project Co-ordinator approval"""% (self.name)
+            channel_id.message_post(body=body, subject='Transportion Expenses Pending Approval',subtype='mail.mt_comment')
+        channel_all_employeess = self.env.ref('marcom_expense_updates.channel_all_transportaion_expense_co').read()[0]
+        template_new_employees = self.env.ref('marcom_expense_updates.email_template_data_transportaion_expense_co').read()[0]
+        # raise ValidationError(_(template_new_employee))
+        if template_new_employees:
+            # MailTemplate = self.env['mail.template']
+            body_html = template_new_employees['body_html']
+            subject = template_new_employees['subject']
+            # raise ValidationError(_('%s %s ') % (body_html,subject))
+            ids = channel_all_employeess['id']
+            channel_id = self.env['mail.channel'].search([('id', '=', ids)])
+            body = """Hello, One transportion expense with description %s  Send to Project Co-ordinator approval"""% (self.name)
+            channel_id.message_post(body=body, subject='Transportion Expenses Pending Approval',subtype='mail.mt_comment')
         self.write({'state':'co-ordinator approve'})
 
     @api.multi
     def action_co_approval(self):
+        channel_all_employees = self.env.ref('marcom_expense_updates.channel_all_transportaion_expense').read()[0]
+        template_new_employee = self.env.ref('marcom_expense_updates.email_template_data_transportaion_expense').read()[0]
+        # raise ValidationError(_(template_new_employee))
+        if template_new_employee:
+            # MailTemplate = self.env['mail.template']
+            body_html = template_new_employee['body_html']
+            subject = template_new_employee['subject']
+            # raise ValidationError(_('%s %s ') % (body_html,subject))
+            ids = channel_all_employees['id']
+            channel_id = self.env['mail.channel'].search([('id', '=', ids)])
+            body = """Hello, One transportion expense with description %s  Send to Purchase department approval"""% (self.name)
+            channel_id.message_post(body=body, subject='Transportion Expenses Pending Approval',subtype='mail.mt_comment')
+        channel_all_employeess = self.env.ref('marcom_expense_updates.channel_all_transportaion_expense_po').read()[0]
+        template_new_employees = self.env.ref('marcom_expense_updates.email_template_data_transportaion_expense_po').read()[0]
+        # raise ValidationError(_(template_new_employee))
+        if template_new_employees:
+            # MailTemplate = self.env['mail.template']
+            body_html = template_new_employees['body_html']
+            subject = template_new_employees['subject']
+            # raise ValidationError(_('%s %s ') % (body_html,subject))
+            ids = channel_all_employeess['id']
+            channel_id = self.env['mail.channel'].search([('id', '=', ids)])
+            body = """Hello, One transportion expense with description %s  Send to Purchase department approval"""% (self.name)
+            channel_id.message_post(body=body, subject='Transportion Expenses Pending Approval',subtype='mail.mt_comment')
         self.write({'state':'Purchase Approval'})
 
     @api.multi
     def action_purchase_approval(self):
+        channel_all_employees = self.env.ref('marcom_expense_updates.channel_all_transportaion_expense').read()[0]
+        template_new_employee = self.env.ref('marcom_expense_updates.email_template_data_transportaion_expense').read()[0]
+        # raise ValidationError(_(template_new_employee))
+        if template_new_employee:
+            # MailTemplate = self.env['mail.template']
+            body_html = template_new_employee['body_html']
+            subject = template_new_employee['subject']
+            # raise ValidationError(_('%s %s ') % (body_html,subject))
+            ids = channel_all_employees['id']
+            channel_id = self.env['mail.channel'].search([('id', '=', ids)])
+            body = """Hello, all approvals are done for the transportion expense %s ,So you can submit the request now %s"""% (self.name,self.creator.name)
+            channel_id.message_post(body=body, subject='Transportion Expenses Pending Approval',subtype='mail.mt_comment')
         self.write({'state':'wait'})
 
     @api.multi
@@ -1066,6 +1150,18 @@ class Transportaion_expense_detals(models.Model):
 
     @api.multi
     def set_to_draft(self):
+        channel_all_employees = self.env.ref('marcom_expense_updates.channel_all_transportaion_expense').read()[0]
+        template_new_employee = self.env.ref('marcom_expense_updates.email_template_data_transportaion_expense').read()[0]
+        # raise ValidationError(_(template_new_employee))
+        if template_new_employee:
+            # MailTemplate = self.env['mail.template']
+            body_html = template_new_employee['body_html']
+            subject = template_new_employee['subject']
+            # raise ValidationError(_('%s %s ') % (body_html,subject))
+            ids = channel_all_employees['id']
+            channel_id = self.env['mail.channel'].search([('id', '=', ids)])
+            body = """Hello, One transportion expense with description %s  i just set it to draft"""% (self.name)
+            channel_id.message_post(body=body, subject='Transportion Expenses Pending Approval',subtype='mail.mt_comment')
         self.write({'state':'draft'})
 
 
