@@ -389,11 +389,22 @@ if records:
 
                 <form string="Expenses" class="o_expense_form">
                 <header>
-                  <button name="action_submit_expenses" string="Create Report" type="object" class="oe_highlight o_expense_submit" attrs="{'invisible': ['|', ('attachment_number', '&lt;=', 0), ('sheet_id', '!=', False)]}"/>
+                  <button name="action_submit_expenses" string="Submit" type="object" states="wait" class="oe_highlight o_expense_submit" attrs="{'invisible': ['|', ('attachment_number', '&lt;=', 0),'|',('sheet_id', '!=', False), ('is_requester', '=', False)]}"/>
+                  <button name="set_to_draft" string="Set To Draft" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',['refused']),('is_requester', '=', False)]}"/>
+                  <button name="action_send_to_approve" string="Send To Approve" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',['draft']),('is_requester', '=', False)]}"/>
+                  <button name="action_department_approval" string="Department Manager Approval" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',['Department approval']),('is_requester_man', '=', False)]}"/>
+                  <!-- <button name="action_department_reject" string="Reject" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',['Department approval']),('is_requester_man', '=', False)]}"/> -->
+                  <button name="action_hr_approval" string="HR Approval" type="object" class="oe_highlight" states="HR Approve" groups="hr.group_hr_manager"/>
+                  <!-- <button name="action_hr_reject" string="Reject" type="object" class="oe_highlight" states="HR Approve" groups="hr.group_hr_manager"/> -->
+                  <button name="action_co_approval" string="Co-ordinator approval" type="object" class="oe_highlight" states="co-ordinator approve" groups="product_requisition.group_coordinator"/>
+                  <!-- <button name="action_co_reject" string="Reject" type="object" class="oe_highlight" states="co-ordinator approve" groups="product_requisition.group_coordinator"/> -->
+                  <button name="action_purchase_approval" string="Purchase Approval" type="object" class="oe_highlight" states="Purchase Approval" groups="purchase.group_purchase_manager"/>
+                  <!-- <button name="action_purchase_reject" string="Reject" type="object" class="oe_highlight" states="Purchase Approval" groups="purchase.group_purchase_manager"/> -->
+                
                   <widget name="attach_document" string="Attach Document" action="message_post" attrs="{'invisible': ['|', ('attachment_number', '&lt;', 1), ('id','=',False)]}"/>
-                  <widget name="attach_document" string="Attach Document" action="message_post" highlight="1" attrs="{'invisible': ['|',('attachment_number', '&gt;=', 1), ('id','=',False)]}"/>
-                  <button name="action_submit_expenses" string="Create Report" type="object" class="o_expense_submit" attrs="{'invisible': ['|', ('attachment_number', '&gt;=', 1), ('sheet_id', '!=', False)]}"/>
-                  <field name="state" widget="statusbar" statusbar_visible="draft,reported,approved,done,refused"/>
+                  <!-- <widget name="attach_document" string="Attach Document" action="message_post" highlight="1" attrs="{'invisible': ['|',('attachment_number', '&gt;=', 1), ('id','=',False)]}"/> -->
+                  <!-- <button name="action_submit_expenses" string="Create Report" type="object" class="o_expense_submit" attrs="{'invisible': ['|', ('attachment_number', '&gt;=', 1), ('sheet_id', '!=', False)]}"/> -->
+                  <field name="state" widget="statusbar" statusbar_visible="draft,wait,reported,approved,done,refused"/>
                   <button name="action_view_sheet" type="object" string="View Report" class="oe_highlight" attrs="{'invisible': [('sheet_id', '=', False)]}"/>
                 </header>
                 <sheet>
@@ -441,12 +452,16 @@ if records:
                             <field name="company_id" groups="base.group_multi_company"/>
                             <field name="type_id" />
                             <field name="vehicle_type_id" />
-                            <field name="partner_id" />
+                            <field name="partner_id"  domain="[('supplier','=',True)]"/>
                             <field name="trip_from" />
                             <field name="trip_to" />
                             <field name="vehicle_no"/>
                             <field name="project_id" groups="hr_expense.group_hr_expense_user"/>
                             <field name="project_manager" invisible="1" />
+                            <field name="creator" />
+                            <field name="creator_manager" />
+                            <field name="is_requester" invisible="1" />
+                            <field name="is_requester_man" invisible="1" />
                             <field name="remarks" />
                         </group>
                             <!-- <label for="payment_mode"/>
@@ -455,6 +470,16 @@ if records:
                             </div> -->
 
                     </group>
+                    <label for="department_comment"/>
+                    <field name="department_comment" attrs="{'readonly': [('state', 'not in', ['Department approval'])],'required': [('state', 'in', ['Department approval'])]}"/><br/>
+                    <label for="hr_comment"/>
+                    <field name="hr_comment" attrs="{'readonly': [('state', 'not in', ['HR Approve'])],'required': [('state', 'in', ['HR Approve'])]}"/><br/>
+                    <label for="co_comment"/>
+                    <field name="co_comment" attrs="{'readonly': [('state', 'not in', ['co-ordinator approve'])],'required': [('state', 'in', ['co-ordinator approve'])]}"/><br/>
+                    <label for="purchase_comment"/>
+                    <field name="purchase_comment" attrs="{'readonly': [('state', 'not in', ['Purchase Approval'])],'required': [('state', 'in', ['Purchase Approval'])]}"/><br/>
+
+
                     <div>
                         <field name="description" class="oe_inline" placeholder="Notes..."/>
                     </div>
@@ -654,7 +679,7 @@ if records:
                             <tree decoration-danger="is_refused">
                                 <field name="date"/>
                                 <field name="name"/>
-                                <field name="partner_id"/>
+                                <field name="partner_id" />
                                 <field name="project_id"/>
                                 <field name="reference"/>
                                 <field name="rates"/>
@@ -677,7 +702,7 @@ if records:
                             <group>
                                <field name="date"/>
                                <field name="name"/>
-                               <field name="partner_id"/>
+                               <field name="partner_id" domain="[('supplier','=',True)]"/>
                                <field name="project_id"/>
                                <field name="reference"/>
                                <field name="rates"/>
@@ -784,7 +809,7 @@ if records:
                             <field name="reference"/>
                             <field name="date"/>
                             <field name="account_id" invisible="1" groups="account.group_account_user"/>
-                            <field name="employee_id" groups="hr_expense.group_hr_expense_user"/>
+                            <field name="employee_id" domain="[('supplier','=',True)]" groups="hr_expense.group_hr_expense_user"/>
                             <field name="employees_id" invisible="1" groups="hr_expense.group_hr_expense_user"/>
                             <field name="sheet_id" invisible="1"/>
                             <field name="currency_id" groups="base.group_multi_currency"/>
@@ -1119,7 +1144,7 @@ if records:
                     <group>
                         <group>
                             <field name="product_id" />
-                            <field name="partner_id" />
+                            <field name="partner_id" domain="[('supplier','=',True)]"/>
                             <field name="no_of_helpers"/>
                             <field name="labour_type" />
                             <field name="time_in" widget="float_time" />
@@ -1359,7 +1384,7 @@ if records:
                                 <!-- <field name="partner_id"/> -->
                                 <field name="project_id"/>
                                 <field name="reference"/>
-                                <field name="partner_id"/>
+                                <field name="partner_id" domain="[('supplier','=',True)]"/>
                                 <field name="no_of_helpers"/>
                                 <field name="time_in" widget="float_time"/>
                                 <field name="time_out" widget="float_time"/>

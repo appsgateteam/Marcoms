@@ -633,10 +633,10 @@ class SaleAdvancePaymentInv(models.TransientModel):
             for order in sale_orders:
                 if self.advance_payment_method == 'percentage':
                     amount = order.amount_untaxed * self.amount / 100
-                    invoicename = """Invoice %s %s : %s""" % (self.amount,'%',time.strftime('%m %Y'))
+                    invoicename = """Invoice %s %s : %s""" % (self.amount,'%',time.strftime('%d %m %Y'))
                 else:
                     amount = self.amount
-                    invoicename = """Invoice : %s""" % (time.strftime('%m %Y'))
+                    invoicename = """Invoice : %s""" % (time.strftime('%d %m %Y'))
                 if self.product_id.invoice_policy != 'order':
                     raise UserError(_('The product used to invoice a down payment should have an invoice policy set to "Ordered quantities". Please update your deposit product to be able to create a deposit invoice.'))
                 if self.product_id.type != 'service':
