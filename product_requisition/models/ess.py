@@ -541,7 +541,7 @@ class productRequisitionFromsales(models.Model):
                                                 'reason_for_requisition':res.reason_for_requisition,
                                                 'co_box':res.co_box,
                                                 'req_name':res.req_name.id,
-                                                'user_id':False,
+                                                'user_id':res.req_name.user_id.id,
                                                 'project_manager':True,
                                                 })
             else:
@@ -567,7 +567,7 @@ class productRequisitionFromsales(models.Model):
                                                 'reason_for_requisition':res.reason_for_requisition,
                                                 'co_box':res.co_box,
                                                 'req_name':res.req_name.id,
-                                                'user_id':False,
+                                                'user_id':res.req_name.user_id.id,
                                                 'project_manager':False,
                                                 })
         # for line in self.requisition_line_ids:  
@@ -598,7 +598,7 @@ class productRequisitionFromsales(models.Model):
                     task_ids.append((0,0,data))
                 datas = {
                                                 'default_requisition_pr_id':res.id,
-                                                'default_user_id':False,
+                                                'default_user_id':res.req_name.user_id.id,
                                                 'default_state':'draft',
                                                 'default_origin':res.sequence,
                                                 'task_id':res.task_id.id,
@@ -626,7 +626,7 @@ class productRequisitionFromsales(models.Model):
                     task_ids.append((0,0,data))
                 datas = {
                                                 'default_requisition_pr_id':res.id,
-                                                'default_user_id':False,
+                                                'default_user_id':res.req_name.user_id.id,
                                                 'default_state':'draft',
                                                 'default_origin':res.sequence,
                                                 'task_id':res.task_id.id,
