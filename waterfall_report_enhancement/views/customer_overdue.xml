@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="account_invoice_inherited" model="ir.ui.view">
+            <field name="name">account.invoice.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+             <button name="action_invoice_cancel" position="after">
+				    <button name="send_cron_email" type="object" string="overdue" />
+             </button>
+            </field>
+        </record>
+
+    </data>
+</odoo>
