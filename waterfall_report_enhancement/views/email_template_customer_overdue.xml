@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+	<data noupdate="0">
+
+        <record id="customer_overdue_mail_report" model="mail.template">
+            <field name="name">Customer Overdue Details</field>
+            <field name="subject">Customer Overdue Details</field>
+            <field name="email_to">${ctx['email_to']}</field>
+<!--            <field name="lang">${object.lang}</field>-->
+            <field name="model_id" ref="base.model_res_users"/>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html">
+		        <![CDATA[
+                    Hello ${ctx['name']},
+
+
+			            <table class="table table-condensed" cellspacing="1" border="1" style="width:100%;border:1px solid black; font-size:14px">
+			            	<tr  style="background:#b3b3dd;">
+			            		<td style="font:bold;text-align:center;border:1px solid black" colspan="8">
+			            			<b>Customer Overdue Report</b>
+			            		</td>
+			            	</tr>
+
+		        			<tr>
+		        				<th style="text-align:center;border:1px solid black;">Sr.</th>
+		            			<th style="text-align:center;border:1px solid black">Invoice No</th>
+		            			<th style="text-align:center;border:1px solid black">SO No</th>
+		            			<th style="text-align:center;border:1px solid black">Customer</th>
+		            			<th style="text-align:center;border:1px solid black">Invoice Date</th>
+		            			<th style="text-align:center;border:1px solid black">Due Date</th>
+		            			<th style="text-align:center;border:1px solid black">Invoice Amount</th>
+                                <th style="text-align:center;border:1px solid black">Due Amount</th>
+		            		</tr>
+
+		            		% for val in ctx['data']:
+		            			<tr>
+
+		            				<td style="text-align:center;border:1px solid black;">${val.get('inv_count','')}</td>
+		            				<td style="text-align:center;border:1px solid black">${val.get('inv_no','')}</td>
+		            				<td style="text-align:center;border:1px solid black">${val.get('origin','')}</td>
+		            				<td style="text-align:center;border:1px solid black">${val.get('customer','')}</td>
+		            				<td style="text-align:center;border:1px solid black">${val.get('inv_date','')}</td>
+		            				<td style="text-align:center;border:1px solid black">${val.get('due_date','')}</td>
+		            				<td style="text-align:center;border:1px solid black">${val.get('inv_amt','')}</td>
+		            				<td style="text-align:right;border:1px solid black">${val.get('due_amt','')}</td>
+
+		            			</tr>
+		            		% endfor
+
+		        		</table>
+
+
+					<p>
+
+						Thanks,
+
+	                </p>
+	                <pre>
+	                	Auto Generated Email
+	                </pre>
+
+
+		    	]]>
+		  	</field>
+        </record>
+
+
+	</data>
+
+</odoo>
