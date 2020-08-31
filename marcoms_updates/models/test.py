@@ -613,7 +613,8 @@ class Uom(models.Model):
 
 class SaleAdvancePaymentInv(models.TransientModel):
     _inherit = "sale.advance.payment.inv"
-    
+
+  
     @api.multi
     def create_invoices(self):
         sale_orders = self.env['sale.order'].browse(self._context.get('active_ids', []))
@@ -663,7 +664,10 @@ class SaleAdvancePaymentInv(models.TransientModel):
                     'is_downpayment': True,
                 })
                 del context
-                self._create_invoice(order, so_line, amount)
+                invoo = self._create_invoice(order, so_line, amount)
+                invoo.write({'project_name': order.project_name,
+                            'project': order.analytic_account_id.id,
+                            'LPO': order.lpo_number,})
         if self._context.get('open_invoices', False):
             return sale_orders.action_view_invoice()
         return {'type': 'ir.actions.act_window_close'}
