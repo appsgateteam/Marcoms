@@ -1826,7 +1826,7 @@ class Transportaion_Sheet(models.Model):
     @api.multi
     def set_to_paid(self):
         self.write({'state': 'done'})
-        don
+        # don
 
     @api.multi
     def action_submit_sheet(self):
