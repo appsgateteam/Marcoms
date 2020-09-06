@@ -28,7 +28,7 @@
                     
                     <!--<b><span t-field="doc.sign_man" style="font-family:PWSignaturetwo;font-size:40px;white-space: nowrap;"/></b><br/>-->
                     <b><span t-field="doc.sign_man" class="mb6"/></b><br/>
-                    <b><span t-field="doc.sign_man.job_title" class="mb6"/></b><br/>
+                    <b><span t-field="doc.sign_man.job_id.name" class="mb6"/></b><br/>
                 </t>
             <div class="oe_structure"/>
         </div>

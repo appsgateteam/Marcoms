@@ -945,6 +945,13 @@ class SaleOrder_customize(models.Model):
             # each.date_today = date.today()
         # self.amount_change()
 
+    # @api.one
+    # def _compute_amount_undiscounted(self):
+    #     total = 0.0
+    #     for line in self.order_line:
+    #         total += line.price_subtotal + line.price_unit * ((line.discount or 0.0) / 100.0) * line.product_uom_qty  # why is there a discount in a field named amount_undiscounted ??
+    #     self.amount_undiscounted = total
+
     @api.depends('order_line.price_total')
     def _amount_all(self):
         """
@@ -969,28 +976,45 @@ class SaleOrder_customize(models.Model):
                             
             #     # each._amount_all()
             #     order.discount_value = x
-            amount_untaxed = amount_tax = 0.0
+            amount_untaxed = amount_tax = amount_untaxeds = amount_taxs = 0.0
             x = 0.0
             y = 0
+            for lines in order.order_line:
+                if lines.is_discount != True:
+                    amount_untaxed += lines.price_subtotal
+                    amount_tax += lines.price_tax
+                    amount_untaxeds += lines.price_subtotal
+                    amount_taxs += lines.price_tax
+
             for line in order.order_line:
-                amount_untaxed += line.price_subtotal
-                amount_tax += line.price_tax
-                if line.is_discount == True:
+                if line.is_discount == True and not line.discount:
+                    
                     if line.price_unit:
                         x = x + abs(line.price_subtotal)
+                        amount_untaxed = amount_untaxed + line.price_subtotal
+                # order.discount_value = x
+                # order.update({
+                #     'amount_untaxed': amount_untaxeds,
+                #     'amount_tax': amount_taxs,
+                #     'amount_total': amount_untaxeds + amount_taxs,
+                # })
                     
             
             for lines in order.order_line:
+                # amount_untaxed += lines.price_subtotal
+                # amount_tax += lines.price_tax
                 if lines.is_discount == True and lines.discount:
+                    
                     # if order.discount_value:
                     # raise UserError(amount_untaxed)
                     if lines.discount:
                         y = 1
-                        x = (amount_untaxed * (lines.discount or 0.0) / 100.0)
+                        z = (amount_untaxed * (lines.discount or 0.0) / 100.0)
                         # rec.price_subtotal = -x
                         # lines.write({'price_subtotal':-x,'price_total':-x})
-                        lines.update({'price_subtotal':-x,'price_total':-x})
-                    amount_untaxed = amount_untaxed + lines.price_subtotal
+                        lines.price_unit = -z
+                        x = x + abs(line.price_subtotal)
+                        amount_untaxed = amount_untaxed + lines.price_subtotal
                     # raise UserError(amount_untaxed)
             order.discount_value = x
             order.update({
@@ -1817,6 +1841,22 @@ class SaleOrderLinecus(models.Model):
     sale_order_venue_ids = fields.One2many('sale.order.venue', 'line_id', 'Venue Lines')
     # price_subtotal = fields.Monetary(compute='_compute_amount', string='Subtotal',readonly=False,  store=True)
 
+    @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id')
+    def _compute_amount(self):
+        """
+        Compute the amounts of the SO line.
+        """
+        for line in self:
+            if line.is_discount == True:
+                price = line.price_unit * (1 - 0.0 / 100.0)
+            else:
+                price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
+            taxes = line.tax_id.compute_all(price, line.order_id.currency_id, line.product_uom_qty, product=line.product_id, partner=line.order_id.partner_shipping_id)
+            line.update({
+                'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
+                'price_total': taxes['total_included'],
+                'price_subtotal': taxes['total_excluded'],
+            })
 
     @api.multi
     def add_space(self):
