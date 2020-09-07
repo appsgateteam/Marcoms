@@ -976,22 +976,26 @@ class SaleOrder_customize(models.Model):
                             
             #     # each._amount_all()
             #     order.discount_value = x
-            amount_untaxed = amount_tax = amount_untaxeds = amount_taxs = 0.0
+            amount_untaxed = amount_tax = 0.0
             x = 0.0
             y = 0
             for lines in order.order_line:
                 if lines.is_discount != True:
+                    
                     amount_untaxed += lines.price_subtotal
                     amount_tax += lines.price_tax
-                    amount_untaxeds += lines.price_subtotal
-                    amount_taxs += lines.price_tax
 
             for line in order.order_line:
+                # amount_untaxed += line.price_subtotal
+                # amount_tax += line.price_tax
                 if line.is_discount == True and not line.discount:
                     
                     if line.price_unit:
                         x = x + abs(line.price_subtotal)
-                        amount_untaxed = amount_untaxed + line.price_subtotal
+                        taxes = line.tax_id.compute_all(-line.price_unit, line.order_id.currency_id, line.product_uom_qty, product=line.product_id, partner=line.order_id.partner_shipping_id)
+                        tax = sum(t.get('amount', 0.0) for t in taxes.get('taxes', []))
+                        amount_tax = amount_tax + -tax
+                    amount_untaxed = amount_untaxed + line.price_subtotal
                 # order.discount_value = x
                 # order.update({
                 #     'amount_untaxed': amount_untaxeds,
@@ -1000,21 +1004,24 @@ class SaleOrder_customize(models.Model):
                 # })
                     
             
-            for lines in order.order_line:
-                # amount_untaxed += lines.price_subtotal
-                # amount_tax += lines.price_tax
-                if lines.is_discount == True and lines.discount:
+            # for lines in order.order_line:
+            #     amount_untaxed += lines.price_subtotal
+            #     amount_tax += lines.price_tax
+                if line.is_discount == True and line.discount:
                     
                     # if order.discount_value:
                     # raise UserError(amount_untaxed)
-                    if lines.discount:
+                    if line.discount:
                         y = 1
-                        z = (amount_untaxed * (lines.discount or 0.0) / 100.0)
+                        z = (amount_untaxed * (line.discount or 0.0) / 100.0)
                         # rec.price_subtotal = -x
                         # lines.write({'price_subtotal':-x,'price_total':-x})
-                        lines.price_unit = -z
+                        line.price_unit = -z
                         x = x + abs(line.price_subtotal)
-                        amount_untaxed = amount_untaxed + lines.price_subtotal
+                        taxes = line.tax_id.compute_all(z, line.order_id.currency_id, line.product_uom_qty, product=line.product_id, partner=line.order_id.partner_shipping_id)
+                        tax = sum(t.get('amount', 0.0) for t in taxes.get('taxes', []))
+                        amount_tax = amount_tax + -tax
+                    amount_untaxed = amount_untaxed + line.price_subtotal
                     # raise UserError(amount_untaxed)
             order.discount_value = x
             order.update({
@@ -1847,7 +1854,7 @@ class SaleOrderLinecus(models.Model):
         Compute the amounts of the SO line.
         """
         for line in self:
-            if line.is_discount == True:
+            if line.is_discount == True and line.discount:
                 price = line.price_unit * (1 - 0.0 / 100.0)
             else:
                 price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
