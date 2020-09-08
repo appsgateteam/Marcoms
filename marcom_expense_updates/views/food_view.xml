@@ -258,11 +258,11 @@ if records:
                 <field name="can_reset" invisible="1"/>
                  <header>
                     <button name="action_submit_sheet" states="draft" string="Submit to Manager" type="object" class="oe_highlight o_expense_sheet_submit"/>
-                    <button name="approve_expense_sheets" states="submit" string="Approve" type="object" groups="hr_expense.group_hr_expense_user" class="oe_highlight o_expense_sheet_approve"/>
+                    <button name="approve_expense_sheets" states="submit" string="Approve" type="object" groups="marcom_expense_updates.group_production_manager" class="oe_highlight o_expense_sheet_approve"/>
                     <button name="action_sheet_move_create" states="approve" string="Post Journal Entries" type="object" groups="account.group_account_manager" class="oe_highlight o_expense_sheet_post"/>
                     <button name="%(marcom_expense_updates.food_expense_sheet_register_payment_wizard_action)d" type="action" string="Register Payment" class="oe_highlight o_expense_sheet_pay" attrs="{'invisible': [('state', '!=', 'post')]}" context="{'default_amount': total_amount, 'partner_id': address_id}" groups="account.group_account_manager"/>
                     <button name="reset_expense_sheets" string="Reset to Draft" type="object" attrs="{'invisible': ['|', ('can_reset', '=', False), ('state', 'not in', ['submit', 'cancel'])]}"/>
-                    <button name="%(marcom_expense_updates.food_expense_refuse_wizard_action)d" states="submit,approve" context="{'hr_expense_refuse_model':'food.expense.sheet'}" string="Refuse" type="action" groups="hr_expense.group_hr_expense_user" />
+                    <button name="%(marcom_expense_updates.food_expense_refuse_wizard_action)d" states="submit,approve" context="{'hr_expense_refuse_model':'food.expense.sheet'}" string="Refuse" type="action" groups="marcom_expense_updates.group_production_manager" />
                     <field name="state" widget="statusbar" statusbar_visible="draft,submit,approve,post,done"/>
                 </header>
                 <sheet>
@@ -396,7 +396,8 @@ if records:
                   <!-- <button name="action_department_reject" string="Reject" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',['Department approval']),('is_requester_man', '=', False)]}"/> -->
                   <button name="action_hr_approval" string="HR Approval" type="object" class="oe_highlight" states="HR Approve" groups="hr.group_hr_manager"/>
                   <!-- <button name="action_hr_reject" string="Reject" type="object" class="oe_highlight" states="HR Approve" groups="hr.group_hr_manager"/> -->
-                  <button name="action_co_approval" string="Co-ordinator approval" type="object" class="oe_highlight" states="co-ordinator approve" groups="product_requisition.group_coordinator"/>
+                  <button name="action_co_approval" string="Co-ordinator Approval" type="object" class="oe_highlight" states="co-ordinator approve" groups="marcom_expense_updates.group_Co_Ordinator"/>
+                  <button name="action_top_managment" string="Management Approval" type="object" class="oe_highlight" states="management approve" groups="marcom_expense_updates.group_top_managment"/>
                   <!-- <button name="action_co_reject" string="Reject" type="object" class="oe_highlight" states="co-ordinator approve" groups="product_requisition.group_coordinator"/> -->
                   <button name="action_purchase_approval" string="Purchase Approval" type="object" class="oe_highlight" states="Purchase Approval" groups="purchase.group_purchase_manager"/>
                   <!-- <button name="action_purchase_reject" string="Reject" type="object" class="oe_highlight" states="Purchase Approval" groups="purchase.group_purchase_manager"/> -->
@@ -426,13 +427,13 @@ if records:
 
                     <group>
                         <group>
-                            <field name="product_id" context="{'default_can_be_expensed': 1, 'tree_view_ref': 'hr_expense.product_product_expense_tree_view'}"/>
-                            <field name="rates" required="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            <field name="labour_charges" required="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            <field name="waiting_charges" required="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            <field name="total_amounts" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            <field name="tax_ids" domain="[('type_tax_use', '=', 'purchase')]" widget="many2many_tags" groups="account.group_account_user"/>
-                            <field name="total_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="product_id" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}" context="{'default_can_be_expensed': 1, 'tree_view_ref': 'hr_expense.product_product_expense_tree_view'}"/>
+                            <field name="rates" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}" required="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="labour_charges" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}" required="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="waiting_charges" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}" required="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="total_amounts" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="tax_ids" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}" domain="[('type_tax_use', '=', 'purchase')]" widget="many2many_tags" groups="account.group_account_user"/>
+                            <field name="total_amount" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <!-- <label for="quantity"/>
                             <div>
                                 <field name="quantity" class="oe_inline"/>
@@ -441,24 +442,25 @@ if records:
                             <field name="tax_ids" domain="[('type_tax_use', '=', 'purchase')]" widget="many2many_tags" groups="account.group_account_user"/> -->
                         </group>
                         <group>
-                            <field name="reference"/>
-                            <field name="date"/>
+                            <field name="reference" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}"/>
+                            <field name="date" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}"/>
                             <!-- <field name="account_id" domain="[('internal_type', '=', 'other')]" groups="account.group_account_user"/> -->
                             <field name="employee_id" invisible="1" groups="hr_expense.group_hr_expense_user"/>
                             <field name="sheet_id" invisible="1"/>
-                            <field name="currency_id" groups="base.group_multi_currency"/>
+                            <field name="make_readonly" invisible="1"/>
+                            <field name="currency_id" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}" groups="base.group_multi_currency"/>
                             <field name="analytic_account_id" invisible="1" groups="analytic.group_analytic_accounting"/>
                             <field name="analytic_tag_ids" invisible="1" widget="many2many_tags" groups="analytic.group_analytic_tags"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
-                            <field name="type_id" />
-                            <field name="vehicle_type_id" />
-                            <field name="partner_id"  domain="[('supplier','=',True)]"/>
-                            <field name="trip_from" />
-                            <field name="trip_to" />
-                            <field name="vehicle_no"/>
+                            <field name="company_id" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}" groups="base.group_multi_company"/>
+                            <field name="type_id" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}"/>
+                            <field name="vehicle_type_id" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}"/>
+                            <field name="partner_id" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}" domain="[('supplier','=',True)]"/>
+                            <field name="trip_from" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}"/>
+                            <field name="trip_to"  attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}"/>
+                            <field name="vehicle_no" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}"/>
                             <field name="project_id" groups="hr_expense.group_hr_expense_user"/>
                             <field name="project_manager" invisible="1" />
-                            <field name="creator" />
+                            <field name="creator" readonly="1"/>
                             <field name="creator_manager" />
                             <field name="is_requester" invisible="1" />
                             <field name="is_requester_man" invisible="1" />
@@ -470,14 +472,16 @@ if records:
                             </div> -->
 
                     </group>
-                    <label for="department_comment"/>
+                    <label for="department_comment"/><br/>
                     <field name="department_comment" attrs="{'readonly': [('state', 'not in', ['Department approval'])],'required': [('state', 'in', ['Department approval'])]}"/><br/>
-                    <label for="hr_comment"/>
+                    <label for="hr_comment"/><br/>
                     <field name="hr_comment" attrs="{'readonly': [('state', 'not in', ['HR Approve'])],'required': [('state', 'in', ['HR Approve'])]}"/><br/>
-                    <label for="co_comment"/>
+                    <label for="co_comment"/><br/>
                     <field name="co_comment" attrs="{'readonly': [('state', 'not in', ['co-ordinator approve'])],'required': [('state', 'in', ['co-ordinator approve'])]}"/><br/>
-                    <label for="purchase_comment"/>
+                    <label for="purchase_comment"/><br/>
                     <field name="purchase_comment" attrs="{'readonly': [('state', 'not in', ['Purchase Approval'])],'required': [('state', 'in', ['Purchase Approval'])]}"/><br/>
+                    <label for="management_comment"/><br/>
+                    <field name="management_comment" attrs="{'readonly': [('state', 'not in', ['management approve'])],'required': [('state', 'in', ['management approve'])]}"/><br/>
 
 
                     <div>
@@ -640,11 +644,11 @@ if records:
                 <field name="can_reset" invisible="1"/>
                  <header>
                     <button name="action_submit_sheet" states="draft" string="Submit to Manager" type="object" class="oe_highlight o_expense_sheet_submit"/>
-                    <button name="approve_expense_sheets" states="submit" string="Approve" type="object" groups="hr_expense.group_hr_expense_user" class="oe_highlight o_expense_sheet_approve"/>
+                    <button name="approve_expense_sheets" states="submit" string="Approve" type="object" groups="marcom_expense_updates.group_production_manager" class="oe_highlight o_expense_sheet_approve"/>
                     <button name="action_sheet_move_create" states="approve" string="Post Journal Entries" type="object" groups="account.group_account_manager" class="oe_highlight o_expense_sheet_post"/>
                     <button name="%(marcom_expense_updates.transportaion_expense_sheet_register_payment_wizard_action)d" type="action" string="Register Payment" class="oe_highlight o_expense_sheet_pay" attrs="{'invisible': [('state', '!=', 'post')]}" context="{'default_amount': total_amount, 'partner_id': address_id}" groups="account.group_account_manager"/>
                     <button name="reset_expense_sheets" string="Reset to Draft" type="object" attrs="{'invisible': ['|', ('can_reset', '=', False), ('state', 'not in', ['submit', 'cancel'])]}"/>
-                    <button name="%(marcom_expense_updates.transportaion_expense_refuse_wizard_action)d" states="submit,approve" context="{'hr_expense_refuse_model':'transportaion.expense.sheet'}" string="Refuse" type="action" groups="hr_expense.group_hr_expense_user" />
+                    <button name="%(marcom_expense_updates.transportaion_expense_refuse_wizard_action)d" states="submit,approve" context="{'hr_expense_refuse_model':'transportaion.expense.sheet'}" string="Refuse" type="action" groups="marcom_expense_updates.group_production_manager" />
                     <field name="state" widget="statusbar" statusbar_visible="draft,submit,approve,post,done"/>
                 </header>
                 <sheet>
@@ -981,11 +985,11 @@ if records:
                     <field name="can_reset" invisible="1"/>
                     <header>
                        <button name="action_submit_sheet" states="draft" string="Submit to Manager" type="object" class="oe_highlight o_expense_sheet_submit"/>
-                       <button name="approve_expense_sheets" states="submit" string="Approve" type="object" groups="hr_expense.group_hr_expense_user" class="oe_highlight o_expense_sheet_approve"/>
+                       <button name="approve_expense_sheets" states="submit" string="Approve" type="object" groups="marcom_expense_updates.group_production_manager" class="oe_highlight o_expense_sheet_approve"/>
                        <button name="action_sheet_move_create" states="approve" string="Post Journal Entries" type="object" groups="account.group_account_manager" class="oe_highlight o_expense_sheet_post"/>
                        <button name="753" type="action" string="Register Payment" class="oe_highlight o_expense_sheet_pay" attrs="{'invisible': [('state', '!=', 'post')]}" context="{'default_amount': total_amount, 'partner_id': employee_id}" groups="account.group_account_manager"/>
                        <button name="reset_expense_sheets" string="Reset to Draft" type="object" attrs="{'invisible': ['|', ('can_reset', '=', False), ('state', 'not in', ['submit', 'cancel'])]}"/>
-                       <button name="749" states="submit,approve" context="{'hr_expense_refuse_model':'petty.cash.sheet'}" string="Refuse" type="action" groups="hr_expense.group_hr_expense_user"/>
+                       <button name="749" states="submit,approve" context="{'hr_expense_refuse_model':'petty.cash.sheet'}" string="Refuse" type="action" groups="marcom_expense_updates.group_production_manager"/>
                        <field name="state" widget="statusbar" statusbar_visible="draft,submit,approve,post,done"/>
                    </header>
                    <sheet>
@@ -1116,11 +1120,30 @@ if records:
 
                 <form string="Expenses" class="o_expense_form">
                 <header>
-                  <button name="action_submit_expenses" string="Create Report" type="object" class="oe_highlight o_expense_submit" attrs="{'invisible': ['|', ('attachment_number', '&lt;=', 0), ('sheet_id', '!=', False)]}"/>
+                  <!-- <button name="action_submit_expenses" string="Create Report" type="object" class="oe_highlight o_expense_submit" attrs="{'invisible': ['|', ('attachment_number', '&lt;=', 0), ('sheet_id', '!=', False)]}"/>
                   <widget name="attach_document" string="Attach Document" action="message_post" attrs="{'invisible': ['|', ('attachment_number', '&lt;', 1), ('id','=',False)]}"/>
                   <widget name="attach_document" string="Attach Document" action="message_post" highlight="1" attrs="{'invisible': ['|',('attachment_number', '&gt;=', 1), ('id','=',False)]}"/>
                   <button name="action_submit_expenses" string="Create Report" type="object" class="o_expense_submit" attrs="{'invisible': ['|', ('attachment_number', '&gt;=', 1), ('sheet_id', '!=', False)]}"/>
                   <field name="state" widget="statusbar" statusbar_visible="draft,reported,approved,done,refused"/>
+                  <button name="action_view_sheet" type="object" string="View Report" class="oe_highlight" attrs="{'invisible': [('sheet_id', '=', False)]}"/>
+                 -->
+                  <button name="action_submit_expenses" string="Submit" type="object" states="wait" class="oe_highlight o_expense_submit" attrs="{'invisible': ['|', ('attachment_number', '&lt;=', 0),'|',('sheet_id', '!=', False), ('is_requester', '=', False)]}"/>
+                  <button name="set_to_draft" string="Set To Draft" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',['refused']),('is_requester', '=', False)]}"/>
+                  <button name="action_send_to_approve" string="Send To Approve" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',['draft']),('is_requester', '=', False)]}"/>
+                  <button name="action_department_approval" string="Department Manager Approval" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',['Department approval']),('is_requester_man', '=', False)]}"/>
+                  <!-- <button name="action_department_reject" string="Reject" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',['Department approval']),('is_requester_man', '=', False)]}"/> -->
+                  <button name="action_hr_approval" string="HR Approval" type="object" class="oe_highlight" states="HR Approve" groups="hr.group_hr_manager"/>
+                  <!-- <button name="action_hr_reject" string="Reject" type="object" class="oe_highlight" states="HR Approve" groups="hr.group_hr_manager"/> -->
+                  <button name="action_co_approval" string="Co-ordinator Approval" type="object" class="oe_highlight" states="co-ordinator approve" groups="marcom_expense_updates.group_Co_Ordinator"/>
+                  <button name="action_top_managment" string="Management Approval" type="object" class="oe_highlight" states="management approve" groups="marcom_expense_updates.group_top_managment"/>
+                  <!-- <button name="action_co_reject" string="Reject" type="object" class="oe_highlight" states="co-ordinator approve" groups="product_requisition.group_coordinator"/> -->
+                  <button name="action_purchase_approval" string="Purchase Approval" type="object" class="oe_highlight" states="Purchase Approval" groups="purchase.group_purchase_manager"/>
+                  <!-- <button name="action_purchase_reject" string="Reject" type="object" class="oe_highlight" states="Purchase Approval" groups="purchase.group_purchase_manager"/> -->
+                
+                  <widget name="attach_document" string="Attach Document" action="message_post" attrs="{'invisible': ['|', ('attachment_number', '&lt;', 1), ('id','=',False)]}"/>
+                  <!-- <widget name="attach_document" string="Attach Document" action="message_post" highlight="1" attrs="{'invisible': ['|',('attachment_number', '&gt;=', 1), ('id','=',False)]}"/> -->
+                  <!-- <button name="action_submit_expenses" string="Create Report" type="object" class="o_expense_submit" attrs="{'invisible': ['|', ('attachment_number', '&gt;=', 1), ('sheet_id', '!=', False)]}"/> -->
+                  <field name="state" widget="statusbar" statusbar_visible="draft,wait,reported,approved,done,refused"/>
                   <button name="action_view_sheet" type="object" string="View Report" class="oe_highlight" attrs="{'invisible': [('sheet_id', '=', False)]}"/>
                 </header>
                 <sheet>
@@ -1136,27 +1159,27 @@ if records:
                     <div class="oe_title">
                         <label for="name"/>
                         <h1>
-                            <field name="name" placeholder="e.g. Labour Claims"/>
+                            <field name="name" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}" placeholder="e.g. Labour Claims"/>
                         </h1>
                        
                     </div>
 
                     <group>
                         <group>
-                            <field name="product_id" />
-                            <field name="partner_id" domain="[('supplier','=',True)]"/>
-                            <field name="no_of_helpers"/>
-                            <field name="labour_type" />
-                            <field name="time_in" widget="float_time" />
-                            <field name="time_out" widget="float_time" />
-                            <field name="total_hours" widget="float_time"/>
-                            <field name="break_hour" widget="float_time"/>
-                            <field name="travelling_hours" widget="float_time"/>
-                            <field name="net_hours" widget="float_time"/>
-                            <field name="rate_per_hour" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            <field name="total_amounts" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            <field name="tax_ids" domain="[('type_tax_use', '=', 'purchase')]" widget="many2many_tags" groups="account.group_account_user"/>
-                            <field name="total_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="product_id" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}"/>
+                            <field name="partner_id" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}" domain="[('supplier','=',True)]"/>
+                            <field name="no_of_helpers" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}"/>
+                            <field name="labour_type" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}"/>
+                            <field name="time_in" widget="float_time" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}" />
+                            <field name="time_out" widget="float_time" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}" />
+                            <field name="total_hours" widget="float_time" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}"/>
+                            <field name="break_hour" widget="float_time" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}"/>
+                            <field name="travelling_hours" widget="float_time" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}"/>
+                            <field name="net_hours" widget="float_time" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}"/>
+                            <field name="rate_per_hour" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="total_amounts" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="tax_ids" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}" domain="[('type_tax_use', '=', 'purchase')]" widget="many2many_tags" groups="account.group_account_user"/>
+                            <field name="total_amount" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <!-- <field name="product_id" context="{'default_can_be_expensed': 1, 'tree_view_ref': 'hr_expense.product_product_expense_tree_view'}"/> -->
                             <!-- <field name="unit_amount" required="1" widget="monetary" options="{'currency_field': 'currency_id'}"/> -->
                             <!-- <label for="quantity"/>
@@ -1170,23 +1193,37 @@ if records:
                             <field name="date"/>
                             <!-- <field name="account_id" domain="[('internal_type', '=', 'other')]" groups="account.group_account_user"/> -->
                             <!-- <field name="employee_id" groups="hr_expense.group_hr_expense_user"/> -->
-                            <field name="project_id" groups="hr_expense.group_hr_expense_user"/>
+                            <field name="project_id" groups="hr_expense.group_hr_expense_user" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}"/>
                             <field name="project_manager" invisible="1"/>
+                            <field name="make_readonly" invisible="1"/>
                             <field name="sheet_id" invisible="1"/>
-                            <field name="currency_id" groups="base.group_multi_currency"/>
+                            <field name="currency_id" groups="base.group_multi_currency" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}"/>
                             <field name="analytic_account_id" invisible="1" groups="analytic.group_analytic_accounting"/>
                             <field name="analytic_tag_ids" invisible="1" widget="many2many_tags" groups="analytic.group_analytic_tags"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
-                        </group><group>
-                            <!-- <field name="untaxed_amount" widget='monetary' options="{'currency_field': 'currency_id'}"/> -->
-                            <!-- <field name="total_amount" widget='monetary' options="{'currency_field': 'currency_id'}"/> -->
+                            <field name="company_id" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve'])]}" groups="base.group_multi_company"/>
+                            <field name="creator" readonly="1"/>
+                            <field name="creator_manager" />
+                            <field name="is_requester" invisible="1" />
+                            <field name="is_requester_man" invisible="1" />
+                            <!-- <field name="remarks" /> -->
+                        </group>
                             <!-- <label for="payment_mode"/>
                             <div>
                                 <field name="payment_mode" />
                             </div> -->
-                        </group>
-                        
+
                     </group>
+                    <label for="department_comment"/><br/>
+                    <field name="department_comment" attrs="{'readonly': [('state', 'not in', ['Department approval'])],'required': [('state', 'in', ['Department approval'])]}"/><br/>
+                    <label for="hr_comment"/><br/>
+                    <field name="hr_comment" attrs="{'readonly': [('state', 'not in', ['HR Approve'])],'required': [('state', 'in', ['HR Approve'])]}"/><br/>
+                    <label for="co_comment"/><br/>
+                    <field name="co_comment" attrs="{'readonly': [('state', 'not in', ['co-ordinator approve'])],'required': [('state', 'in', ['co-ordinator approve'])]}"/><br/>
+                    <label for="purchase_comment"/><br/>
+                    <field name="purchase_comment" attrs="{'readonly': [('state', 'not in', ['Purchase Approval'])],'required': [('state', 'in', ['Purchase Approval'])]}"/><br/>
+                    <label for="management_comment"/><br/>
+                    <field name="management_comment" attrs="{'readonly': [('state', 'not in', ['management approve'])],'required': [('state', 'in', ['management approve'])]}"/><br/>
+
                     <div>
                         <field name="description" class="oe_inline" placeholder="Notes..."/>
                     </div>
@@ -1341,11 +1378,11 @@ if records:
                 <field name="can_reset" invisible="1"/>
                  <header>
                     <button name="action_submit_sheet" states="draft" string="Submit to Manager" type="object" class="oe_highlight o_expense_sheet_submit"/>
-                    <button name="approve_expense_sheets" states="submit" string="Approve" type="object" groups="hr_expense.group_hr_expense_user" class="oe_highlight o_expense_sheet_approve"/>
+                    <button name="approve_expense_sheets" states="submit" string="Approve" type="object" groups="marcom_expense_updates.group_production_manager" class="oe_highlight o_expense_sheet_approve"/>
                     <button name="action_sheet_move_create" states="approve" string="Post Journal Entries" type="object" groups="account.group_account_manager" class="oe_highlight o_expense_sheet_post"/>
                     <button name="%(marcom_expense_updates.labour_expense_sheet_register_payment_wizard_action)d" type="action" string="Register Payment" class="oe_highlight o_expense_sheet_pay" attrs="{'invisible': [('state', '!=', 'post')]}" context="{'default_amount': total_amount, 'partner_id': address_id}" groups="account.group_account_manager"/>
                     <button name="reset_expense_sheets" string="Reset to Draft" type="object" attrs="{'invisible': ['|', ('can_reset', '=', False), ('state', 'not in', ['submit', 'cancel'])]}"/>
-                    <button name="%(marcom_expense_updates.labour_expense_refuse_wizard_action)d" states="submit,approve" context="{'hr_expense_refuse_model':'labour.sheet'}" string="Refuse" type="action" groups="hr_expense.group_hr_expense_user" />
+                    <button name="%(marcom_expense_updates.labour_expense_refuse_wizard_action)d" states="submit,approve" context="{'hr_expense_refuse_model':'labour.sheet'}" string="Refuse" type="action" groups="marcom_expense_updates.group_production_manager" />
                     <field name="state" widget="statusbar" statusbar_visible="draft,submit,approve,post,done"/>
                 </header>
                 <sheet>
@@ -1472,6 +1509,25 @@ if records:
         </record>
 
     <!--End Labour section  --> 
+
+    <!--expense form changes  --> 
+    <record id="hr_expense_sheet_cusss_form" model="ir.ui.view">
+        <field name="name">hr.expense.sheet.cusss.form</field>
+        <field name="model">hr.expense.sheet</field>
+        <field name="inherit_id" ref="hr_expense.view_hr_expense_sheet_form"/>
+        <field name="arch" type="xml">
+            <button name="approve_expense_sheets" position="replace">
+                <button name="approve_expense_sheets" states="submit" string="Approve" type="object" groups="marcom_expense_updates.group_production_manager" class="oe_highlight o_expense_sheet_approve"/>
+
+            </button>
+            <button name="(hr_expense.hr_expense_refuse_wizard_action)d" position="replace">
+                <button name="%(hr_expense.hr_expense_refuse_wizard_action)d" states="submit,approve" context="{'hr_expense_refuse_model':'hr.expense.sheet'}" string="Refuse" type="action" groups="marcom_expense_updates.group_production_manager" />
+                    
+
+            </button>
+        </field>
+    </record>
+    <!--expense form changes  --> 
 
 
         <menuitem 
