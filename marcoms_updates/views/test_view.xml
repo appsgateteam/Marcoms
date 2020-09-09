@@ -416,7 +416,8 @@ if record:
             <button name="%(sale_crm.sale_action_orders)d" position="replace">
             </button>
             <xpath expr="//field[@name='team_id']" position="after">
-                <field name="assign_to_designer" attrs="{'invisible': ['|',('stage_id', '=', 1),('stage_id', '=', 2)],'required': [('stage_id', '=', 3)]}" groups="marcoms_updates.group_sale_top_manager,marcoms_updates.group_creative_coordinator"/>
+                <!-- ['|',('stage_id', '=', 1),('stage_id', '=', 2)] -->
+                <field name="assign_to_designer" attrs="{'invisible': [('stage_id', '=', 1)],'required': [('stage_id', '=', 3)]}" groups="marcoms_updates.group_sale_top_manager,marcoms_updates.group_creative_coordinator"/>
             </xpath>
             <xpath expr="//field[@name='lost_reason']" position="after">
                 <field name="des_reason" attrs="{'invisible': [('active', '=', True)]}"/>
@@ -474,14 +475,14 @@ if record:
                         <group>
                             <!-- <field name="project_date" readonly="1"/> -->
                             <field name="design_deadline" attrs="{'required': [('assign_to_designer', '!=', 80)]}"/>
-                            <field name="design_complete" attrs="{'required': [('assign_to_designer', '!=', 80)]}"/>
+                            <field name="design_complete" required="0"/>
                             <field name="remaining_dates_design"/>
                             <field name="brief_type" required="1"/>
                             <field name="stand_size" required="1"/>
                         </group>
                         <group>
                             <field name="quotation_deadline" required="1"/>
-                            <field name="quotation_complete" required="1"/>
+                            <field name="quotation_complete" required="0"/>
                             <field name="remaining_dates"/>
                             <field name="brief_status" invisible="1" />
                         </group>
@@ -497,27 +498,27 @@ if record:
                     <group>
                         <group>
                             <span>Client History with Marcoms</span>
-                            <h5><field name="eval_detail1" domain="[('detail_id', '=', 12)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
+                            <h5><field name="eval_detail1" required="1" domain="[('detail_id', '=', 12)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
                             <span>Scalability</span>
-                            <h5><field name="eval_detail2" domain="[('detail_id', '=', 13)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
+                            <h5><field name="eval_detail2" required="1" domain="[('detail_id', '=', 13)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
                             <span>Brand Guidelines</span>
-                            <h5><field name="eval_detail3" domain="[('detail_id', '=', 14)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
+                            <h5><field name="eval_detail3" required="1" domain="[('detail_id', '=', 14)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
                             <span>Floor Plan and Requirements</span>
-                            <h5><field name="eval_detail4" domain="[('detail_id', '=', 15)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
+                            <h5><field name="eval_detail4" required="1" domain="[('detail_id', '=', 15)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
                             <span>Client Approach Time</span>
-                            <h5><field name="eval_detail5" domain="[('detail_id', '=', 16)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
+                            <h5><field name="eval_detail5" required="1" domain="[('detail_id', '=', 16)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
                             <span>Multi Shows</span>
-                            <h5><field name="eval_detail6" domain="[('detail_id', '=', 17)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
+                            <h5><field name="eval_detail6" required="1" domain="[('detail_id', '=', 17)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
                             <span>Design Time Line </span>
-                            <h5><field name="eval_detail7" domain="[('detail_id', '=', 18)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
+                            <h5><field name="eval_detail7" required="1" domain="[('detail_id', '=', 18)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
                             <span>Account Manager % of Project Approval</span>
-                            <h5><field name="eval_detail8" domain="[('detail_id', '=', 19)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
+                            <h5><field name="eval_detail8" required="1" domain="[('detail_id', '=', 19)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
                             <span>Budget " Evaluated by Sales"</span>
-                            <h5><field name="eval_detail9" domain="[('detail_id', '=', 20)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
+                            <h5><field name="eval_detail9" required="1" domain="[('detail_id', '=', 20)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
                             <span>Brief Details " Evaluated by Sales"</span>
-                            <h5><field name="eval_detail10" domain="[('detail_id', '=', 21)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
+                            <h5><field name="eval_detail10" required="1" domain="[('detail_id', '=', 21)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
                             <span>Number Of companies Pitching</span>
-                            <h5><field name="eval_detail11" domain="[('detail_id', '=', 22)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
+                            <h5><field name="eval_detail11" required="1" domain="[('detail_id', '=', 22)]" options="{'no_create': True, 'no_create_edit':True}"/></h5>
                             <field name="rate_sum" />
                         </group>
                         <group>

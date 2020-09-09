@@ -160,7 +160,7 @@ class crm_customize(models.Model):
                 raise UserError(_("You should add the reason for cancel field"))
 
         if vals.get('stage_id') == 7:
-            # vals['quotation_complete'] = date.today()
+            vals['quotation_complete'] = date.today()
             if self.sale_number:
                 com = self.env['sale.order'].search([('opportunity_id','=',self.id)])
                 for l in com:

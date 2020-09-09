@@ -82,6 +82,10 @@
                             <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;;background-color:transparent;"><span style="margin-left:5px;" t-field="o.contact_name"/></td>
                         </tr>
                         <tr>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Contact Email </span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;;background-color:transparent;"><span style="margin-left:5px;" t-field="o.email_from_contact"/></td>
+                        </tr>
+                        <tr>
                             <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Position</span></td>
                             <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.partner_id.function"/></td>
                         </tr>
@@ -94,7 +98,7 @@
                             <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.partner_id.mobile"/></td>
                         </tr>
                         <tr>
-                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Email</span></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Company Email</span></td>
                             <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.email_from"/></td>
                         </tr>
                         <tr>
