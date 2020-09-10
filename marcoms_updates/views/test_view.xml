@@ -49,6 +49,9 @@ teams of the sales pipeline.</field>
             <xpath expr="//field[@name='create_date']" position="after">
                 <field name="sequence_no"/>
             </xpath>
+            <xpath expr="//field[@name='planned_revenue']" position="after">
+                <field name="quotation_value"/>
+            </xpath>
         </field>
     </record>
 
