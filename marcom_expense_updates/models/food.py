@@ -817,16 +817,16 @@ class food_Sheet(models.Model):
 
     @api.multi
     def approve_expense_sheets(self):
-        if not self.user_has_groups('hr_expense.group_hr_expense_user'):
-            raise UserError(_("Only Managers and HR Officers can approve expenses"))
-        elif not self.user_has_groups('hr_expense.group_hr_expense_manager'):
+        # if not self.user_has_groups('hr_expense.group_hr_expense_user'):
+        #     raise UserError(_("Only Managers and HR Officers can approve expenses"))
+        if not self.user_has_groups('hr_expense.group_hr_expense_manager'):
             current_managers = self.employee_id.parent_id.user_id | self.employee_id.department_id.manager_id.user_id
 
             if self.employee_id.user_id == self.env.user:
                 raise UserError(_("You cannot approve your own expenses"))
 
-            if not self.env.user in current_managers:
-                raise UserError(_("You can only approve your department expenses"))
+            # if not self.env.user in current_managers:
+            #     raise UserError(_("You can only approve your department expenses"))
 
         responsible_id = self.user_id.id or self.env.user.id
         self.write({'state': 'approve', 'user_id': responsible_id})
@@ -1878,16 +1878,16 @@ class Transportaion_Sheet(models.Model):
 
     @api.multi
     def approve_expense_sheets(self):
-        if not self.user_has_groups('hr_expense.group_hr_expense_user'):
-            raise UserError(_("Only Managers and HR Officers can approve expenses"))
-        elif not self.user_has_groups('hr_expense.group_hr_expense_manager'):
+        # if not self.user_has_groups('hr_expense.group_hr_expense_user'):
+        #     raise UserError(_("Only Managers and HR Officers can approve expenses"))
+        if not self.user_has_groups('hr_expense.group_hr_expense_manager'):
             current_managers = self.employee_id.parent_id.user_id | self.employee_id.department_id.manager_id.user_id
 
             if self.employee_id.user_id == self.env.user:
                 raise UserError(_("You cannot approve your own expenses"))
 
-            if not self.env.user in current_managers:
-                raise UserError(_("You can only approve your department expenses"))
+            # if not self.env.user in current_managers:
+            #     raise UserError(_("You can only approve your department expenses"))
 
         responsible_id = self.user_id.id or self.env.user.id
         self.write({'state': 'approve', 'user_id': responsible_id})
@@ -2781,16 +2781,16 @@ class Petty_Cash_Sheet(models.Model):
 
     @api.multi
     def approve_expense_sheets(self):
-        if not self.user_has_groups('hr_expense.group_hr_expense_user'):
-            raise UserError(_("Only Managers and HR Officers can approve expenses"))
-        elif not self.user_has_groups('hr_expense.group_hr_expense_manager'):
+        # if not self.user_has_groups('hr_expense.group_hr_expense_user'):
+        #     raise UserError(_("Only Managers and HR Officers can approve expenses"))
+        if not self.user_has_groups('hr_expense.group_hr_expense_manager'):
             current_managers = self.employees_id.parent_id.user_id | self.employees_id.department_id.manager_id.user_id
 
             if self.employees_id.user_id == self.env.user:
                 raise UserError(_("You cannot approve your own expenses"))
 
-            if not self.env.user in current_managers:
-                raise UserError(_("You can only approve your department expenses"))
+            # if not self.env.user in current_managers:
+            #     raise UserError(_("You can only approve your department expenses"))
 
         responsible_id = self.user_id.id or self.env.user.id
         self.write({'state': 'approve', 'user_id': responsible_id})
@@ -3953,16 +3953,16 @@ class Labour_Sheet(models.Model):
 
     @api.multi
     def approve_expense_sheets(self):
-        if not self.user_has_groups('hr_expense.group_hr_expense_user'):
-            raise UserError(_("Only Managers and HR Officers can approve expenses"))
-        elif not self.user_has_groups('hr_expense.group_hr_expense_manager'):
+        # if not self.user_has_groups('hr_expense.group_hr_expense_user'):
+        #     raise UserError(_("Only Managers and HR Officers can approve expenses"))
+        if not self.user_has_groups('hr_expense.group_hr_expense_manager'):
             current_managers = self.employee_id.parent_id.user_id | self.employee_id.department_id.manager_id.user_id
 
             if self.employee_id.user_id == self.env.user:
                 raise UserError(_("You cannot approve your own expenses"))
 
-            if not self.env.user in current_managers:
-                raise UserError(_("You can only approve your department expenses"))
+            # if not self.env.user in current_managers:
+            #     raise UserError(_("You can only approve your department expenses"))
 
         responsible_id = self.user_id.id or self.env.user.id
         self.write({'state': 'approve', 'user_id': responsible_id})
