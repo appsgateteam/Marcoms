@@ -5,7 +5,7 @@ from odoo import api, fields, models, tools ,_
 from odoo.exceptions import except_orm, ValidationError,UserError
 from odoo.exceptions import  AccessError, UserError, RedirectWarning,Warning
 import odoo.addons.decimal_precision as dp
-from datetime import datetime, timedelta , date
+from datetime import datetime, timedelta , date ,time
 import time
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import odoo.exceptions
