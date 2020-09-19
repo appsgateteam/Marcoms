@@ -444,7 +444,7 @@ if records:
                         <group>
                             <field name="reference" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve','draft'])]}"/>
                             <field name="date" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve','draft'])]}"/>
-                            <!-- <field name="account_id" domain="[('internal_type', '=', 'other')]" groups="account.group_account_user"/> -->
+                            <field name="account_id" invisible="1" groups="account.group_account_user"/>
                             <field name="employee_id" invisible="1" groups="hr_expense.group_hr_expense_user"/>
                             <field name="sheet_id" invisible="1"/>
                             <field name="make_readonly" invisible="1"/>
@@ -692,6 +692,7 @@ if records:
                                 <field name="state" invisible="1"/>
                                 <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
                                 <field name="tax_ids" widget="many2many_tags" />
+                                <field name="account_id" />
                                 <field name="analytic_tag_ids" invisible="1" widget="many2many_tags" groups="analytic.group_analytic_tags"/>
                                 <field name="message_unread" invisible="1"/>
                                 <field name="attachment_number" string=" "/>
@@ -715,6 +716,7 @@ if records:
                                <field name="labour_charges"/>
                                <field name="waiting_charges"/>
                                <field name="state" invisible="1"/>
+                                <field name="account_id"/>
                                <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
                                <field name="analytic_tag_ids" invisible="1" widget="many2many_tags" groups="analytic.group_analytic_tags"/>
                              </group>
