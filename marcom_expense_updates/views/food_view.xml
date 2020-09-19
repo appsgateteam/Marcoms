@@ -1202,6 +1202,8 @@ if records:
                             <field name="project_manager" invisible="1"/>
                             <field name="make_readonly" invisible="1"/>
                             <field name="sheet_id" invisible="1"/>
+                            <field name="account_id" invisible="1" groups="account.group_account_user"/>
+
                             <field name="currency_id" groups="base.group_multi_currency" attrs="{'readonly': ['|',('make_readonly','=',True),('state','not in',['management approve','draft'])]}"/>
                             <field name="analytic_account_id" invisible="1" groups="analytic.group_analytic_accounting"/>
                             <field name="analytic_tag_ids" invisible="1" widget="many2many_tags" groups="analytic.group_analytic_tags"/>
@@ -1450,6 +1452,7 @@ if records:
                                 <!-- <field name="untaxed_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/> -->
                                 <field name="total_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                 <field name="company_currency_id" invisible="1"/>
+                                <field name="account_id"/>
                                 <field name="total_amount_company" groups="base.group_multi_currency"/>
                                 <field name="is_refused" invisible="True"/>
                            </tree>
@@ -1466,6 +1469,7 @@ if records:
                                 <!-- <field name="can_project" invisible="1"/> -->
                                 <field name="state" invisible="1"/>
                                 <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
+                                <field name="account_id"/>
                                 <field name="analytic_tag_ids" widget="many2many_tags" groups="analytic.group_analytic_tags"/>
                             </group>
                              <group>
