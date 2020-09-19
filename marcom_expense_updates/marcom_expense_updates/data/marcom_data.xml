@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!--   Food Sequence -->
+  <data noupdate="1">
+    <record id="food_expesnse_seq_name" model="ir.sequence">
+      <field name="name">Food Expense Sequence Number</field>
+      <field name="code">food.expense.sequence</field>
+      <field name="active">True</field>
+      <field name="prefix">Meal/</field>
+      <field name="number_increment">1</field>
+      <field name="number_next">1</field>
+      <field name="padding">4</field>
+      <field name="implementation">standard</field>
+    </record>
+  </data>
+
+</odoo>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data > 
+            
+       
+        <record id="transportaion_vehicle_expense_form" model="ir.ui.view">
+            <field name="name">transportaion.vehicle.expense.form</field>
+            <field name="model">transportaion.vehicle.type</field>
+            <field name="arch" type="xml">
+                <form string="Vehicle Type" class="o_expense_sheet">
+                    <sheet>
+                        <notebook>
+                            <page string="Vehicle Type">
+                                <group>
+                                    <field name="name"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+   </data> 
+</odoo>
