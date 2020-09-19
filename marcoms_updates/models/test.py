@@ -4431,6 +4431,7 @@ class BankDetails(models.Model):
 class AccountMoveCustomize(models.Model):
     _inherit = 'account.move'
 
+
     prepare = fields.Char('Prepared by')
     checked = fields.Char('Checked by')
     received = fields.Char('Received by')

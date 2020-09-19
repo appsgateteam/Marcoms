@@ -52,6 +52,18 @@ teams of the sales pipeline.</field>
             <xpath expr="//field[@name='planned_revenue']" position="replace">
                 <field name="quotation_value"/>
             </xpath>
+            <xpath expr="//field[@name='country_id']" position="replace">
+            </xpath>
+             <xpath expr="//field[@name='activity_date_deadline']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+             <xpath expr="//field[@name='activity_date_deadline']" position="after">
+               <field name="show"/>
+            </xpath>
+
+             <xpath expr="//field[@name='activity_summary']" position="replace">
+                <field name="show_date"/>
+            </xpath>
         </field>
     </record>
 
@@ -549,6 +561,15 @@ if record:
             <xpath expr="//field[@name='partner_address_phone']" position="attributes">
                 <attribute name="readonly">0</attribute>
             </xpath>
+
+
+            <xpath expr="//field[@name='partner_address_phone']" position="after">
+               <field name="partner_address_mobile" />
+            </xpath>
+
+             <xpath expr="//field[@name='partner_address_mobile']" position="attributes">
+                <attribute name="string">Mobile</attribute>
+            </xpath>
             <xpath expr="//field[@name='partner_address_phone']" position="before">
                 <field name="email_from_contact" widget="email"/>
             </xpath>
@@ -848,6 +869,19 @@ if record:
             </xpath>
         </field>
     </record>
+
+     <record id="sale_quote_cus_tree" model="ir.ui.view">
+        <field name="name">sale.order.quote.tree</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                 <field name="project_name" />
+                <field name="opportunity_id"/>
+            </xpath>
+        </field>
+    </record>
+
     <record id="sale.sale_order_view_search_inherit_quotation" model="ir.ui.view">
         <field name="name">sale.order.search.inherit.quotation</field>
         <field name="model">sale.order</field>
@@ -2925,7 +2959,7 @@ if record:
                     </group>
                 </group>       
             </xpath>
-           <!-- <xpath expr="//form" position="after">
+            <!--<xpath expr="//form/sheet" position="after">
                 <div class="oe_chatter">
                     <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
                     <field name="activity_ids" widget="mail_activity"/>
