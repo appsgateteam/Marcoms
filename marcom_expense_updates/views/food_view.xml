@@ -284,7 +284,7 @@ if records:
                     <group>
                         <group>
                             <field name="employee_id" invisible="1"/>
-                            <field name="payment_mode"/>
+                            <field name="payment_mode" />
                             <field name="user_id" readonly="1"/>
                             <field name="address_id" invisible="1"/>
                             <field name="department_id" invisible="1"/>
@@ -670,7 +670,7 @@ if records:
                     <group>
                         <group>
                             <field name="employee_id" invisible="1"/>
-                            <field name="payment_mode"/>
+                            <field name="payment_mode" />
                             <field name="user_id" readonly="1"/>
                             <field name="address_id" invisible="1"/>
                             <field name="department_id" invisible="1"/>
@@ -691,12 +691,14 @@ if records:
                                 <field name="waiting_charges"/>
                                 <field name="state" invisible="1"/>
                                 <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
-
+                                <field name="tax_ids" widget="many2many_tags" />
+                                <field name="account_id" />
                                 <field name="analytic_tag_ids" invisible="1" widget="many2many_tags" groups="analytic.group_analytic_tags"/>
                                 <field name="message_unread" invisible="1"/>
                                 <field name="attachment_number" string=" "/>
                                 <button name="action_get_attachment_view" string="View Attachments" type="object" icon="fa-paperclip"/>
-                                <!-- <field name="tax_ids" widget="many2many_tags" groups="account.group_account_user"/> -->
+                                <!--<field name="tax_ids" widget="many2many_tags" groups="account.group_account_user"/> -->
+
                                 <field name="currency_id" invisible="1"/>
                                 <field name="total_amount"/>
                                 <field name="company_currency_id" invisible="1"/>
@@ -724,6 +726,7 @@ if records:
                                <button name="action_get_attachment_view" string="View Attachments" type="object" icon="fa-paperclip"/>
                                <!-- <field name="tax_ids" widget="many2many_tags" groups="account.group_account_user"/> -->
                                <field name="currency_id" invisible="1"/>
+
                                <field name="total_amount"/>
                                <field name="company_currency_id" invisible="1"/>
                                <field name="total_amount_company" groups="base.group_multi_currency"/>
@@ -742,7 +745,7 @@ if records:
                         <page string="Other Info">
                             <group>
                                 <group>
-                                    <field name="journal_id" domain="[('type', '=', 'purchase')]" options="{'no_open': True, 'no_create': True}" attrs="{'invisible': [('payment_mode', '!=', 'own_account')]}"/>
+                                    <field name="journal_id"  options="{'no_open': True, 'no_create': True}" attrs="{'invisible': [('payment_mode', '!=', 'own_account')]}"/><!--domain="[('type', '=', 'purchase')]"-->
                                     <field name="bank_journal_id" groups="account.group_account_user" options="{'no_open': True, 'no_create': True}" attrs="{'invisible': [('payment_mode', '!=', 'company_account')]}" domain="[('type', 'in', ['cash', 'bank'])]"/>
                                     <field name="accounting_date" groups="account.group_account_user" attrs="{'invisible': [('state', 'not in', ['approve', 'post', 'done'])]}"/>
                                 </group>
@@ -1444,10 +1447,10 @@ if records:
                                 <field name="message_unread" invisible="1"/>
                                 <field name="attachment_number" string=" "/>
                                 <button name="action_get_attachment_view" string="View Attachments" type="object" icon="fa-paperclip"/>
-                                <!-- <field name="tax_ids" widget="many2many_tags" groups="account.group_account_user"/> -->
+                                <field name="tax_ids" widget="many2many_tags" />
                                 <field name="currency_id" invisible="1"/>
                                 <!-- <field name="untaxed_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/> -->
-                                <!-- <field name="total_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/> -->
+                                <field name="total_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                 <field name="company_currency_id" invisible="1"/>
                                 <field name="account_id"/>
                                 <field name="total_amount_company" groups="base.group_multi_currency"/>
@@ -1494,7 +1497,7 @@ if records:
                         <page string="Other Info">
                             <group>
                                 <group>
-                                    <field name="journal_id" domain="[('type', '=', 'purchase')]" options="{'no_open': True, 'no_create': True}" attrs="{'invisible': [('payment_mode', '!=', 'own_account')]}"/>
+                                    <field name="journal_id"  options="{'no_open': True, 'no_create': True}" attrs="{'invisible': [('payment_mode', '!=', 'own_account')]}"/>
                                     <field name="bank_journal_id" groups="account.group_account_user" options="{'no_open': True, 'no_create': True}" attrs="{'invisible': [('payment_mode', '!=', 'company_account')]}" domain="[('type', 'in', ['cash', 'bank'])]"/>
                                     <field name="accounting_date" groups="account.group_account_user" attrs="{'invisible': [('state', 'not in', ['approve', 'post', 'done'])]}"/>
                                 </group>
