@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, tools, _
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta ,date
 from odoo.exceptions import AccessError, UserError, ValidationError
 import math
 
@@ -21,7 +21,7 @@ class FinalSettlement(models.Model):
 		for obj in self:
 			final_settlement = obj.settlement_type_id.final_settlement
 			leave_pending = obj.employee_id.leaves_count
-			joining_date = obj.employee_id.join_date
+			joining_date = obj.join_date
 
 			holiday_ids = self.env['hr.leave'].search([('employee_id','=',obj.employee_id.id),('holiday_status_id','=',4),('state','not in',('cancel','refuse'))])
 			for holiday in holiday_ids:
@@ -49,72 +49,72 @@ class FinalSettlement(models.Model):
 			# for al_line in contract_obj.xo_allowance_rule_line_ids:
 			#     al_line.copy({'od_sett_id':ids[0],'contract_id':False})
 			vals = {'basic':basic,
-					'join_date':obj.employee_id.join_date,
+					# 'join_date':obj.employee_id.join_date,
 					'total_salary':total_sal,
 					'leave_pending':leave_pending,
 					'unpaid_leave':unpaid_tot,
 					'total_working_days':working_days,
-					'job_id':obj.employee_id.job_id.id,
-					'department_id':obj.employee_id.department_id.id,
+					# 'job_id':obj.employee_id.job_id.id,
+					# 'department_id':obj.employee_id.department_id.id,
 					'address_home_id':obj.employee_id.address_home_id.id,
 					}
 			self.write(vals)
-			partner_id = obj.employee_id.address_home_id.id
-			settlement_type_id = obj.settlement_type_id and obj.settlement_type_id.id
-			settlement_ids = self.env['final.settlement.type.master'].search([('id','=',settlement_type_id)])
-			settlement_type_obj = self.env['final.settlement.type.master'].browse(settlement_ids).id
-			account_ids = []
-			for accounts in settlement_type_obj.settlement_type_master_line:
-				account_ids.append(accounts.account_id.id)
-			if not account_ids:
-				raise UserError(_('first set the accounts in settlement type master'))
-			# if not partner_id:
-			#     raise osv.except_osv(_('Error!'), _('define Home Address First'))
-			if obj.account_line:
-				for lines in obj.account_line:
-					self.env['final.settlement.account.line'].unlink()
+			# partner_id = obj.employee_id.address_home_id.id
+			# settlement_type_id = obj.settlement_type_id and obj.settlement_type_id.id
+			# settlement_ids = self.env['final.settlement.type.master'].search([('id','=',settlement_type_id)])
+			# settlement_type_obj = self.env['final.settlement.type.master'].browse(settlement_ids).id
+			# account_ids = []
+			# for accounts in settlement_type_obj.settlement_type_master_line:
+			# 	account_ids.append(accounts.account_id.id)
+			# if not account_ids:
+			# 	raise UserError(_('first set the accounts in settlement type master'))
+			# # if not partner_id:
+			# #     raise osv.except_osv(_('Error!'), _('define Home Address First'))
+			# if obj.account_line:
+			# 	for lines in obj.account_line:
+			# 		self.env['final.settlement.account.line'].unlink()
 
 
-			account_move_line_obj = self.env['account.move.line']
+			# account_move_line_obj = self.env['account.move.line']
 
 
 			
-			move_ids = account_move_line_obj.search([('partner_id','=',partner_id),('account_id','in',account_ids)])
-			if not move_ids:
-				raise UserError(_('there is no accounting entries for the particular employee'))
+			# move_ids = account_move_line_obj.search([('partner_id','=',partner_id),('account_id','in',account_ids)])
+			# if not move_ids:
+			# 	raise UserError(_('there is no accounting entries for the particular employee'))
 
-			move_data = account_move_line_obj.browse(move_ids).id
-			move_line_credit={}
-			move_line_debit={}
-			for line in move_data:
-				if not line.account_id:
-					continue
-				if line.credit:
-					move_line_credit[line.account_id.id] = (line.account_id.id not in move_line_credit) \
-															 and line.credit or (float(move_line_credit.get(line.account_id.id))+line.credit)
-				if line.debit:
-					move_line_debit[line.account_id.id] = (line.account_id.id not in move_line_debit) \
-														   and line.debit or (float(move_line_debit.get(line.account_id.id))+line.debit)
+			# move_data = account_move_line_obj.browse(move_ids).id
+			# move_line_credit={}
+			# move_line_debit={}
+			# for line in move_data:
+			# 	if not line.account_id:
+			# 		continue
+			# 	if line.credit:
+			# 		move_line_credit[line.account_id.id] = (line.account_id.id not in move_line_credit) \
+			# 												 and line.credit or (float(move_line_credit.get(line.account_id.id))+line.credit)
+			# 	if line.debit:
+			# 		move_line_debit[line.account_id.id] = (line.account_id.id not in move_line_debit) \
+			# 											   and line.debit or (float(move_line_debit.get(line.account_id.id))+line.debit)
 
-			result =  { k: move_line_debit.get(k, 0) - move_line_credit.get(k, 0) for k in set(move_line_debit) | set(move_line_credit) }
-			for account_id in result:
-				if result[account_id] < 0:
-					payable = math.fabs(result[account_id])
-					amount = math.fabs(result[account_id])
-				elif result[account_id] >0:
-					amount = (-1 * result[account_id])
-					payable = 0
+			# result =  { k: move_line_debit.get(k, 0) - move_line_credit.get(k, 0) for k in set(move_line_debit) | set(move_line_credit) }
+			# for account_id in result:
+			# 	if result[account_id] < 0:
+			# 		payable = math.fabs(result[account_id])
+			# 		amount = math.fabs(result[account_id])
+			# 	elif result[account_id] >0:
+			# 		amount = (-1 * result[account_id])
+			# 		payable = 0
 
 
-				vals = {
-					'account_id':account_id,
-					'balance':result[account_id],
-					'account_line_id':self.id,
-					'amount':amount,
-					'final_settlement_flag':final_settlement
+			# 	vals = {
+			# 		'account_id':account_id,
+			# 		'balance':result[account_id],
+			# 		'account_line_id':self.id,
+			# 		'amount':amount,
+			# 		'final_settlement_flag':final_settlement
 
-				}
-				self.env['final.settlement.account.line'].create(vals)
+			# 	}
+			# 	self.env['final.settlement.account.line'].create(vals)
 		# self.write(cr,uid,ids,{'checking_acc_entry_button_ctrl':True})
 		return True
 
@@ -280,8 +280,9 @@ class FinalSettlement(models.Model):
 			resign = obj.settlement_type_id.final_settlement
 			join_date = obj.join_date
 			resign_date = obj.resign_date
-			if not join_date:
-				raise Warning(_("pls provide join date"))
+			# raise UserError(_(obj.join_date))
+			if not obj.join_date:
+				raise UserError(_("pls provide join date"))
 			joining_date = datetime.strptime(str(join_date), "%Y-%m-%d").date()
 			gratuity_date = datetime.strptime(str(resign_date), "%Y-%m-%d").date()
 			experience = float((gratuity_date -  joining_date).days)/365.00
@@ -334,7 +335,7 @@ class FinalSettlement(models.Model):
 					}
 					data_lines.append((0,0,vals3),)
 				elif experience >= 5:
-					extra_year = experiance - 5
+					extra_year = experience - 5
 					extra_year_in_days = extra_year * 365
 					gratuity = ((21 * one_day_wage)*5) + (((one_day_wage *30) /365) * extra_year_in_days)
 					vals4 = {
@@ -366,8 +367,8 @@ class FinalSettlement(models.Model):
 							  'date_from':joining_date,
 							  'date_to':gratuity_date,
 							  'no_of_days':working_days,
-							  'termination_amount':0,
-							  'resign_amount':gratuity,
+							  'termination_amount':gratuity,
+							  'resign_amount':0,
 					}
 					data_lines.append((0,0,vals2),)
 				elif experience >= 3 and experience < 5:
@@ -377,8 +378,8 @@ class FinalSettlement(models.Model):
 							  'date_from':joining_date,
 							  'date_to':gratuity_date,
 							  'no_of_days':working_days,
-							  'termination_amount':0,
-							  'resign_amount':gratuity,
+							  'termination_amount':gratuity,
+							  'resign_amount':0,
 					}
 					data_lines.append((0,0,vals3),)
 				elif experience >= 5:
@@ -390,8 +391,8 @@ class FinalSettlement(models.Model):
 							  'date_from':joining_date,
 							  'date_to':gratuity_date,
 							  'no_of_days':working_days,
-							  'termination_amount':0,
-							  'resign_amount':gratuity,
+							  'termination_amount':gratuity,
+							  'resign_amount':0,
 					}
 					data_lines.append((0,0,vals4),)
 				self.gratuity_line_id = data_lines
@@ -461,8 +462,8 @@ class FinalSettlement(models.Model):
 							  'date_from':joining_date,
 							  'date_to':gratuity_date,
 							  'no_of_days':working_days,
-							  'termination_amount':0,
-							  'resign_amount':gratuity,
+							  'termination_amount':gratuity,
+							  'resign_amount':0,
 					}
 					data_lines.append((0,0,vals2),)
 				elif experience >= 3 and experience < 5:
@@ -472,8 +473,8 @@ class FinalSettlement(models.Model):
 							  'date_from':joining_date,
 							  'date_to':gratuity_date,
 							  'no_of_days':working_days,
-							  'termination_amount':0,
-							  'resign_amount':gratuity,
+							  'termination_amount':gratuity,
+							  'resign_amount':0,
 					}
 					data_lines.append((0,0,vals3),)
 				elif experience >= 5:
@@ -485,8 +486,8 @@ class FinalSettlement(models.Model):
 							  'date_from':joining_date,
 							  'date_to':gratuity_date,
 							  'no_of_days':working_days,
-							  'termination_amount':0,
-							  'resign_amount':gratuity,
+							  'termination_amount':gratuity,
+							  'resign_amount':0,
 					}
 					data_lines.append((0,0,vals4),)
 				self.gratuity_line_id = data_lines
@@ -495,7 +496,7 @@ class FinalSettlement(models.Model):
 
 	company_id = fields.Many2one('res.company',string="Company", default=lambda self: self.env.user.company_id.id)
 	employee_id = fields.Many2one('hr.employee', string="Employee", required=True)
-	join_date = fields.Date(string="Join Date")
+	join_date = fields.Date('Join Date',store=True)
 	resign_date = fields.Date(string="Resign Date", default=fields.Date.context_today)
 	settlement_type_id = fields.Many2one('final.settlement.type.master',string="Settlement Type",required=True)
 	basic = fields.Float(string="Basic")
@@ -519,6 +520,14 @@ class FinalSettlement(models.Model):
 	leave_pending = fields.Integer(string="Remaining Leaves")
 	unpaid_leaves = fields.Integer(string="Unpaid Leaves")
 	total_working_days = fields.Float(string="Total Working Days")
+
+	@api.onchange('employee_id')
+	def _change_employee(self):
+		for rec in self:
+			rec.join_date = fields.Datetime.to_string(rec.employee_id.join_date)
+			rec.department_id = rec.employee_id.department_id
+			rec.job_id = rec.employee_id.job_id
+
 	# @api.multi
 	# def _total_wage(self):
 	# 	for rec in self:

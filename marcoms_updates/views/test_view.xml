@@ -3357,4 +3357,20 @@ if record:
             parent="purchase.menu_procurement_management"
             action="payment_request_action"/>
 
+    <!---Access to view supplier taxes ids-->
+
+     <record id="product_supplier_new_inherit" model="ir.ui.view">
+        <field name="name">product.template.supplier.form.new.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="purchase.view_product_supplier_inherit"/>
+         <field name="arch" type="xml">
+            <xpath expr="//page[@name='purchase']/group[2]" position="attributes">
+                <attribute name="groups"></attribute>
+            </xpath>
+        </field>
+ </record>
+
 </odoo>
+
+
+

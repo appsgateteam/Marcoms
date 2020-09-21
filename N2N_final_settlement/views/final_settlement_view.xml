@@ -41,7 +41,7 @@
                     <button name="action_generate" type="object" string="Generate" attrs="{'invisible':[('state','in',('progress','done'))]}"/>
 
 
-                    <button name="check_accounts_entry" type="object" string="Check Accounts Entry" attrs="{'invisible':[('state','in',('progress','done'))]}"/>
+                    <button name="check_accounts_entry" invisible="1" type="object" string="Check Accounts Entry" attrs="{'invisible':[('state','in',('progress','done'))]}"/>
 
                     <button name="action_validate" type="object" string="Validate" states="progress"/>
 
@@ -84,7 +84,7 @@
 
 
                 <notebook>
-                <page string="Account Information">
+                <page string="Account Information" invisible="1">
                 <field name="account_line" attrs="{'readonly':[('state','in', ('done'))]}">
                     <tree editable="top" create="false" delete="false">
 
@@ -120,7 +120,7 @@
                 <group>
 
                     <group string="Working Days">
-                        <field name="join_date" readonly="1"/>
+                        <!-- <field name="join_date" readonly="1"/> -->
                         <field name="total_working_days" readonly="1"/>
                         <field name="leave_pending" readonly="1"/>
                         <field name="unpaid_leaves" readonly="1"/>
