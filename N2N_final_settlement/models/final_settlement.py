@@ -477,7 +477,7 @@ class FinalSettlement(models.Model):
 					}
 					data_lines.append((0,0,vals3),)
 				elif experience >= 5:
-					extra_year = experiance - 5
+					extra_year = experience - 5
 					extra_year_in_days = extra_year * 365
 					gratuity = ((30 * one_day_wage)*5) + (((one_day_wage *30) /365) * extra_year_in_days)
 					vals4 = {

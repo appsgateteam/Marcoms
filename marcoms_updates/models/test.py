@@ -76,7 +76,7 @@ class crm_customize(models.Model):
     reason_for_cancel = fields.Text('Reason For Cancel')
     tag_ids = fields.Many2one('crm.lead.tag',string='Tags', help="Classify and analyze your lead/opportunity categories like: Training, Service")
     source_master = fields.Many2one('source.master',string="Source")
-    is_oppor = fields.Boolean('print lead form from oppourtunity',default=False)
+    is_oppor = fields.Boolean('print lead form oppourtunity',default=False)
     email_from_contact = fields.Char('Contact Person Email', help="Email address of the contact", track_visibility='onchange', track_sequence=4, index=True)
 
     @api.multi
