@@ -1785,6 +1785,7 @@ class Petty_Cash_detals(models.Model):
         ('draft', 'To Submit'),
         ('reported', 'Submitted'),
         ('approved', 'Approved'),
+        ('posted','Posted'),
         ('done', 'Paid'),
         ('refused', 'Refused')
     ], compute='_compute_state', string='Status', copy=False, index=True, readonly=True, store=True, help="Status of the Food expense.")
@@ -1883,8 +1884,10 @@ class Petty_Cash_detals(models.Model):
                 expense.state = "draft"
             elif expense.sheet_id.state == "cancel":
                 expense.state = "refused"
-            elif expense.sheet_id.state == "approve" or expense.sheet_id.state == "post":
+            elif expense.sheet_id.state == "approve":
                 expense.state = "approved"
+            elif expense.sheet_id.state == "post":
+                expense.state ="posted"
             elif not expense.sheet_id.account_move_id:
                 expense.state = "reported"
             else:

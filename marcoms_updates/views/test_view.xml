@@ -562,7 +562,6 @@ if record:
                 <attribute name="readonly">0</attribute>
             </xpath>
 
-
             <xpath expr="//field[@name='partner_address_phone']" position="after">
                <field name="partner_address_mobile" />
             </xpath>

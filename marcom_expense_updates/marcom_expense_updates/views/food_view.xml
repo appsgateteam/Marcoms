@@ -617,7 +617,7 @@ if records:
                   <widget name="attach_document" string="Attach Document" action="message_post" attrs="{'invisible': ['|', ('attachment_number', '&lt;', 1), ('id','=',False)]}"/>
                   <widget name="attach_document" string="Attach Document" action="message_post" highlight="1" attrs="{'invisible': ['|',('attachment_number', '&gt;=', 1), ('id','=',False)]}"/>
                   <button name="action_submit_expenses" string="Create Report" type="object" class="o_expense_submit" attrs="{'invisible': ['|', ('attachment_number', '&gt;=', 1), ('sheet_id', '!=', False)]}"/>
-                  <field name="state" widget="statusbar" statusbar_visible="draft,reported,approved,done,refused"/>
+                  <field name="state" widget="statusbar" statusbar_visible="draft,reported,approved,posted,done,refused"/>
                   <button name="action_view_sheet" type="object" string="View Report" class="oe_highlight" attrs="{'invisible': [('sheet_id', '=', False)]}"/>
                 </header>
                 <sheet>
@@ -760,7 +760,7 @@ if records:
                     <button name="action_submit_sheet" states="draft" string="Submit to Manager" type="object" class="oe_highlight o_expense_sheet_submit"/>
                     <button name="approve_expense_sheets" states="submit" string="Approve" type="object" groups="hr_expense.group_hr_expense_user" class="oe_highlight o_expense_sheet_approve"/>
                     <button name="action_sheet_move_create" states="approve" string="Post Journal Entries" type="object" groups="account.group_account_manager" class="oe_highlight o_expense_sheet_post"/>
-                    <button name="%(marcom_expense_updates.petty_cash_expense_sheet_register_payment_wizard_action)d" type="action" string="Register Payment" class="oe_highlight o_expense_sheet_pay" attrs="{'invisible': [('state', '!=', 'post')]}" context="{'default_amount': total_amount, 'partner_id': address_id}" groups="account.group_account_manager"/>
+                    <button name="%(marcom_expense_updates.petty_cash_expense_sheet_register_payment_wizard_action)d" states="post" type="action" string="Register Payment" class="oe_highlight o_expense_sheet_pay"  context="{'default_amount': total_amount, 'partner_id': address_id}" groups="account.group_account_manager"/><!--attrs="{'invisible': [('state', '!=', 'post')]}"-->
                     <button name="reset_expense_sheets" string="Reset to Draft" type="object" attrs="{'invisible': ['|', ('can_reset', '=', False), ('state', 'not in', ['submit', 'cancel'])]}"/>
                     <button name="%(marcom_expense_updates.petty_cash_expense_refuse_wizard_action)d" states="submit,approve" context="{'hr_expense_refuse_model':'petty.cash.sheet'}" string="Refuse" type="action" groups="hr_expense.group_hr_expense_user" />
                     <field name="state" widget="statusbar" statusbar_visible="draft,submit,approve,post,done"/>
