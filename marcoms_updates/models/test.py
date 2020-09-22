@@ -73,10 +73,12 @@ class crm_customize(models.Model):
     quotation_value2 = fields.Float('Quotation Value')
     submit_leadd = fields.Boolean('Submit Lead',default=False,copy=False)
     reason_for_lost = fields.Text('Reason For Lost')
+    #reason_for_drop = fields.Text(related='name.lost_reason',string='Drop Reason')
     reason_for_cancel = fields.Text('Reason For Cancel')
     tag_ids = fields.Many2one('crm.lead.tag',string='Tags', help="Classify and analyze your lead/opportunity categories like: Training, Service")
     source_master = fields.Many2one('source.master',string="Source")
     is_oppor = fields.Boolean('print lead form oppourtunity',default=False)
+    mobile_from_contact = fields.Char('Contact Person Mobile', help="Mobile Number of the contact", track_visibility='onchange', track_sequence=5, index=True)
     email_from_contact = fields.Char('Contact Person Email', help="Email address of the contact", track_visibility='onchange', track_sequence=4, index=True)
 
     @api.multi
@@ -302,6 +304,7 @@ class crm_customize(models.Model):
         partner_ids = {}
         for lead in self:
             lead.email_from_contact = lead.email_from
+            lead.mobile_from_contact = lead.mobile
             if lead.partner_id:
                 partner_ids[lead.id] = lead.partner_id.id
                 # continue
@@ -1581,6 +1584,8 @@ class SaleOrderOptioncus(models.Model):
 
     @api.multi
     def action_duplicate(self):
+
+
          self.copy(default={'order_id':self.order_id.id})
 
     @api.onchange('product_id', 'uom_id')

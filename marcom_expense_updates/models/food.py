@@ -2224,14 +2224,16 @@ class Petty_Cash_detals(models.Model):
             'view_mode': 'form',
             'res_model': 'petty.cash.sheet',
             'target': 'current',
+           # 'domain': [('petty_expense_id', '=', self.id)],
             'context': {
                 'default_expense_line_ids': todo.ids,
                 'default_employee_id': self[0].employee_id.id,
                 'default_name': todo[0].name if len(todo) == 1 else '',
                 'default_user_id': self[0].project_manager.id,
-                'default_employees_id': self[0].employees_id.id
-                
-            }
+                'default_employees_id': self[0].employees_id.id,
+               # 'default_petty_expense_id': self.petty_expense_id.id
+                }
+
         }
 
     @api.multi
@@ -2254,11 +2256,13 @@ class Petty_Cash_detals(models.Model):
         self.ensure_one()
         journal = self.sheet_id.bank_journal_id if self.payment_mode == 'company_account' else self.sheet_id.journal_id
         account_date = self.sheet_id.accounting_date or self.date
+
         move_values = {
             'journal_id': journal.id,
             'company_id': self.env.user.company_id.id,
             'date': account_date,
             'ref': self.sheet_id.name,
+            'petty_expense_id':self.id,
             # force the name to the default value, to avoid an eventual 'default_name' in the context
             # to set it to '' which cause no number to be given to the account.move when posted.
             'name': '/',
@@ -4024,7 +4028,9 @@ class Labour_Sheet(models.Model):
 
 
    
+class AccountMoveInherit(models.Model):
+    _inherit = "account.move"
 
-
+    petty_expense_id = fields.Many2one('petty.cash.expense', string='Expense', copy=False, help="Expense where the move line come from")
 
 
