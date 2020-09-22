@@ -563,18 +563,18 @@ if record:
             </xpath>
 
             <xpath expr="//field[@name='partner_address_phone']" position="after">
-               <field name="partner_address_mobile" />
+               <field name="mobile_from_contact" />
             </xpath>
 
-             <xpath expr="//field[@name='partner_address_mobile']" position="attributes">
-                <attribute name="string">Mobile</attribute>
-            </xpath>
+
             <xpath expr="//field[@name='partner_address_phone']" position="before">
                 <field name="email_from_contact" widget="email"/>
             </xpath>
             <xpath expr="//notebook/page[1]" position="inside">
                 <label for="reason_for_lost"/>
                 <field name="reason_for_lost"/>
+                <label for="reason_for_cancel"/>
+                <field name="reason_for_cancel"/>
                 <label for="reason_for_cancel"/>
                 <field name="reason_for_cancel"/>
             </xpath>
@@ -610,6 +610,7 @@ if record:
             action="crm.crm_lead_tag_action"
             parent="crm.menu_crm_config_lead"
             sequence="1"/>
+
     <record id="crm.crm_lead_lost_action" model="ir.actions.act_window">
         <field name="name">Drop Reason</field>
         <field name="type">ir.actions.act_window</field>
