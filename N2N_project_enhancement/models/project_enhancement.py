@@ -436,7 +436,10 @@ class ProjectProject(models.Model):
 		res = super(ProjectProject, self).write(vals)
 		for rec in self:
 			analytic = self.env['account.analytic.account'].search([('name','=',rec.name)])
-			analytic.code = rec.sequence
+
+			for res in analytic:
+				res.code= rec.sequence
+
 		return res
 
 	@api.multi
