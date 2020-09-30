@@ -83,6 +83,7 @@ class PurchaseorderCus2(models.Model):
         ('draft', 'RFQ'),
         ('sel', 'Selected'),
         ('sent', 'RFQ Sent'),
+        #('pm_appr', 'Awaiting Project Manager Approval'),
         ('account', 'Accounts Approval'),
         ('req', 'Requester Approval'),
         ('top', 'Management Approval'),
@@ -100,6 +101,8 @@ class PurchaseorderCus2(models.Model):
     project_manager = fields.Boolean('Created by project manager',default=False)
     check_man = fields.Boolean('Check',compute='_req_count',default=True)
     hide_button = fields.Boolean('Hide',compute="_get_hide_button",default=False)
+
+
 
     @api.multi
     def _get_hide_button(self):
@@ -310,6 +313,7 @@ class productRequisitionFromsales(models.Model):
     state = fields.Selection([
                                 ('new','New'),
                                 ('po_created','Purchase Department'),
+                               # ('pm_app', 'Awaiting Project Manager Approval'),
                                 ('account','Accounts Department'),
                                 ('back','Requester Approval'),
                                 ('top','Management Approval'),
@@ -327,6 +331,7 @@ class productRequisitionFromsales(models.Model):
     pro_requi = fields.Boolean('product Requisition',default=True)
     co_box = fields.Boolean(string="Actionable by Coordinator",default=False)
     project_manager = fields.Boolean('Created by project manager',default=False)
+
 
     @api.constrains('requisition_date','requisition_dead')
     def check_inv_date(self):

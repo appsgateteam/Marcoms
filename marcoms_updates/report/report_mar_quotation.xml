@@ -94,6 +94,11 @@
                                 <td class="text-right" style="border: 1px solid black;width:10%;"><span t-esc="gross" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></td>
                                 <td class="text-right" style="border: 1px solid black;width:10%;"><span t-esc="doc.discount_value" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></td>
                                 </t>
+                                 <t t-if="not doc.discount_value and (doc.discount_value_op or doc.discount_value_venue)">
+                                  <td class="text-center" style="border: 1px solid black;width:10%;">-</td>
+                                  <td class="text-center" style="border: 1px solid black;width:10%;">-</td>
+
+                                </t>
                                 <td class="text-right" style="border: 1px solid black;width:15%;">
                                     <!--<t t-set="Net1" t-value="doc.amount_untaxed - doc.ks_amount_discount"/>-->
                                     <span t-esc="doc.amount_untaxed" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
@@ -139,6 +144,11 @@
                                 
                                     <td class="text-right" style="border: 1px solid black;width:10%;"><span t-esc="doc.discount_value_venue" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></td>
                                     </t>
+                                    <t t-if="not doc.discount_value_venue and (doc.discount_value or doc.discount_value_op)">
+                                  <td class="text-center" style="border: 1px solid black;width:10%;">-</td>
+                                  <td class="text-center" style="border: 1px solid black;width:10%;">-</td>
+
+                                </t>
                                     <td class="text-right" style="border: 1px solid black;width:15%;">
                                         <span t-esc="doc.amount_untaxed_venue" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/>
                                     </td>
@@ -276,7 +286,7 @@
                             </t>
                             <t t-if="line.display_type == 'line_note'">
                                 <t t-set="i" t-value="i-1"/>
-                                <td colspan="99" style="border: 1px solid black;vertical-align: top;">
+                                <td colspan="99" style="border: 1px solid black;border-top:0;vertical-align: top;">
                                     <span t-field="line.name"/>
                                 </td>
                             </t>
@@ -348,6 +358,7 @@
                           </t>
                       </t>
                       <tr>
+
                         <td class="text-left" colspan="7" style="border: 1px solid black;font-size:18px;">
                             <!--<t t-set="totals" t-value="doc.amount_untaxed_optional - doc.discount_value_op"/>-->
                               <b><span><span t-esc="doc.optional_total_name"/>:<span t-esc="totals" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/> <span t-field="doc.pricelist_id.currency_id"/></span></b>
