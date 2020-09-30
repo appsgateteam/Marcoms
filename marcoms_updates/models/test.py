@@ -10,6 +10,18 @@ from odoo.tools import float_utils, float_compare ,pycompat ,email_re, email_spl
 
 from odoo.tools.misc import format_date
 
+
+# PURCHASE_REQUISITION_STATES_IN = [
+#         ('draft', 'Draft'),
+#         ('ongoing', 'Ongoing'),
+#         ('in_progress', 'Confirmed'),
+#         ('open', 'Bid Selection'),
+#         ('pm_approval','Awaiting Project Manager Approval'),
+#         ('done', 'Closed'),
+#         ('cancel', 'Cancelled')
+#
+#     ]
+
 #CRM Module Customize Part
 class crm_customize(models.Model):
     _inherit = "crm.lead"
@@ -2786,16 +2798,35 @@ class PurchaseRequisitionCus(models.Model):
 
 
     requisition_so_id = fields.Many2one('material.requisition.sales',string="Requisition From Sales")
+    # state = state = fields.Selection(PURCHASE_REQUISITION_STATES_IN,
+    #                           'Status', track_visibility='onchange', required=True,
+    #                           copy=False, default='draft')
+    # state_blanket_order = fields.Selection(PURCHASE_REQUISITION_STATES_IN, compute='_set_state')
+    #po_sequence = fields.Many2one('purchase.order',string='PO Sequence', readonly=True)
+
 
     @api.multi
     def action_compare(self):
         action = self.env.ref('marcoms_updates.purchase_order_line_cus_action').read()[0]
         return action
 
+    # @api.multi
+    # def action_rfq_review_project_manager(self):
+    #     for order in self:
+    #         com = self.env['product.requisition'].search([('id', '=', order.pr_sequence.id)])
+    #         com.write({'state': 'pm_app'})
+    #         # comm = self.env['purchase.order'].search([('id', '=', order.po_sequence.id)])
+    #         # comm.write({'state': 'pm_appr'})
+    #         self.write({
+    #             'state': 'pm_approval',
+    #         })
+
+
+
     @api.model
     def create(self,vals):
         """ Broadcast the welcome message to all users in the employee company. """
-        
+
         # self.ensure_one()
         # IrModelData = self.env['ir.model.data']
         # ch_id = self.env['material.requisition'].search([('id', '=', vals['requisition_mat_po_id'])])
@@ -2803,7 +2834,7 @@ class PurchaseRequisitionCus(models.Model):
         #     req = x.sequence
         # raise ValidationError(_(vals['name']))
         if vals['origin']:
-            
+
             channel_all_employees = self.env.ref('marcoms_updates.channel_all_employees_pur').read()[0]
             template_new_employee = self.env.ref('marcoms_updates.email_template_data_applicant_tender').read()[0]
             # raise ValidationError(_(template_new_employee))
@@ -2815,8 +2846,8 @@ class PurchaseRequisitionCus(models.Model):
                 ids = channel_all_employees['id']
                 channel_id = self.env['mail.channel'].search([('id', '=', ids)])
                 channel_id.message_post(body='Hello there are New Purchase Tender Created Please Check the Purchase Requisition NO is '+str(vals['origin']), subject=subject,subtype='mail.mt_comment')
-                
-            
+
+
         result = super(PurchaseRequisitionCus, self).create(vals)
         return result
             # self.env['mail.message'].create({'message_type':"notification",
@@ -5217,7 +5248,7 @@ class hrexpenseUpdate(models.Model):
     payment_mode = fields.Selection([
         ("own_account", "Employee (to reimburse)"),
         ("company_account", "Company")
-    ], default='company_account', states={'done': [('readonly', True)], 'post': [('readonly', True)], 'submitted': [('readonly', True)]}, string="Paid By")
+    ], default='own_account', states={'done': [('readonly', True)], 'post': [('readonly', True)], 'submitted': [('readonly', True)]}, string="Paid By")
     is_vendor = fields.Boolean('Is Vendor Expense',default=False)
     vendor_id = fields.Many2one('res.partner','Vendor')
     # employee_id = fields.Many2one('hr.employee', string="Employee", readonly=True, states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'refused': [('readonly', False)]}, default=_default_employee_id, domain=lambda self: self._get_employee_id_domain())

@@ -973,7 +973,7 @@ if record:
             </xpath>
             
             <xpath expr="//field[@name='partner_id']" position="replace">
-                <field name="partner_id" widget="res_partner_many2one" domain="[('customer','=',True),('parent_id','=',False)]" context="{'search_default_customer':1, 'show_address': 1, 'show_vat': True}" options="{&quot;always_reload&quot;: True}"/>
+                <field name="partner_id" widget="res_partner_many2one" domain="[('customer','=',True),('parent_id','=',False)]" context="{'search_default_customer':1, 'show_address': 1, 'show_vat': True}"  options="{&quot;always_reload&quot;: True}"/>
                 <field name="partner_no" string=" "/>
                 <field name="contact_name" readonly="1" invisible="1"/>
                 <field name="comtype" invisible="1"/>
@@ -984,7 +984,7 @@ if record:
                 <field name="venue_total_name"/>
                 <field name="sum_without_dis" invisible="1"/>
                 <!-- <field name="optional_total" invisible="1"/> -->
-                
+
             </xpath>
             <xpath expr="//field[@name='note']" position="before">
                 <br/>
@@ -1996,8 +1996,19 @@ if record:
                 <button name="action_compare" string="Analyze RFQ" type="object" attrs="{'invisible': ['|','|','|','|',('state', '=', 'draft'),('state', '=', 'in_progress'),('state', '=', 'done'),('state', '=', 'cancel')], 'required': [('state', '=','open')]}" class="btn-primary"/>
                 
             </xpath>
+            <xpath expr="//field[@name='state']" position="replace">
+                <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,open,pm_approval,done" attrs="{'invisible': [('is_quantity_copy', '=', 'none')]}"/>
+            </xpath>
+
+          <!--   <xpath expr="//button[@name='action_compare']" position="after">
+                <button name="action_rfq_review_project_manager" string="Submit To Project Manager" type="object" states="open"  class="btn-primary"/>
+
+            </xpath>-->
             <field name="vendor_id" position="after">
                 <field name="requisition_so_id"/>
+            </field>
+            <field name="requisition_so_id" position="after">
+                <field name="po_sequence"/>
             </field>
         </field>
     </record>
@@ -2050,6 +2061,9 @@ if record:
             <xpath expr="//field[@name='date_planned']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <!--<xpath expr="//field[@name='date_planned']" position="after">
+                <field name="po_sequence"></field>
+            </xpath>-->
             <xpath expr="//field[@name='payment_term_id']" position="replace">
             </xpath>
             <xpath expr="//field[@name='company_id']" position="after">
@@ -2153,7 +2167,7 @@ if record:
                 <attribute name="string">Ask for a Debit Note</attribute>
             </xpath>
             <xpath expr="//field[@name='reference']" position="after">
-                <field name="project_name"/>
+                <field name="project_name" required="1"/>
                 <field name="project" invisible="1"/>
             </xpath>
             

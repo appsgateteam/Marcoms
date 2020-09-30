@@ -142,6 +142,7 @@
             <xpath expr="//button[@name='action_rfq_send']" position="after">
                 <button name="action_return_requester" type="object" string="Accounts Approve" attrs="{'invisible': [('state', 'not in', 'account')]}" groups="product_requisition.group_Accounts"/>
                 <button name="action_requester_approve" type="object" string="Requester Approve" attrs="{'invisible': ['|',('test_requester', '!=',True),('state', 'not in', 'req'),'|',('co_box', '!=',False)]}" groups="product_requisition.group_Requester_id"/>
+                <button name="action_rfq_review_project_manager" invisible="1"/>
                 <button name="action_mana_approve" type="object" string="Management Approve" attrs="{'invisible': ['|',('co_box', '=',True),('state', 'not in', 'top')]}" groups="product_requisition.group_top_management"/>
                 <button name="action_requester_approve" type="object" string="Requester Approve" attrs="{'invisible': ['|',('co_box', '!=',True),'|',('test_requester', '=',True),('state', 'not in', 'req')]}" groups="product_requisition.group_Requester_id,product_requisition.group_coordinator"/>
                 <button name="action_mana_approve" type="object" string="Management Approve" attrs="{'invisible': ['|',('co_box', '!=',True),('state', 'not in', 'top')]}" groups="product_requisition.group_top_management,product_requisition.group_coordinator"/>

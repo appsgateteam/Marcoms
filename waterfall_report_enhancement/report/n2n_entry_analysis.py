@@ -30,7 +30,7 @@ class N2NAccountEntryAnalysis(models.Model):
     blocked = fields.Boolean(string='No Follow-up')
     date_maturity = fields.Date(string='Due date')
     tax_ids = fields.Many2many('account.tax', string='Taxes')
-    tax_line_id = fields.Many2one('account.tax', string='Originator tax', ondelete='restrict')
+    #tax_line_id = fields.Many2one('account.tax', string='Originator tax', ondelete='restrict')
     analytic_account_id = fields.Many2one('account.analytic.account', string='Analytic Account')
     company_id = fields.Many2one('res.company', related='account_id.company_id', string='Company', store=True)
     invoice_id = fields.Many2one('account.invoice', oldname="invoice")

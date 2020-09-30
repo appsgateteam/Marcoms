@@ -640,24 +640,21 @@ if records:
             <field name="model">transportaion.expense.sheet</field>
             <field eval="25" name="priority"/>
             <field name="arch" type="xml">
-                <form string="Expense Reports" class="o_expense_sheet">
+
+            <form string="Expense Reports" class="o_expense_sheet">
                 <field name="can_reset" invisible="1"/>
                  <header>
                     <button name="action_submit_sheet" states="draft" string="Submit to Manager" type="object" class="oe_highlight o_expense_sheet_submit"/>
-                    <button name="approve_expense_sheets" states="submit" string="Approve" type="object" groups="marcom_expense_updates.group_production_manager" class="oe_highlight o_expense_sheet_approve"/>
+                    <button name="approve_expense_sheets" states="submit" string="Approve" type="object" groups="hr_expense.group_hr_expense_user" class="oe_highlight o_expense_sheet_approve"/>
                     <button name="action_sheet_move_create" states="approve" string="Post Journal Entries" type="object" groups="account.group_account_manager" class="oe_highlight o_expense_sheet_post"/>
-                    <button name="%(marcom_expense_updates.transportaion_expense_sheet_register_payment_wizard_action)d" type="action" string="Register Payment" class="oe_highlight o_expense_sheet_pay" attrs="{'invisible': [('state', '!=', 'post')]}" context="{'default_amount': total_amount, 'partner_id': address_id}" groups="account.group_account_manager"/>
+                    <button name="752" type="action" string="Register Payment" class="oe_highlight o_expense_sheet_pay" attrs="{'invisible': [('state', '!=', 'post')]}" context="{'default_amount': total_amount, 'partner_id': address_id}" groups="account.group_account_manager"/>
                     <button name="reset_expense_sheets" string="Reset to Draft" type="object" attrs="{'invisible': ['|', ('can_reset', '=', False), ('state', 'not in', ['submit', 'cancel'])]}"/>
-                    <button name="%(marcom_expense_updates.transportaion_expense_refuse_wizard_action)d" states="submit,approve" context="{'hr_expense_refuse_model':'transportaion.expense.sheet'}" string="Refuse" type="action" groups="marcom_expense_updates.group_production_manager" />
+                    <button name="748" states="submit,approve" context="{'hr_expense_refuse_model':'transportaion.expense.sheet'}" string="Refuse" type="action" groups="hr_expense.group_hr_expense_user"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,submit,approve,post,done"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box">
-                        <button name="action_get_attachment_view"
-                            class="oe_stat_button"
-                            icon="fa-book"
-                            type="object"
-                            attrs="{'invisible': [('attachment_number', '=', 0)]}">
+                        <button name="action_get_attachment_view" class="oe_stat_button" icon="fa-book" type="object" attrs="{'invisible': [('attachment_number', '=', 0)]}">
                             <field name="attachment_number" widget="statinfo" string="Documents"/>
                         </button>
                     </div>
@@ -670,7 +667,7 @@ if records:
                     <group>
                         <group>
                             <field name="employee_id" invisible="1"/>
-                            <field name="payment_mode" />
+                            <field name="payment_mode" invisible="1"/>
                             <field name="user_id" readonly="1"/>
                             <field name="address_id" invisible="1"/>
                             <field name="department_id" invisible="1"/>
@@ -683,7 +680,7 @@ if records:
                             <tree decoration-danger="is_refused">
                                 <field name="date"/>
                                 <field name="name"/>
-                                <field name="partner_id" />
+                                <field name="partner_id"/>
                                 <field name="project_id"/>
                                 <field name="reference"/>
                                 <field name="rates"/>
@@ -691,21 +688,19 @@ if records:
                                 <field name="waiting_charges"/>
                                 <field name="state" invisible="1"/>
                                 <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
-                                <field name="tax_ids" widget="many2many_tags" />
-                                <field name="account_id" />
                                 <field name="analytic_tag_ids" invisible="1" widget="many2many_tags" groups="analytic.group_analytic_tags"/>
                                 <field name="message_unread" invisible="1"/>
                                 <field name="attachment_number" string=" "/>
                                 <button name="action_get_attachment_view" string="View Attachments" type="object" icon="fa-paperclip"/>
-                                <!--<field name="tax_ids" widget="many2many_tags" groups="account.group_account_user"/> -->
-
+                                <field name="tax_ids" widget="many2many_tags" />
+                                <field name="account_id"/>
                                 <field name="currency_id" invisible="1"/>
                                 <field name="total_amount"/>
                                 <field name="company_currency_id" invisible="1"/>
                                 <field name="total_amount_company" groups="base.group_multi_currency"/>
                                 <field name="is_refused" invisible="True"/>
                            </tree>
-                           <form >
+                           <form>
                             <group>
                                <field name="date"/>
                                <field name="name"/>
@@ -716,7 +711,6 @@ if records:
                                <field name="labour_charges"/>
                                <field name="waiting_charges"/>
                                <field name="state" invisible="1"/>
-                                <field name="account_id"/>
                                <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
                                <field name="analytic_tag_ids" invisible="1" widget="many2many_tags" groups="analytic.group_analytic_tags"/>
                              </group>
@@ -726,7 +720,6 @@ if records:
                                <button name="action_get_attachment_view" string="View Attachments" type="object" icon="fa-paperclip"/>
                                <!-- <field name="tax_ids" widget="many2many_tags" groups="account.group_account_user"/> -->
                                <field name="currency_id" invisible="1"/>
-
                                <field name="total_amount"/>
                                <field name="company_currency_id" invisible="1"/>
                                <field name="total_amount_company" groups="base.group_multi_currency"/>
@@ -746,7 +739,7 @@ if records:
                             <group>
                                 <group>
                                     <field name="journal_id"  options="{'no_open': True, 'no_create': True}" attrs="{'invisible': [('payment_mode', '!=', 'own_account')]}"/><!--domain="[('type', '=', 'purchase')]"-->
-                                    <field name="bank_journal_id" groups="account.group_account_user" options="{'no_open': True, 'no_create': True}" attrs="{'invisible': [('payment_mode', '!=', 'company_account')]}" domain="[('type', 'in', ['cash', 'bank'])]"/>
+                                    <field name="bank_journal_id" groups="account.group_account_user" options="{'no_open': True, 'no_create': True}" attrs="{'invisible': [('payment_mode', '!=', 'company_account')]}" /><!--domain="[('type', 'in', ['cash', 'bank'])]"-->
                                     <field name="accounting_date" groups="account.group_account_user" attrs="{'invisible': [('state', 'not in', ['approve', 'post', 'done'])]}"/>
                                 </group>
                                 <group>
@@ -762,6 +755,7 @@ if records:
                     <field name="message_ids" widget="mail_thread"/>
                 </div>
                 </form>
+
             </field>
         </record>
 
@@ -1411,7 +1405,7 @@ if records:
                     <group>
                         <group>
                             <field name="employee_id"/>
-                            <field name="payment_mode"/>
+                            <field name="payment_mode" invisible="1"/>
                             <field name="user_id"/>
                             <field name="address_id" invisible="1"/>
                             <field name="department_id" invisible="1"/>
@@ -1448,6 +1442,7 @@ if records:
                                 <field name="attachment_number" string=" "/>
                                 <button name="action_get_attachment_view" string="View Attachments" type="object" icon="fa-paperclip"/>
                                 <field name="tax_ids" widget="many2many_tags" />
+                                <field name="account_id"/>
                                 <field name="currency_id" invisible="1"/>
                                 <!-- <field name="untaxed_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/> -->
                                 <field name="total_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
@@ -1469,7 +1464,7 @@ if records:
                                 <!-- <field name="can_project" invisible="1"/> -->
                                 <field name="state" invisible="1"/>
                                 <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
-                                <field name="account_id"/>
+
                                 <field name="analytic_tag_ids" widget="many2many_tags" groups="analytic.group_analytic_tags"/>
                             </group>
                              <group>
@@ -1498,7 +1493,7 @@ if records:
                             <group>
                                 <group>
                                     <field name="journal_id"  options="{'no_open': True, 'no_create': True}" attrs="{'invisible': [('payment_mode', '!=', 'own_account')]}"/>
-                                    <field name="bank_journal_id" groups="account.group_account_user" options="{'no_open': True, 'no_create': True}" attrs="{'invisible': [('payment_mode', '!=', 'company_account')]}" domain="[('type', 'in', ['cash', 'bank'])]"/>
+                                    <field name="bank_journal_id" groups="account.group_account_user" options="{'no_open': True, 'no_create': True}" attrs="{'invisible': [('payment_mode', '!=', 'company_account')]}" /><!--domain="[('type', 'in', ['cash', 'bank'])]"-->
                                     <field name="accounting_date" groups="account.group_account_user" attrs="{'invisible': [('state', 'not in', ['approve', 'post', 'done'])]}"/>
                                 </group>
                                 <group>
