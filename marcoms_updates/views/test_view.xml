@@ -2007,9 +2007,9 @@ if record:
             <field name="vendor_id" position="after">
                 <field name="requisition_so_id"/>
             </field>
-            <field name="requisition_so_id" position="after">
+           <!-- <field name="requisition_so_id" position="after">
                 <field name="po_sequence"/>
-            </field>
+            </field>-->
         </field>
     </record>
     <!-- <record id="purchase_order_tree_cus2" model="ir.ui.view">
