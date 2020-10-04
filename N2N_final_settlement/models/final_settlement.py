@@ -61,6 +61,7 @@ class FinalSettlement(models.Model):
 			basic = contract_obj.wage
 			contract_type_id = contract_obj.contract_type
 			total_sal = contract_obj.hr_total_wage
+
 			leave_balance_ids = self.env['n2n.leave.analysis.view'].search([('employee_id','=',employee_id)])
 			leave_bal_id = leave_balance_ids[0]
 			leave_bal_obj = self.env['n2n.leave.analysis.view'].browse(leave_bal_id).id
