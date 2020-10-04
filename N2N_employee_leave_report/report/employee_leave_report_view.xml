@@ -33,7 +33,7 @@
                     <field name="join_date"/>
                     <field name="total_leaves"/>
                     <field name="total_allocated"/>
-                    <field name="pending_leaves"/>
+                    <field name="pending_leaves" type="measure"/>
                     <field name="wage" type="measure"/>
                     <field name="salary_per" type="measure"/>
                     <field name="leave_amt" type="measure"/>
@@ -54,7 +54,7 @@
                     <field name="join_date" type="col"/>
                     <field name="total_leaves" type="col"/>
                     <field name="total_allocated" type="col"/>
-                    <field name="pending_leaves" type="col"/>
+                    <field name="pending_leaves" type="measure"/>
                     <field name="wage" type="measure"/>
                     <field name="salary_per" type="measure"/>
                     <field name="leave_amt" type="measure"/>

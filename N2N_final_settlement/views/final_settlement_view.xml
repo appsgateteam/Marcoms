@@ -73,6 +73,7 @@
                         <!-- <field name="settlement_type_id" attrs="{'readonly':[('state','in', ('done'))]}"/> -->
                         <field name="department_id" attrs="{'readonly':[('state','in', ('done'))]}"/>
                         <field name="job_id" attrs="{'readonly':[('state','in', ('done'))]}"/>
+
                          <field name="address_home_id" attrs="{'readonly':[('state','in', ('done'))]}"/>
                         <field name="account_move_id" attrs="{'invisible':[('state','in', ('draft'))]}"/>
                      </group>
@@ -124,15 +125,27 @@
                         <field name="total_working_days" readonly="1"/>
                         <field name="leave_pending" readonly="1"/>
                         <field name="unpaid_leaves" readonly="1"/>
-
+                         <field name="leave_pending_balance" readonly="1"/>
                     </group>
 
                     </group>
 
 
-                    <group string="Salary Information">
+                    <group col="2" string="Salary Information">
                         <field name="basic" readonly="1"/>
-                        <field name="total_salary" readonly="1"/>
+                        <field name="contract_type_id"/>
+                        <field name="total_salary" invisible="1"/>
+                        <field name="payroll_overtime" readonly="1"/>
+                        <field name="payroll_ded" readonly="1"/>
+                        <field name="payroll_add" readonly="1"/>
+                        <field name="payroll_allw" readonly="1"/>
+                        <field name="total_net_salary" readonly="1"/>
+
+                    </group>
+                    <group>
+                        <button name="action_final_settlement" type="object" string="Final Dues" attrs="{'invisible':[('state','in',('progress','done'))]}"/>
+                        <field name="final_settlement_amount" readonly="1"/>
+                        <field name="final_payment" readonly="1"/>
                     </group>
                     <!-- <field name="allowance_rule_ids" readonly="1">
                         <tree>
@@ -154,6 +167,7 @@
                         <field name="no_of_days"/>
                         <field name="termination_amount"/>
                         <field name="resign_amount"/>
+
                     </tree>
                 </field>
 

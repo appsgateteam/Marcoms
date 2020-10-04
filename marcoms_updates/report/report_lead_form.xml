@@ -91,7 +91,7 @@
                         </tr>
                         <tr>
                             <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Position</span></td>
-                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.partner_id.function"/></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.function"/></td>
                         </tr>
                         <tr>
                             <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Telephone</span></td>
@@ -111,7 +111,7 @@
                         </tr>
                         <tr>
                             <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Website</span></td>
-                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.partner_id.website"/></td>
+                            <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;background-color:transparent;"><span style="margin-left:5px;" t-field="o.website"/></td>
                         </tr>
                         <tr>
                             <td class="text-left" style="border: 1px solid black;width:50%;font-size:17px;margin-left:12px;"><span style="margin-left:5px;">Type of client</span></td>
