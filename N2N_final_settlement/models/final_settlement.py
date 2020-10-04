@@ -18,6 +18,7 @@ class FinalSettlement(models.Model):
 		unpaid_tot = 0
 		working_days = 0
 		amount = 0
+
 		for obj in self:
 			final_settlement = obj.settlement_type_id.final_settlement
 			leave_pending = obj.employee_id.leaves_count
@@ -27,6 +28,19 @@ class FinalSettlement(models.Model):
 			for holiday in holiday_ids:
 				holiday_obj = self.env['hr.leave'].browse(holiday).id
 				unpaid_tot = unpaid_tot + holiday_obj.number_of_days
+
+
+
+			# gratuity_ids = self.env['gratuity.employee'].search([('gratuity_line_id', '=', obj.gratuity_line_id.id)])
+			# for gratuity_id in gratuity_ids:
+			# 	gratuity_obj = self.env['gratuity.employee'].browse(gratuity_id).id
+			# 	if gratuity_obj.resign_amount:
+			# 		final_due_amt = gratuity_obj.resign_amount
+			# 	else:
+			# 		final_due_amt = gratuity_obj.termination_amount
+			#
+
+
 
 			date_to = obj.resign_date
 			if date_to:
@@ -45,20 +59,45 @@ class FinalSettlement(models.Model):
 			contract_id = contract_ids[0]
 			contract_obj = self.env['hr.contract'].browse(contract_id).id
 			basic = contract_obj.wage
+			contract_type_id = contract_obj.contract_type
 			total_sal = contract_obj.hr_total_wage
+			leave_balance_ids = self.env['n2n.leave.analysis.view'].search([('employee_id','=',employee_id)])
+			leave_bal_id = leave_balance_ids[0]
+			leave_bal_obj = self.env['n2n.leave.analysis.view'].browse(leave_bal_id).id
+			leave_balances = leave_bal_obj.leave_amt
+
+
 			# for al_line in contract_obj.xo_allowance_rule_line_ids:
 			#     al_line.copy({'od_sett_id':ids[0],'contract_id':False})
+			payroll_ids = self.env['hr.salary.sheet.view'].search([('employee_id', '=', employee_id)])
+			payroll_id = payroll_ids[0]
+			payroll_obj = self.env['hr.salary.sheet.view'].browse(payroll_id).id
+			pay_overtime = payroll_obj.ot_allowance
+			pay_add = payroll_obj.additions
+			pay_ded = payroll_obj.deductions
+			pay_allw = payroll_obj.allowances_value
+			pay_net_sal = payroll_obj.net_salary
+
 			vals = {'basic':basic,
+					'contract_type_id':contract_type_id,
 					# 'join_date':obj.employee_id.join_date,
 					'total_salary':total_sal,
 					'leave_pending':leave_pending,
 					'unpaid_leave':unpaid_tot,
+					'leave_pending_balance':leave_balances,
 					'total_working_days':working_days,
+					'payroll_overtime':pay_overtime,
+					'payroll_ded':pay_ded,
+					'payroll_add':pay_add,
+					'payroll_allw':pay_allw,
+					'total_net_salary':pay_net_sal,
+
 					# 'job_id':obj.employee_id.job_id.id,
 					# 'department_id':obj.employee_id.department_id.id,
 					'address_home_id':obj.employee_id.address_home_id.id,
 					}
 			self.write(vals)
+
 			# partner_id = obj.employee_id.address_home_id.id
 			# settlement_type_id = obj.settlement_type_id and obj.settlement_type_id.id
 			# settlement_ids = self.env['final.settlement.type.master'].search([('id','=',settlement_type_id)])
@@ -117,6 +156,30 @@ class FinalSettlement(models.Model):
 			# 	self.env['final.settlement.account.line'].create(vals)
 		# self.write(cr,uid,ids,{'checking_acc_entry_button_ctrl':True})
 		return True
+
+	@api.multi
+	def action_final_settlement(self):
+		final_due_amt = 0
+		final_pay = 0
+
+		for obj in self:
+			if not obj.gratuity_line_id:
+				raise UserError(_('there is no lines in gratuity'))
+
+			if obj.gratuity_line_id.resign_amount:
+				final_due_amt = obj.gratuity_line_id.resign_amount
+			elif obj.gratuity_line_id.termination_amount:
+				final_due_amt = obj.gratuity_line_id.termination_amount
+
+			final_pay = final_due_amt + obj.leave_pending_balance
+
+			vals={
+				'final_settlement_amount': final_due_amt,
+				'final_payment': final_pay,
+				}
+			self.write(vals)
+			return True
+
 
 	@api.multi
 	def action_validate(self):
@@ -383,7 +446,7 @@ class FinalSettlement(models.Model):
 					}
 					data_lines.append((0,0,vals3),)
 				elif experience >= 5:
-					extra_year = experiance - 5
+					extra_year = experience - 5
 					extra_year_in_days = extra_year * 365
 					gratuity = ((30 * one_day_wage)*5) + (((one_day_wage *30) /365) * extra_year_in_days)
 					vals4 = {
@@ -430,7 +493,7 @@ class FinalSettlement(models.Model):
 					}
 					data_lines.append((0,0,vals3),)
 				elif experience >= 5:
-					extra_year = experiance - 5
+					extra_year = experience - 5
 					extra_year_in_days = extra_year * 365
 					gratuity = ((21 * one_day_wage)*5) + (((one_day_wage *30) /365) * extra_year_in_days)
 					vals4 = {
@@ -502,8 +565,17 @@ class FinalSettlement(models.Model):
 	basic = fields.Float(string="Basic")
 	# hr_allowance_line_ids = fields.One2many('hr.allowance.line','nn_sett_id',string="HR Allowance")
 	total_salary = fields.Float('Total Salary')
+	payroll_overtime = fields.Float('Overtime')
+	payroll_ded = fields.Float('Deductions')
+	payroll_add = fields.Float('Additions')
+	payroll_allw = fields.Float('Allowances')
+	total_net_salary = fields.Float('Net Salary')
+	final_settlement_amount = fields.Float('Gratuity Amount')
+	final_payment = fields.Float('Final payment')
 	department_id = fields.Many2one('hr.department',string="Department",readonly=True)
 	job_id =fields.Many2one('hr.job',string='Job', readonly=True)
+	contract_type_id = fields.Char(string='Contract Type')
+
 	reason = fields.Text(string="Reason")
 	state = fields.Selection([
 			('draft', 'New'),
@@ -518,15 +590,21 @@ class FinalSettlement(models.Model):
 	account_move_id = fields.Many2one('account.move','Entry',readonly=True)
 	gratuity_line_id = fields.One2many('gratuity.employee','settlement_grat_id',string="Gratuity Line")
 	leave_pending = fields.Integer(string="Remaining Leaves")
+	leave_pending_balance = fields.Float(string='Leave Balance Amount')
 	unpaid_leaves = fields.Integer(string="Unpaid Leaves")
 	total_working_days = fields.Float(string="Total Working Days")
 
+
 	@api.onchange('employee_id')
+	@api.depends('employee_id')
 	def _change_employee(self):
 		for rec in self:
 			rec.join_date = fields.Datetime.to_string(rec.employee_id.join_date)
 			rec.department_id = rec.employee_id.department_id
 			rec.job_id = rec.employee_id.job_id
+
+
+
 
 	# @api.multi
 	# def _total_wage(self):
@@ -613,7 +691,9 @@ class GratuityCalculation(models.Model):
 	settlement_grat_id = fields.Many2one('final.settlement', string="Settlement")
 
 
+
+
 class Contract(models.Model):
 	_inherit = 'hr.contract'
-	
+
 	contract_type = fields.Selection([('limited', 'Limited'),('unlimited', 'Unlimited')], string="Contract Type", required=True)
