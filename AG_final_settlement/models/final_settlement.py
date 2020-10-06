@@ -2,6 +2,7 @@
 
 from odoo import api, fields, models, tools, _
 from datetime import datetime, timedelta ,date
+from dateutil import relativedelta
 from odoo.exceptions import AccessError, UserError, ValidationError
 import math
 
@@ -16,8 +17,11 @@ class FinalSettlement(models.Model):
 		payable = 0
 		recievable = 0
 		unpaid_tot = 0
+		leave_tot = 0
 		working_days = 0
 		amount = 0
+		days_in_year = 365
+		months_in_year = 12
 
 		for obj in self:
 			final_settlement = obj.settlement_type_id.final_settlement
@@ -29,7 +33,10 @@ class FinalSettlement(models.Model):
 				holiday_obj = self.env['hr.leave'].browse(holiday).id
 				unpaid_tot = unpaid_tot + holiday_obj.number_of_days
 
-
+			holiday_leave_ids = self.env['hr.leave'].search([('employee_id', '=', obj.employee_id.id), ('holiday_status_id', '=', 1),('state', 'not in', ('cancel', 'refuse'))])
+			for holiday in holiday_leave_ids:
+				day_obj = self.env['hr.leave'].browse(holiday).id
+				leave_tot = leave_tot + day_obj.number_of_days
 
 			# gratuity_ids = self.env['gratuity.employee'].search([('gratuity_line_id', '=', obj.gratuity_line_id.id)])
 			# for gratuity_id in gratuity_ids:
@@ -59,33 +66,48 @@ class FinalSettlement(models.Model):
 			contract_id = contract_ids[0]
 			contract_obj = self.env['hr.contract'].browse(contract_id).id
 			basic = contract_obj.wage
+			net = contract_obj.hr_total_wage
 			contract_type_id = contract_obj.contract_type
 			total_sal = contract_obj.hr_total_wage
 
-			leave_balance_ids = self.env['n2n.leave.analysis.view'].search([('employee_id','=',employee_id)])
-			leave_bal_id = leave_balance_ids[0]
-			leave_bal_obj = self.env['n2n.leave.analysis.view'].browse(leave_bal_id).id
-			leave_balances = leave_bal_obj.leave_amt
+			# leave_balance_ids = self.env['n2n.leave.analysis.view'].search([('employee_id','=',employee_id)])
+			# leave_bal_id = leave_balance_ids[0]
+			# leave_bal_obj = self.env['n2n.leave.analysis.view'].browse(leave_bal_id).id
+			# leave_balances = leave_bal_obj.leave_amt
 
+			var_gross = net
+
+			self.fs_gross_per_day = var_gross / days_in_year * months_in_year  ####### gross per day for leave
+
+
+			leave_records = self.env['hr.leave'].search([('employee_id','=',employee_id),('state', '=', 'validate'),('holiday_status_id','=',1)], order='date_to desc',
+														limit=1)
+
+			lv = leave_records
+			self.last_vacation = lv.date_to
+			print('-----------last vacation-------', self.last_vacation)
 
 			# for al_line in contract_obj.xo_allowance_rule_line_ids:
 			#     al_line.copy({'od_sett_id':ids[0],'contract_id':False})
-			payroll_ids = self.env['hr.salary.sheet.view'].search([('employee_id', '=', employee_id)])
-			payroll_id = payroll_ids[0]
-			payroll_obj = self.env['hr.salary.sheet.view'].browse(payroll_id).id
-			pay_overtime = payroll_obj.ot_allowance
-			pay_add = payroll_obj.additions
-			pay_ded = payroll_obj.deductions
-			pay_allw = payroll_obj.allowances_value
-			pay_net_sal = payroll_obj.net_salary
+			payroll_ids = self.env['hr.salary.sheet.view'].search([('employee_id', '=', employee_id)],order='date_to desc',limit=1)
+			if payroll_ids:
+				payroll_obj = payroll_ids[-1:]
+				pay_overtime = payroll_obj.ot_allowance
+				pay_add = payroll_obj.additions
+				pay_ded = payroll_obj.deductions
+				pay_allw = payroll_obj.allowances_value
+				pay_net_sal = payroll_obj.net_salary
+			# payroll_id = payroll_ids[0]
+			#payroll_obj = self.env['hr.salary.sheet.view'].browse(payroll_id).id
+
 
 			vals = {'basic':basic,
 					'contract_type_id':contract_type_id,
 					# 'join_date':obj.employee_id.join_date,
 					'total_salary':total_sal,
-					'leave_pending':leave_pending,
-					'unpaid_leave':unpaid_tot,
-					'leave_pending_balance':leave_balances,
+					'leave_pending':leave_tot,
+					'unpaid_leaves':unpaid_tot,
+					#'leave_pending_balance':leave_balances,
 					'total_working_days':working_days,
 					'payroll_overtime':pay_overtime,
 					'payroll_ded':pay_ded,
@@ -172,7 +194,7 @@ class FinalSettlement(models.Model):
 			elif obj.gratuity_line_id.termination_amount:
 				final_due_amt = obj.gratuity_line_id.termination_amount
 
-			final_pay = final_due_amt + obj.leave_pending_balance
+			final_pay = final_due_amt + obj.fs_gross_available_days
 
 			vals={
 				'final_settlement_amount': final_due_amt,
@@ -180,6 +202,51 @@ class FinalSettlement(models.Model):
 				}
 			self.write(vals)
 			return True
+
+
+	@api.depends('resign_date', 'join_date', 'last_vacation','fs_gross_per_day')
+	def action_fs_date_diff(self):
+
+		d3 = self.join_date
+		d4 = self.resign_date
+		d5 = self.last_vacation
+		days_in_year = 365
+		months_in_year = 12
+		leaves_per_month = 2.5
+		days_in_month = 30
+
+		if d3 and d4:
+			d3 = datetime.strptime(str(d3), "%Y-%m-%d")
+			d4 = datetime.strptime(str(d4), "%Y-%m-%d")
+
+			# r2 relativedelta ----->   relativedelta(years=+1, months=+11, days=+30)
+			r2 = relativedelta.relativedelta(d4, d3)
+			print('--------------------r2--------------', r2)
+			self.fs_temp_year = r2.years
+			print('--------------------fs_tmp_yr--------------', self.fs_temp_year)
+			# self.fs_temp_day = r2.days+(r2.months*days_in_month)
+			self.fs_temp_day = (d4 - (d3 + relativedelta.relativedelta(years=r2.years))).days + 1
+			print('--------------------fsday_tmp_--------------', self.fs_temp_day)
+			self.fs_total_period = str(self.fs_temp_year) + ' year(s) ' + str(self.fs_temp_day) + ' day(s)'
+			print('--------------------fs_total_period--------------', self.fs_total_period)
+
+			if d5:
+				d5 = datetime.strptime(str(d5), '%Y-%m-%d %H:%M:%S')
+				r3 = relativedelta.relativedelta(d4, d5)
+				print('------------R3------------', r3)
+				print('--------D5-----------',d5)
+				print('----------D4------',d4)
+				self.fs_temp_month_2 = r3.months + (r3.years * months_in_year)
+				print('------------fs_temp_month_2------------', self.fs_temp_month_2)
+				fs_temp_day2 = (r3.days+1)*leaves_per_month/days_in_month
+				print('------------fs_temp_day2------------', fs_temp_day2)
+				self.available_days = (self.fs_temp_month_2 * leaves_per_month) +  (self.leave_pending + fs_temp_day2 )
+				print('------------available_days------------', self.available_days)
+
+				#       print (self.available_days)
+				self.fs_gross_available_days = self.fs_gross_per_day * self.available_days
+				print('------------tot salary------------', self.fs_gross_available_days)
+
 
 
 	@api.multi
@@ -564,6 +631,9 @@ class FinalSettlement(models.Model):
 	resign_date = fields.Date(string="Resign Date", default=fields.Date.context_today)
 	settlement_type_id = fields.Many2one('final.settlement.type.master',string="Settlement Type",required=True)
 	basic = fields.Float(string="Basic")
+	#fs_allowance = fields.Float('Allowance', states={'draft': [('readonly', False)]}, readonly=True)
+	fs_gross_per_day = fields.Float('Basic Salary Per Day For leave', states={'draft': [('readonly', False)]},
+									readonly=True)
 	# hr_allowance_line_ids = fields.One2many('hr.allowance.line','nn_sett_id',string="HR Allowance")
 	total_salary = fields.Float('Total Salary')
 	payroll_overtime = fields.Float('Overtime')
@@ -576,7 +646,13 @@ class FinalSettlement(models.Model):
 	department_id = fields.Many2one('hr.department',string="Department",readonly=True)
 	job_id =fields.Many2one('hr.job',string='Job', readonly=True)
 	contract_type_id = fields.Char(string='Contract Type')
-
+	fs_temp_year = fields.Float('temp year', states={'draft': [('readonly', False)]}, readonly=True)
+	fs_temp_day = fields.Integer('temp day', states={'draft': [('readonly', False)]}, readonly=True)
+	fs_total_period = fields.Char('Job Duration', states={'draft': [('readonly', False)]}, readonly=True)
+	fs_temp_month_2 = fields.Float('temp month', states={'draft': [('readonly', False)]}, readonly=True)
+	available_days = fields.Float('Leave Days Calculation', states={'draft': [('readonly', False)]}, readonly=True)
+	fs_gross_available_days = fields.Float('Eligible Leave Salary', states={'draft': [('readonly', False)]},
+										   readonly=True)
 	reason = fields.Text(string="Reason")
 	state = fields.Selection([
 			('draft', 'New'),
@@ -590,8 +666,9 @@ class FinalSettlement(models.Model):
 	account_new_line = fields.One2many('final.settlement.new.account.line','account_line_id',string="Account New Line")
 	account_move_id = fields.Many2one('account.move','Entry',readonly=True)
 	gratuity_line_id = fields.One2many('gratuity.employee','settlement_grat_id',string="Gratuity Line")
-	leave_pending = fields.Integer(string="Remaining Leaves")
-	leave_pending_balance = fields.Float(string='Leave Balance Amount')
+	leave_pending = fields.Integer(string="Remaining Annual Leaves")
+	#leave_pending_balance = fields.Float(string='Leave Balance Amount')
+	last_vacation = fields.Datetime('Last Vacation End Date', states={'draft': [('readonly', False)]}, readonly=True)
 	unpaid_leaves = fields.Integer(string="Unpaid Leaves")
 	total_working_days = fields.Float(string="Total Working Days")
 
