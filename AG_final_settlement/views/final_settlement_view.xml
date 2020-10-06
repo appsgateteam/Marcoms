@@ -68,6 +68,7 @@
 <!--                         <field name="date_from"/>-->
                          <field name="join_date" string="Join Date" attrs="{'readonly':[('state','in', ('done'))]}"/>
                          <field name="resign_date" string="Resign Date" attrs="{'readonly':[('state','in', ('done'))]}"/>
+
                       </group>
                      <group>
                         <!-- <field name="settlement_type_id" attrs="{'readonly':[('state','in', ('done'))]}"/> -->
@@ -125,7 +126,7 @@
                         <field name="total_working_days" readonly="1"/>
                         <field name="leave_pending" readonly="1"/>
                         <field name="unpaid_leaves" readonly="1"/>
-                         <field name="leave_pending_balance" readonly="1"/>
+<!--                         <field name="leave_pending_balance" readonly="1"/>-->
                     </group>
 
                     </group>
@@ -147,6 +148,19 @@
                         <field name="final_settlement_amount" readonly="1"/>
                         <field name="final_payment" readonly="1"/>
                     </group>
+                    <div class="col-xs-6">
+								<strong>
+									<h3>Leave Salary</h3>
+								</strong>
+								<group>
+                                    <button name="action_fs_date_diff" type="object" string="Encash Leaves" attrs="{'invisible':[('state','in',('progress','done'))]}"/>
+									<field name="last_vacation" />
+									<field name="available_days" />
+									<field name="fs_gross_per_day" />
+									<field name="fs_gross_available_days" />
+
+								</group>
+							</div>
                     <!-- <field name="allowance_rule_ids" readonly="1">
                         <tree>
                           <field name="rule_type" domain="[('category_id.code','in',('ALW','DED'))]"/>
