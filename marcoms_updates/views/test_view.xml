@@ -2888,6 +2888,7 @@ if record:
                 <!-- <field name="the_month"/> -->
                 <field name="total_leave_days"/>
                 <field name="total_allocated_days"/>
+<!--                <field name="total_unpaid_allocated_days"/>-->
                 <field name="pending_leaves"/>
             </tree>
         </field>

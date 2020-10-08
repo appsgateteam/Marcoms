@@ -132,7 +132,7 @@
                     </group>
 
 
-                    <group col="2" string="Salary Information">
+                    <group  string="Salary Information">
                         <field name="basic" readonly="1"/>
                         <field name="contract_type_id"/>
                         <field name="total_salary" invisible="1"/>
@@ -143,24 +143,24 @@
                         <field name="total_net_salary" readonly="1"/>
 
                     </group>
-                    <group>
-                        <button name="action_final_settlement" type="object" string="Final Dues" attrs="{'invisible':[('state','in',('progress','done'))]}"/>
-                        <field name="final_settlement_amount" readonly="1"/>
-                        <field name="final_payment" readonly="1"/>
-                    </group>
-                    <div class="col-xs-6">
-								<strong>
-									<h3>Leave Salary</h3>
-								</strong>
-								<group>
-                                    <button name="action_fs_date_diff" type="object" string="Encash Leaves" attrs="{'invisible':[('state','in',('progress','done'))]}"/>
+
+                    <group string="Leave Salary">
+                        <group>
+                             <button name="action_fs_date_diff" type="object" string="Encash Leaves" attrs="{'invisible':[('state','in',('progress','done'))]}"/>
 									<field name="last_vacation" />
 									<field name="available_days" />
 									<field name="fs_gross_per_day" />
 									<field name="fs_gross_available_days" />
 
-								</group>
-							</div>
+                        </group>
+                    </group>
+                   <group string="Final Settlement Calculation">
+                    <group>
+                        <button name="action_final_settlement" type="object" string="Final Dues" attrs="{'invisible':[('state','in',('progress','done'))]}"/>
+                        <field name="final_settlement_amount" readonly="1"/>
+                        <field name="final_payment" readonly="1"/>
+                    </group>
+                    </group>
                     <!-- <field name="allowance_rule_ids" readonly="1">
                         <tree>
                           <field name="rule_type" domain="[('category_id.code','in',('ALW','DED'))]"/>
