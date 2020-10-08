@@ -33,10 +33,10 @@ class FinalSettlement(models.Model):
 				holiday_obj = self.env['hr.leave'].browse(holiday).id
 				unpaid_tot = unpaid_tot + holiday_obj.number_of_days
 
-			holiday_leave_ids = self.env['hr.leave'].search([('employee_id', '=', obj.employee_id.id), ('holiday_status_id', '=', 1),('state', 'not in', ('cancel', 'refuse'))])
+			holiday_leave_ids = self.env['leave.analysis'].search([('employee_id', '=', obj.employee_id.id), ('holiday_status_id', '=', 1)])
 			for holiday in holiday_leave_ids:
-				day_obj = self.env['hr.leave'].browse(holiday).id
-				leave_tot = leave_tot + day_obj.number_of_days
+				day_obj = self.env['leave.analysis'].browse(holiday).id
+				leave_tot = leave_tot + day_obj.pending_leaves
 
 			# gratuity_ids = self.env['gratuity.employee'].search([('gratuity_line_id', '=', obj.gratuity_line_id.id)])
 			# for gratuity_id in gratuity_ids:
