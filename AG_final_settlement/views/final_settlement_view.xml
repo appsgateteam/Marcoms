@@ -21,6 +21,7 @@
                     <field name="employee_id"/>
                     <field name="join_date"/>
                     <field name="settlement_type_id"/>
+                    <field name="test_field"/>
                 </tree>
           </field>
     </record>

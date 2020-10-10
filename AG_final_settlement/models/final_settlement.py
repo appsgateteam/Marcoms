@@ -640,6 +640,7 @@ class FinalSettlement(models.Model):
 	payroll_ded = fields.Float('Deductions')
 	payroll_add = fields.Float('Additions')
 	payroll_allw = fields.Float('Allowances')
+	test_field = fields.Char('test')
 	total_net_salary = fields.Float('Net Salary')
 	final_settlement_amount = fields.Float('Gratuity Amount')
 	final_payment = fields.Float('Final payment')
