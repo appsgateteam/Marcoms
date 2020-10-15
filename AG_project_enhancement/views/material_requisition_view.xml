@@ -147,7 +147,7 @@
         </record> -->
         <menuitem id="main_menu_requisition"
             name="Requisition"
-            web_icon="N2N_project_enhancement,static/description/icon.png"
+            web_icon="AG_project_enhancement,static/description/icon.png"
             groups="group_mat_requisition_user" />
 
         <menuitem id="menu_purchase_requisition_new"
