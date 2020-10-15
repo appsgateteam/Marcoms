@@ -17,7 +17,7 @@ class EmployeeLeaveReport(models.TransientModel):
 		domain_filter = []
 		if self.employee_id:
 			domain_filter.append(('employee_id','=',self.employee_id.id))
-		action = self.env.ref('N2N_employee_leave_report.action_leave_report_analysis')
+		action = self.env.ref('AG_employee_leave_report.action_leave_report_analysis')
 		result = action.read()[0]
 		result['domain'] = str(domain_filter)
 		return result

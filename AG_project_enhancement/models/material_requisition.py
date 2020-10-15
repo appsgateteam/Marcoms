@@ -37,7 +37,7 @@ class MaterialRequisition(models.Model):
 							'confirmed_date' : datetime.now()
 						})
 		template_id = self.env['ir.model.data'].get_object_reference(
-											  'N2N_project_enhancement',
+											  'AG_project_enhancement',
 											  'email_employee_purchase_requisition_new')[1]
 		email_template_obj = self.env['mail.template'].sudo().browse(template_id)
 		if template_id:
@@ -66,7 +66,7 @@ class MaterialRequisition(models.Model):
 							'department_approval_date' : datetime.now()
 						})
 		template_id = self.env['ir.model.data'].get_object_reference(
-											  'N2N_project_enhancement',
+											  'AG_project_enhancement',
 											  'email_manager_purchase_requisition_new')[1]
 		email_template_obj = self.env['mail.template'].sudo().browse(template_id)
 		if template_id:
@@ -157,7 +157,7 @@ class MaterialRequisition(models.Model):
 							'approved_date' : datetime.now()
 						})
 		template_id = self.env['ir.model.data'].get_object_reference(
-											  'N2N_project_enhancement',
+											  'AG_project_enhancement',
 											  'email_user_purchase_requisition_new')[1]
 		email_template_obj = self.env['mail.template'].sudo().browse(template_id)
 		if template_id:

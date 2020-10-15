@@ -13,7 +13,7 @@ class SaleTimesheetControllerInherit(SaleTimesheetController):
 	# 		material_details = request.env['material.estimate'].sudo().search([])
 	# 		request.httprequest.material_details)
 	# 		print(data)
-	# 		return  request.render('N2N_project_enhancement.material_details_page', {'my_details': material_details})
+	# 		return  request.render('AG_project_enhancement.material_details_page', {'my_details': material_details})
 	@http.route('/timesheet/plan', type='json', auth="user")
 	def plan(self, domain):
 		res = super(SaleTimesheetControllerInherit,self).plan(domain)
