@@ -24,7 +24,7 @@
             </group>
             <notebook>
                 <page string="Overhead Details">
-                    <field name="nn_over_analytic_id" context="{ 'tree_view_ref': 'N2N_project_enhancement.account_analytic_line_tree', 'default_task_id':task_id,'default_project_id':project_id}"/>
+                    <field name="nn_over_analytic_id" context="{ 'tree_view_ref': 'AG_project_enhancement.account_analytic_line_tree', 'default_task_id':task_id,'default_project_id':project_id}"/>
                     <!-- <field name="employee_id" invisible="1"/> -->
                     
                     <!-- <field name="amount"/> -->
