@@ -45,19 +45,19 @@
                         <!-- <field name="partner_id" attrs="{'readonly': [('state', 'in', ['cancel'])]}" domain="[('customer','=',True),('parent_id','=',False)]"/> -->
                         <field name="req_name" attrs="{'readonly': ['|',('test_requester', '!=',True),('state', 'not in', ['new'])]}" />
                         <field name="creator_name" />
-                        <field name="oppor_id" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
-                        <field name="task_id" attrs="{'readonly': [('state', 'in', ['cancel'])]}" domain="[('project_id.analytic_account_id','=',oppor_id)]"/>
-                        <field name="show_name" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
-                        <field name="flag" invisible="1" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
-                        <field name="test_requester" invisible="1" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
+                        <field name="oppor_id" attrs="{'readonly': [('state', 'not in', ['new'])]}"/>
+                        <field name="task_id" attrs="{'readonly': [('state', 'not in', ['new'])]}" domain="[('project_id.analytic_account_id','=',oppor_id)]"/>
+                        <field name="show_name" attrs="{'readonly': [('state', 'not in', ['new'])]}"/>
+                        <field name="flag" invisible="1" attrs="{'readonly': [('state', 'not in', ['new'])]}"/>
+                        <field name="test_requester" invisible="1" attrs="{'readonly': [('state', 'not in', ['new'])]}"/>
                         <!-- <field name="task_id" attrs="{'readonly': [('state', 'in', ['cancel'])]}" domain="[('project_id.analytic_account_id','=',analytic_id)]"/> -->
                     </group>
                     <group>
-                        <field name="requisition_date" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
-                        <field name="pro_requi" invisible="1" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
+                        <field name="requisition_date" attrs="{'readonly': [('state', 'not in', ['new'])]}"/>
+                        <field name="pro_requi" invisible="1" attrs="{'readonly': [('state', 'not in', ['new'])]}"/>
                         <field name="project_manager" invisible="1"/>
-                        <field name="requisition_dead" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
-                        <field name="co_box" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
+                        <field name="requisition_dead" attrs="{'readonly': [('state', 'not in', ['new'])]}"/>
+                        <field name="co_box" attrs="{'readonly': [('state', 'not in', ['new'])]}"/>
                         <!-- <field name="requisition_deadline_date" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/>
                         <field name="company_id" attrs="{'readonly': [('state', 'in', ['cancel'])]}"/> -->
                     </group>
@@ -142,6 +142,7 @@
             <xpath expr="//button[@name='action_rfq_send']" position="after">
                 <button name="action_return_requester" type="object" string="Accounts Approve" attrs="{'invisible': [('state', 'not in', 'account')]}" groups="product_requisition.group_Accounts"/>
                 <button name="action_requester_approve" type="object" string="Requester Approve" attrs="{'invisible': ['|',('test_requester', '!=',True),('state', 'not in', 'req'),'|',('co_box', '!=',False)]}" groups="product_requisition.group_Requester_id"/>
+                <button name="action_rfq_review_project_manager" invisible="1"/>
                 <button name="action_mana_approve" type="object" string="Management Approve" attrs="{'invisible': ['|',('co_box', '=',True),('state', 'not in', 'top')]}" groups="product_requisition.group_top_management"/>
                 <button name="action_requester_approve" type="object" string="Requester Approve" attrs="{'invisible': ['|',('co_box', '!=',True),'|',('test_requester', '=',True),('state', 'not in', 'req')]}" groups="product_requisition.group_Requester_id,product_requisition.group_coordinator"/>
                 <button name="action_mana_approve" type="object" string="Management Approve" attrs="{'invisible': ['|',('co_box', '!=',True),('state', 'not in', 'top')]}" groups="product_requisition.group_top_management,product_requisition.group_coordinator"/>

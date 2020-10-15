@@ -434,10 +434,6 @@ if record:
                 <!-- ['|',('stage_id', '=', 1),('stage_id', '=', 2)] -->
                 <field name="assign_to_designer" attrs="{'invisible': [('stage_id', '=', 1)],'required': [('stage_id', '=', 3)]}" groups="marcoms_updates.group_sale_top_manager,marcoms_updates.group_creative_coordinator"/>
             </xpath>
-
-             <xpath expr="//field[@name='lost_reason']" position="attributes">
-                <attribute name="string">Drop Reason</attribute>
-            </xpath>
             <xpath expr="//field[@name='lost_reason']" position="after">
                 <field name="des_reason" attrs="{'invisible': [('active', '=', True)]}"/>
             </xpath>
@@ -566,19 +562,20 @@ if record:
                 <attribute name="readonly">0</attribute>
             </xpath>
 
+
             <xpath expr="//field[@name='partner_address_phone']" position="after">
-               <field name="mobile_from_contact" />
+               <field name="partner_address_mobile" />
             </xpath>
 
-
+             <xpath expr="//field[@name='partner_address_mobile']" position="attributes">
+                <attribute name="string">Mobile</attribute>
+            </xpath>
             <xpath expr="//field[@name='partner_address_phone']" position="before">
                 <field name="email_from_contact" widget="email"/>
             </xpath>
             <xpath expr="//notebook/page[1]" position="inside">
                 <label for="reason_for_lost"/>
                 <field name="reason_for_lost"/>
-                <label for="reason_for_cancel"/>
-                <field name="reason_for_cancel"/>
                 <label for="reason_for_cancel"/>
                 <field name="reason_for_cancel"/>
             </xpath>
@@ -614,7 +611,6 @@ if record:
             action="crm.crm_lead_tag_action"
             parent="crm.menu_crm_config_lead"
             sequence="1"/>
-
     <record id="crm.crm_lead_lost_action" model="ir.actions.act_window">
         <field name="name">Drop Reason</field>
         <field name="type">ir.actions.act_window</field>
@@ -977,7 +973,7 @@ if record:
             </xpath>
             
             <xpath expr="//field[@name='partner_id']" position="replace">
-                <field name="partner_id" widget="res_partner_many2one" domain="[('customer','=',True),('parent_id','=',False)]" context="{'search_default_customer':1, 'show_address': 1, 'show_vat': True}"  options="{&quot;always_reload&quot;: True}"/>
+                <field name="partner_id" widget="res_partner_many2one" domain="[('customer','=',True),('parent_id','=',False)]" context="{'search_default_customer':1, 'show_address': 1, 'show_vat': True}" options="{&quot;always_reload&quot;: True}"/>
                 <field name="partner_no" string=" "/>
                 <field name="contact_name" readonly="1" invisible="1"/>
                 <field name="comtype" invisible="1"/>
@@ -988,7 +984,7 @@ if record:
                 <field name="venue_total_name"/>
                 <field name="sum_without_dis" invisible="1"/>
                 <!-- <field name="optional_total" invisible="1"/> -->
-
+                
             </xpath>
             <xpath expr="//field[@name='note']" position="before">
                 <br/>
@@ -2000,20 +1996,9 @@ if record:
                 <button name="action_compare" string="Analyze RFQ" type="object" attrs="{'invisible': ['|','|','|','|',('state', '=', 'draft'),('state', '=', 'in_progress'),('state', '=', 'done'),('state', '=', 'cancel')], 'required': [('state', '=','open')]}" class="btn-primary"/>
                 
             </xpath>
-            <xpath expr="//field[@name='state']" position="replace">
-                <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,open,pm_approval,done" attrs="{'invisible': [('is_quantity_copy', '=', 'none')]}"/>
-            </xpath>
-
-          <!--   <xpath expr="//button[@name='action_compare']" position="after">
-                <button name="action_rfq_review_project_manager" string="Submit To Project Manager" type="object" states="open"  class="btn-primary"/>
-
-            </xpath>-->
             <field name="vendor_id" position="after">
                 <field name="requisition_so_id"/>
             </field>
-           <!-- <field name="requisition_so_id" position="after">
-                <field name="po_sequence"/>
-            </field>-->
         </field>
     </record>
     <!-- <record id="purchase_order_tree_cus2" model="ir.ui.view">
@@ -2065,9 +2050,6 @@ if record:
             <xpath expr="//field[@name='date_planned']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-            <!--<xpath expr="//field[@name='date_planned']" position="after">
-                <field name="po_sequence"></field>
-            </xpath>-->
             <xpath expr="//field[@name='payment_term_id']" position="replace">
             </xpath>
             <xpath expr="//field[@name='company_id']" position="after">
@@ -2171,7 +2153,7 @@ if record:
                 <attribute name="string">Ask for a Debit Note</attribute>
             </xpath>
             <xpath expr="//field[@name='reference']" position="after">
-                <field name="project_name" required="1"/>
+                <field name="project_name"/>
                 <field name="project" invisible="1"/>
             </xpath>
             
@@ -2888,7 +2870,6 @@ if record:
                 <!-- <field name="the_month"/> -->
                 <field name="total_leave_days"/>
                 <field name="total_allocated_days"/>
-<!--                <field name="total_unpaid_allocated_days"/>-->
                 <field name="pending_leaves"/>
             </tree>
         </field>
@@ -3377,20 +3358,4 @@ if record:
             parent="purchase.menu_procurement_management"
             action="payment_request_action"/>
 
-    <!---Access to view supplier taxes ids-->
-
-     <record id="product_supplier_new_inherit" model="ir.ui.view">
-        <field name="name">product.template.supplier.form.new.inherit</field>
-        <field name="model">product.template</field>
-        <field name="inherit_id" ref="purchase.view_product_supplier_inherit"/>
-         <field name="arch" type="xml">
-            <xpath expr="//page[@name='purchase']/group[2]" position="attributes">
-                <attribute name="groups"></attribute>
-            </xpath>
-        </field>
- </record>
-
 </odoo>
-
-
-

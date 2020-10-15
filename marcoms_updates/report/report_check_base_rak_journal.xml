@@ -23,9 +23,9 @@
 
                                 <t t-set="num" t-value="len(o.check_amount_in_words)"/> 
                                 <br/>
-                                <div style="width:65%;margin-left:12%;line-height:250%;margin-top:15px;"><b><span t-esc="o.check_amount_in_words"/>   Only</b></div>
+                                <div style="width:55%;margin-left:12%;line-height:250%;margin-top:15px;"><b><span t-esc="o.check_amount_in_words"/>   Only</b></div>
                                 <!--<br/>-->
-                                <t t-if="num &lt;= 45">
+                                <t t-if="num &lt;= 46">
                                   <!--<br />-->
                                   <div style="margin-top:10px;">
                                   <b><span style="margin-left:80%;">**<span t-field="o.check_amount" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></span></b>

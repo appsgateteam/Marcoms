@@ -70,6 +70,62 @@
         <field name="description">General announcements for all Transportion Expenses .</field>
     </record>
 
+    <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5 -->
+
+    <record id="email_template_data_labour_expense" model="mail.template">
+      <field name="name">Applicant: Labour Expenses</field>
+      <field name="model_id" ref="marcom_expense_updates.model_labour_expense"/>
+      <field name="email_from">${object.user_id.login}</field>
+      <field name="subject">Labour Expenses Generated</field>
+      <field name="body_html" type="html"><p>
+          Hello there are New lead generated Please Check
+          it ${object.name}</p>
+      </field>
+    </record>
+
+
+    <record model="mail.channel" id="channel_all_labour_expense">
+        <field name="name">Labour Expenses</field>
+        <field name="group_ids" eval="[(4, ref('hr_expense.group_hr_expense_user'))]"/>
+        <field name="description">General announcements for all Labour Expenses .</field>
+    </record>
+
+    <record id="email_template_data_labour_expense_po" model="mail.template">
+      <field name="name">Applicant: Labour Expenses</field>
+      <field name="model_id" ref="marcom_expense_updates.model_labour_expense"/>
+      <field name="email_from">${object.user_id.login}</field>
+      <field name="subject">Labour Expenses Generated</field>
+      <field name="body_html" type="html"><p>
+          Hello there are New lead generated Please Check
+          it ${object.name}</p>
+      </field>
+    </record>
+
+
+    <record model="mail.channel" id="channel_all_Labour_expense_po">
+        <field name="name">Labour Expenses Purchase Department</field>
+        <field name="group_ids" eval="[(4, ref('purchase.group_purchase_user'))]"/>
+        <field name="description">General announcements for all Labour Expenses .</field>
+    </record>
+
+    <record id="email_template_data_Labour_expense_co" model="mail.template">
+      <field name="name">Applicant: Labour Expenses</field>
+      <field name="model_id" ref="marcom_expense_updates.model_labour_expense"/>
+      <field name="email_from">${object.user_id.login}</field>
+      <field name="subject">Labour Expenses Generated</field>
+      <field name="body_html" type="html"><p>
+          Hello there are New lead generated Please Check
+          it ${object.name}</p>
+      </field>
+    </record>
+
+
+    <record model="mail.channel" id="channel_all_Labour_expense_co">
+        <field name="name">Labour Expenses Co-ordinator Approvals</field>
+        <field name="group_ids" eval="[(4, ref('product_requisition.group_coordinator'))]"/>
+        <field name="description">General announcements for all Labour Expenses .</field>
+    </record>
+
     
   </data>
 

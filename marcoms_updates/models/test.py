@@ -10,6 +10,18 @@ from odoo.tools import float_utils, float_compare ,pycompat ,email_re, email_spl
 
 from odoo.tools.misc import format_date
 
+
+# PURCHASE_REQUISITION_STATES_IN = [
+#         ('draft', 'Draft'),
+#         ('ongoing', 'Ongoing'),
+#         ('in_progress', 'Confirmed'),
+#         ('open', 'Bid Selection'),
+#         ('pm_approval','Awaiting Project Manager Approval'),
+#         ('done', 'Closed'),
+#         ('cancel', 'Cancelled')
+#
+#     ]
+
 #CRM Module Customize Part
 class crm_customize(models.Model):
     _inherit = "crm.lead"
@@ -73,10 +85,12 @@ class crm_customize(models.Model):
     quotation_value2 = fields.Float('Quotation Value')
     submit_leadd = fields.Boolean('Submit Lead',default=False,copy=False)
     reason_for_lost = fields.Text('Reason For Lost')
+    #reason_for_drop = fields.Text(related='name.lost_reason',string='Drop Reason')
     reason_for_cancel = fields.Text('Reason For Cancel')
     tag_ids = fields.Many2one('crm.lead.tag',string='Tags', help="Classify and analyze your lead/opportunity categories like: Training, Service")
     source_master = fields.Many2one('source.master',string="Source")
-    is_oppor = fields.Boolean('print lead form from oppourtunity',default=False)
+    is_oppor = fields.Boolean('print lead form oppourtunity',default=False)
+    mobile_from_contact = fields.Char('Contact Person Mobile', help="Mobile Number of the contact", track_visibility='onchange', track_sequence=5, index=True)
     email_from_contact = fields.Char('Contact Person Email', help="Email address of the contact", track_visibility='onchange', track_sequence=4, index=True)
 
     @api.multi
@@ -160,7 +174,7 @@ class crm_customize(models.Model):
                 raise UserError(_("You should add the reason for cancel field"))
 
         if vals.get('stage_id') == 7:
-            # vals['quotation_complete'] = date.today()
+            vals['quotation_complete'] = date.today()
             if self.sale_number:
                 com = self.env['sale.order'].search([('opportunity_id','=',self.id)])
                 for l in com:
@@ -302,6 +316,7 @@ class crm_customize(models.Model):
         partner_ids = {}
         for lead in self:
             lead.email_from_contact = lead.email_from
+            lead.mobile_from_contact = lead.mobile
             if lead.partner_id:
                 partner_ids[lead.id] = lead.partner_id.id
                 # continue
@@ -546,7 +561,7 @@ class CRMLeadDocument(models.Model):
     lead_ref = fields.Many2one('crm.lead', invisible=1, copy=False)
     doc_attachment_id = fields.Many2many('ir.attachment', 'doc_attach_rels', 'doc_id', 'attach_id3', string="Attachment",
                                          help='You can attach the copy of your document', copy=False)
-    issue_date = fields.Char(string='Issue Date', default=fields.datetime.now(), copy=False)
+    issue_date = fields.Date(string='Issue Date', copy=False)
     active = fields.Boolean(default=True)
 
 class CRMLeadAttachment(models.Model):
@@ -574,7 +589,7 @@ class SaleOrderDocument(models.Model):
     sale_ref = fields.Many2one('sale.order', invisible=1, copy=False)
     docss_attachment_id = fields.Many2many('ir.attachment', 'doc_attachs_rels', 'doc_id', 'attach_id3', string="Attachment",
                                          help='You can attach the copy of your document', copy=False)
-    issue_date = fields.Char(string='Issue Date', default=fields.datetime.now(), copy=False)
+    issue_date = fields.Date(string='Issue Date', copy=False)
     active = fields.Boolean(default=True)
 
 class accountmoveDocument(models.Model):
@@ -588,7 +603,7 @@ class accountmoveDocument(models.Model):
     pay_ref = fields.Many2one('acount.payment', invisible=1, copy=False)
     docss_attachment_ids = fields.Many2many('ir.attachment', 'doc_attachs_account', 'doc_id', 'attach_id3', string="Attachment",
                                          help='You can attach the copy of your document', copy=False)
-    issue_date = fields.Char(string='Issue Date', default=fields.datetime.now(), copy=False)
+    issue_date = fields.Date(string='Issue Date', copy=False)
     active = fields.Boolean(default=True)
 
 class accountinvoiceDocument(models.Model):
@@ -602,7 +617,7 @@ class accountinvoiceDocument(models.Model):
     pay_ref = fields.Many2one('acount.payment', invisible=1, copy=False)
     bill_attachment_ids = fields.Many2many('ir.attachment', 'bill_attachs_account', 'doc_id', 'attach_id3', string="Attachment",
                                          help='You can attach the copy of your document', copy=False)
-    issue_date = fields.Char(string='Issue Date', default=fields.datetime.now(), copy=False)
+    issue_date = fields.Date(string='Issue Date', copy=False)
     active = fields.Boolean(default=True)
 
 
@@ -1581,6 +1596,8 @@ class SaleOrderOptioncus(models.Model):
 
     @api.multi
     def action_duplicate(self):
+
+
          self.copy(default={'order_id':self.order_id.id})
 
     @api.onchange('product_id', 'uom_id')
@@ -2391,6 +2408,7 @@ class LeaveAnalysis(models.Model):
     # the_month = fields.Datetime('Date')
     total_leave_days = fields.Float('Total Leaves Days')
     total_allocated_days = fields.Float('Total Allocated Days')
+    #total_unpaid_allocated_days = fields.Float('total unpaid allocated')
     pending_leaves = fields.Float('Pending Leaves')
 
     # @api.depends('total_leave_days','total_allocated_days')
@@ -2407,19 +2425,23 @@ class LeaveAnalysis(models.Model):
         self.env.cr.execute("""CREATE or REPLACE view leave_analysis as (
                 SELECT row_number() over(ORDER BY e.id) as id,
                         e.id as employee_id,
-                        l.holiday_status_id,
-                        sum(l.number_of_days) as total_leave_days, 
+                        l.holiday_status_id as holiday_status_id,
+                        sum(l.number_of_days) as total_leave_days,
+                        
+                        
                         (select sum(a.number_of_days)
                         from hr_leave_allocation a
-                        where e.id = a.employee_id
+                        where e.id = a.employee_id AND l.holiday_status_id = a.holiday_status_id
                         ) as total_allocated_days,
+                        
+                    
                         ((select sum(a.number_of_days)
                             from hr_leave_allocation a
-                            where e.id = a.employee_id
+                            where e.id = a.employee_id AND l.holiday_status_id = a.holiday_status_id
                             ) - sum(l.number_of_days)) as pending_leaves
                         from hr_employee e,
-                            hr_leave l
-                        where 	e.id=l.employee_id
+                            hr_leave l  
+                        where 	e.id=l.employee_id  
                     group by e.id, l.holiday_status_id
             );""" )
    
@@ -2781,16 +2803,35 @@ class PurchaseRequisitionCus(models.Model):
 
 
     requisition_so_id = fields.Many2one('material.requisition.sales',string="Requisition From Sales")
+    # state = state = fields.Selection(PURCHASE_REQUISITION_STATES_IN,
+    #                           'Status', track_visibility='onchange', required=True,
+    #                           copy=False, default='draft')
+    # state_blanket_order = fields.Selection(PURCHASE_REQUISITION_STATES_IN, compute='_set_state')
+    #po_sequence = fields.Many2one('purchase.order',string='PO Sequence', readonly=True)
+
 
     @api.multi
     def action_compare(self):
         action = self.env.ref('marcoms_updates.purchase_order_line_cus_action').read()[0]
         return action
 
+    # @api.multi
+    # def action_rfq_review_project_manager(self):
+    #     for order in self:
+    #         com = self.env['product.requisition'].search([('id', '=', order.pr_sequence.id)])
+    #         com.write({'state': 'pm_app'})
+    #         # comm = self.env['purchase.order'].search([('id', '=', order.po_sequence.id)])
+    #         # comm.write({'state': 'pm_appr'})
+    #         self.write({
+    #             'state': 'pm_approval',
+    #         })
+
+
+
     @api.model
     def create(self,vals):
         """ Broadcast the welcome message to all users in the employee company. """
-        
+
         # self.ensure_one()
         # IrModelData = self.env['ir.model.data']
         # ch_id = self.env['material.requisition'].search([('id', '=', vals['requisition_mat_po_id'])])
@@ -2798,7 +2839,7 @@ class PurchaseRequisitionCus(models.Model):
         #     req = x.sequence
         # raise ValidationError(_(vals['name']))
         if vals['origin']:
-            
+
             channel_all_employees = self.env.ref('marcoms_updates.channel_all_employees_pur').read()[0]
             template_new_employee = self.env.ref('marcoms_updates.email_template_data_applicant_tender').read()[0]
             # raise ValidationError(_(template_new_employee))
@@ -2810,8 +2851,8 @@ class PurchaseRequisitionCus(models.Model):
                 ids = channel_all_employees['id']
                 channel_id = self.env['mail.channel'].search([('id', '=', ids)])
                 channel_id.message_post(body='Hello there are New Purchase Tender Created Please Check the Purchase Requisition NO is '+str(vals['origin']), subject=subject,subtype='mail.mt_comment')
-                
-            
+
+
         result = super(PurchaseRequisitionCus, self).create(vals)
         return result
             # self.env['mail.message'].create({'message_type':"notification",
@@ -4431,6 +4472,7 @@ class BankDetails(models.Model):
 class AccountMoveCustomize(models.Model):
     _inherit = 'account.move'
 
+
     prepare = fields.Char('Prepared by')
     checked = fields.Char('Checked by')
     received = fields.Char('Received by')
@@ -4441,6 +4483,7 @@ class AccountMoveCustomize(models.Model):
     AC_print = fields.Boolean('Print A/c Payee')
     check_amount_in_words = fields.Char('amount in word',compute="_onchange_amount")
     document_count = fields.Integer(compute='_document_count', string='# Documents')
+
     
 
     @api.multi
@@ -5210,7 +5253,7 @@ class hrexpenseUpdate(models.Model):
     payment_mode = fields.Selection([
         ("own_account", "Employee (to reimburse)"),
         ("company_account", "Company")
-    ], default='company_account', states={'done': [('readonly', True)], 'post': [('readonly', True)], 'submitted': [('readonly', True)]}, string="Paid By")
+    ], default='own_account', states={'done': [('readonly', True)], 'post': [('readonly', True)], 'submitted': [('readonly', True)]}, string="Paid By")
     is_vendor = fields.Boolean('Is Vendor Expense',default=False)
     vendor_id = fields.Many2one('res.partner','Vendor')
     # employee_id = fields.Many2one('hr.employee', string="Employee", readonly=True, states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'refused': [('readonly', False)]}, default=_default_employee_id, domain=lambda self: self._get_employee_id_domain())
