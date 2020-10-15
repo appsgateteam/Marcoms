@@ -42,7 +42,7 @@
                                 <!--  <span style="margin-left:75%;">**<span t-field="o.check_amount" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></span>-->
                                 <!--  </div>-->
                                 <!--</t>-->
-                                <t t-if="num &lt;= 50">
+                                <t t-if="num &lt;= 46">
                                   <!--<br />-->
                                   <div style="margin-top:10px;">
                                   <b><span style="margin-left:75%;">**<span t-field="o.check_amount" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></span></b>
