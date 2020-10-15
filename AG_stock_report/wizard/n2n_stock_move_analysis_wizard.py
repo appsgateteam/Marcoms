@@ -51,7 +51,7 @@ class n2n_stock_move_analysis_wizard(models.TransientModel):
 			domain_filter.append(('categ_id','=',self.categ_id.id))
 		if self.nn_type:
 			domain_filter.append(('type','=',self.nn_type))
-		action = self.env.ref('N2N_stock_report.action_n2n_stock_move_analysis_new')
+		action = self.env.ref('AG_stock_report.action_n2n_stock_move_analysis_new')
 		result = action.read()[0]
 		result['domain'] = str(domain_filter)
 		# result['context']['default_with_value'] = True

@@ -126,8 +126,8 @@ class ProjectTask(models.Model):
 	@api.multi
 	def open_estimation_comparison(self):
 		view_mode = 'tree,pivot'
-		view_tree_id = self.env.ref('N2N_project_enhancement.n2n_material_estimate_combine_tree').id
-		view_pivot_id = self.env.ref('N2N_project_enhancement.n2n_material_estimate_combine_pivot').id
+		view_tree_id = self.env.ref('AG_project_enhancement.n2n_material_estimate_combine_tree').id
+		view_pivot_id = self.env.ref('AG_project_enhancement.n2n_material_estimate_combine_pivot').id
 		domain = [('parent_id','=',self.id)]
 
 		return {
@@ -145,8 +145,8 @@ class ProjectTask(models.Model):
 	@api.multi
 	def open_labour_comparison(self):
 		view_mode = 'tree,pivot'
-		view_tree_id = self.env.ref('N2N_project_enhancement.n2n_labour_estimate_combine_tree').id
-		view_pivot_id = self.env.ref('N2N_project_enhancement.n2n_labour_estimate_combine_pivot').id
+		view_tree_id = self.env.ref('AG_project_enhancement.n2n_labour_estimate_combine_tree').id
+		view_pivot_id = self.env.ref('AG_project_enhancement.n2n_labour_estimate_combine_pivot').id
 		domain = [('task_id','=',self.id)]
 
 		return {
@@ -164,8 +164,8 @@ class ProjectTask(models.Model):
 	@api.multi
 	def open_overhead_comparison(self):
 		view_mode = 'tree,pivot'
-		view_tree_id = self.env.ref('N2N_project_enhancement.n2n_overhead_estimate_combine_tree').id
-		view_pivot_id = self.env.ref('N2N_project_enhancement.n2n_overhead_estimate_combine_pivot').id
+		view_tree_id = self.env.ref('AG_project_enhancement.n2n_overhead_estimate_combine_tree').id
+		view_pivot_id = self.env.ref('AG_project_enhancement.n2n_overhead_estimate_combine_pivot').id
 		domain = [('task_id','=',self.id)]
 
 		return {
@@ -182,7 +182,7 @@ class ProjectTask(models.Model):
 
 	# @api.multi
 	# def open_estimation_comparison(self):
-	#     action = self.env.ref('N2N_project_enhancement.action_n2n_material_estimate_combine').read()[0]
+	#     action = self.env.ref('AG_project_enhancement.action_n2n_material_estimate_combine').read()[0]
 	#     # ctx = self.env.context.copy()
 	#     # ctx.update({
 	#     #     'default_parent_id': self.id,
@@ -445,8 +445,8 @@ class ProjectProject(models.Model):
 	@api.multi
 	def open_pro_estimation_comparison(self):
 		view_mode = 'tree,pivot'
-		view_tree_id = self.env.ref('N2N_project_enhancement.n2n_material_estimate_combine_tree').id
-		view_pivot_id = self.env.ref('N2N_project_enhancement.n2n_material_estimate_combine_pivot').id
+		view_tree_id = self.env.ref('AG_project_enhancement.n2n_material_estimate_combine_tree').id
+		view_pivot_id = self.env.ref('AG_project_enhancement.n2n_material_estimate_combine_pivot').id
 		domain = [('project_id','=',self.analytic_account_id.id)]
 
 		return {
