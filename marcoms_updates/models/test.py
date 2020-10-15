@@ -603,7 +603,7 @@ class accountmoveDocument(models.Model):
     pay_ref = fields.Many2one('acount.payment', invisible=1, copy=False)
     docss_attachment_ids = fields.Many2many('ir.attachment', 'doc_attachs_account', 'doc_id', 'attach_id3', string="Attachment",
                                          help='You can attach the copy of your document', copy=False)
-    issue_date = fields.Char(string='Issue Date', default=fields.datetime.now(), copy=False)
+    issue_date = fields.Date(string='Issue Date', copy=False)
     active = fields.Boolean(default=True)
 
 class accountinvoiceDocument(models.Model):
@@ -617,7 +617,7 @@ class accountinvoiceDocument(models.Model):
     pay_ref = fields.Many2one('acount.payment', invisible=1, copy=False)
     bill_attachment_ids = fields.Many2many('ir.attachment', 'bill_attachs_account', 'doc_id', 'attach_id3', string="Attachment",
                                          help='You can attach the copy of your document', copy=False)
-    issue_date = fields.Char(string='Issue Date', default=fields.datetime.now(), copy=False)
+    issue_date = fields.Date(string='Issue Date', copy=False)
     active = fields.Boolean(default=True)
 
 
