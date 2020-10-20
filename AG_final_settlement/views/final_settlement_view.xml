@@ -120,17 +120,17 @@
 
                 <page string="Details">
 
-                <group>
+<!--                <group>-->
 
-                    <group string="Working Days">
-                        <!-- <field name="join_date" readonly="1"/> -->
-                        <field name="total_working_days" readonly="1"/>
-                        <field name="leave_pending" readonly="1"/>
-                        <field name="unpaid_leaves" readonly="1"/>
-<!--                         <field name="leave_pending_balance" readonly="1"/>-->
-                    </group>
+<!--                    <group string="Working Days">-->
+<!--                        &lt;!&ndash; <field name="join_date" readonly="1"/> &ndash;&gt;-->
+<!--                        <field name="total_working_days" readonly="1"/>-->
+<!--                        <field name="leave_pending" readonly="1"/>-->
+<!--                        <field name="unpaid_leaves" readonly="1"/>-->
+<!--&lt;!&ndash;                         <field name="leave_pending_balance" readonly="1"/>&ndash;&gt;-->
+<!--                    </group>-->
 
-                    </group>
+<!--                    </group>-->
 
 
                     <group  string="Salary Information">
@@ -148,7 +148,7 @@
                     <group string="Leave Salary">
                         <group>
                              <button name="action_fs_date_diff" type="object" string="Encash Leaves" attrs="{'invisible':[('state','in',('progress','done'))]}"/>
-									<field name="last_vacation" />
+<!--									<field name="last_vacation" />-->
 									<field name="available_days" />
 									<field name="fs_gross_per_day" />
 									<field name="fs_gross_available_days" />
