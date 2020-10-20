@@ -492,7 +492,7 @@ class HrLeaveAllocation(models.Model):
             to_datetime,
             self.employee_id.resource_id,
             domain=[
-                ('unpaid', '=', True),
+                ('Unpaid', '=', True),
                 ('time_type', '=', 'leave')
             ],
         )
