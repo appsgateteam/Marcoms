@@ -612,12 +612,12 @@ class HrLeaveAllocation(models.Model):
         if self.date_from:
             return self.date_from
 
-        service_start_date = self.employee_id.sudo().service_start_date
-        if service_start_date:  # pragma: no cover
-            return datetime.combine(
-                service_start_date,
-                datetime.min.time()
-            )
+        # service_start_date = self.employee_id.sudo().service_start_date
+        # if service_start_date:  # pragma: no cover
+        #     return datetime.combine(
+        #         service_start_date,
+        #         datetime.min.time()
+        #     )
 
         return self.employee_id.sudo().create_date
 
@@ -628,14 +628,14 @@ class HrLeaveAllocation(models.Model):
         if self.date_to:
             return self.date_to
 
-        service_termination_date = (
-            self.employee_id.sudo().service_termination_date
-        )
-        if service_termination_date:  # pragma: no cover
-            return datetime.combine(
-                service_termination_date,
-                datetime.min.time()
-            )
+        # service_termination_date = (
+        #     self.employee_id.sudo().service_termination_date
+        # )
+        # if service_termination_date:  # pragma: no cover
+        #     return datetime.combine(
+        #         service_termination_date,
+        #         datetime.min.time()
+        #     )
 
         return None
 

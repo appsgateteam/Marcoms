@@ -8,7 +8,7 @@ from dateutil.relativedelta import relativedelta
 from odoo import fields
 from odoo.tests import common
 
-module_ns = 'odoo.addons.hr_holidays_accrual_advanced'
+module_ns = 'odoo.addons.hr_holidays_accrual_advanced_marcoms'
 hr_leave_allocation_class = (
     module_ns + '.models.hr_leave_allocation.HrLeaveAllocation'
 )
