@@ -126,6 +126,12 @@
         <field name="description">General announcements for all Labour Expenses .</field>
     </record>
 
+       <record model="mail.channel" id="channel_all_Labour_expense_co">
+        <field name="name">Labour Expenses HR Approvals</field>
+        <field name="group_ids" eval="[(4, ref('hr_holidays.group_hr_holidays_manager'))]"/>
+        <field name="description">General announcements for all Labour Expenses .</field>
+    </record>
+
     
   </data>
 
