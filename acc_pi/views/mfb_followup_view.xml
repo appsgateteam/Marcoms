@@ -48,8 +48,9 @@
                             domain="[('followup_status', '=', 'in_need_of_action')]"/>
                     <separator/>
                 </filter>
-                <filter name="customer" position="replace"/>
-                <filter string="Customers" name="customer" domain="[('customer','=',True)]"/>
+                <filter name="customer" position="replace">
+                    <filter string="Customers" name="customer" domain="[('customer','=',True)]"/>
+                </filter>
             </field>
         </record>
 
