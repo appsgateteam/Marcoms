@@ -3390,6 +3390,68 @@ if record:
         </field>
  </record>
 
+    <!--Access employee category or branch-->
+    <record id="hr_category_type_view_form" model="ir.ui.view">
+            <field name="name">employee.category.type.form</field>
+            <field name="model">employee.category.type</field>
+            <field name="arch" type="xml">
+                <form string="Category Type">
+                    <sheet>
+                        <label for="name" />
+                        <h2><field name="name"/></h2>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+    <record id="hr_category_type_view_tree" model="ir.ui.view">
+            <field name="name">employee.category.type.tree</field>
+            <field name="model">employee.category.type</field>
+            <field name="arch" type="xml">
+                <form string="Category Type">
+                    <field name="name"/>
+                </form>
+            </field>
+        </record>
+
+<!--     <record id="hr_category_type_view_search" model="ir.ui.view">-->
+<!--            <field name="name">employee.category.type.search</field>-->
+<!--            <field name="model">employee.category.type</field>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <search string="Category Type">-->
+<!--                    <field name="emp_category_id" string="Category Type"/>-->
+<!--                    <field name="emp_category_code" string="Sequence"/>-->
+<!--               </search>-->
+<!--            </field>-->
+<!--        </record>-->
+
+    <record id="hr_category_type_action" model="ir.actions.act_window">
+        <field name="name">Employee Category</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">employee.category.type</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+        <menuitem
+            id="hr_menu_category_type"
+            name="Category Type"
+            action="hr_category_type_action"
+            parent="hr.menu_human_resources_configuration"
+            sequence="97"
+            />
+
+    <record id="hr_contract_branch_form_inherit" model="ir.ui.view">
+            <field name="name">hr.contract.branch.form.inherit</field>
+            <field name="model">hr.contract</field>
+            <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='schedule_pay']" position="after">
+                  <field name="emp_branch_name"/>
+                </xpath>
+            </field>
+        </record>
+
 </odoo>
 
 
