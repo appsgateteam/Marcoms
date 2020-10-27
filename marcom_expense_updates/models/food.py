@@ -4037,3 +4037,18 @@ class AccountMoveInherit(models.Model):
     petty_expense_id = fields.Many2one('petty.cash.expense', string='Expense', copy=False, help="Expense where the move line come from")
 
 
+# class ExpenseSupplierTax(models.Model):
+#     _inherit = "product.template"
+#
+#     can_be_expensed = fields.Boolean(string="Can be Expensed", help="Specify whether the product can be selected in an expense.")
+#
+#     @api.model
+#     def create(self, vals):
+#         # When creating an expense product on the fly, you don't expect to
+#         # have taxes on it
+#         record = super(ExpenseSupplierTax,self).create(vals)
+#         if vals.get('can_be_expensed', False):
+#             print('--------entered if stmt------')
+#             vals.update({'supplier_taxes_id': True})
+#         print('------yes working-----')
+#         return record
