@@ -2094,6 +2094,26 @@ class HrSalaryRulecus(models.Model):
 
     od_payroll_item = fields.Boolean('Payroll Item',default=False)
 
+class HrPayslipLinecus(models.Model):
+    _inherit = 'hr.payslip.line'
+
+    def _get_partner_id(self, credit_account):
+
+        """
+        Get partner_id of slip line to use in account_move_line
+        """
+        # use partner of salary rule or fallback on employee's address
+        register_partner_id = self.salary_rule_id.register_id.partner_id
+        partner_id = self.slip_id.employee_id.address_home_id.id
+
+        if credit_account:
+            if register_partner_id or self.salary_rule_id.account_credit.internal_type in ('receivable', 'payable'):
+                return partner_id
+        else:
+            if register_partner_id or self.salary_rule_id.account_debit.internal_type in ('receivable', 'payable'):
+                return partner_id
+        return False
+
 class HrPayslipcus(models.Model):
     _inherit = 'hr.payslip'
 
@@ -2137,7 +2157,7 @@ class HrPayslipcus(models.Model):
                 if debit_account_id:
                     debit_line = (0, 0, {
                         'name': line.name,
-                        'partner_id': slip.contract_id.employee_id.id,
+                        'partner_id': line._get_partner_id(credit_account=False),
                         'account_id': debit_account_id,
                         'journal_id': slip.journal_id.id,
                         'date': date,
@@ -2153,7 +2173,7 @@ class HrPayslipcus(models.Model):
                 if credit_account_id:
                     credit_line = (0, 0, {
                         'name': line.name,
-                        'partner_id': slip.contract_id.employee_id.id,
+                        'partner_id': line._get_partner_id(credit_account=True),
                         'account_id': credit_account_id,
                         'journal_id': slip.journal_id.id,
                         'date': date,
