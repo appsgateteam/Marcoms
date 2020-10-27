@@ -2094,7 +2094,8 @@ class HrSalaryRulecus(models.Model):
 
     od_payroll_item = fields.Boolean('Payroll Item',default=False)
 
-class HrPayslipLinecus(models.Model):
+class HrPayslipLine(models.Model):
+    # this function is modified only to get partner_id in account_move_line
     _inherit = 'hr.payslip.line'
 
     def _get_partner_id(self, credit_account):
@@ -2103,8 +2104,8 @@ class HrPayslipLinecus(models.Model):
         Get partner_id of slip line to use in account_move_line
         """
         # use partner of salary rule or fallback on employee's address
-        register_partner_id = self.salary_rule_id.register_id.partner_id
-        partner_id = self.slip_id.employee_id.id
+        register_partner_id = self.slip_id.employee_id.address_home_id.id #self.salary_rule_id.register_id.partner_id
+        partner_id = register_partner_id
 
         if credit_account:
             if register_partner_id or self.salary_rule_id.account_credit.internal_type in ('receivable', 'payable'):
@@ -2113,6 +2114,7 @@ class HrPayslipLinecus(models.Model):
             if register_partner_id or self.salary_rule_id.account_debit.internal_type in ('receivable', 'payable'):
                 return partner_id
         return False
+    #end of function
 
 class HrPayslipcus(models.Model):
     _inherit = 'hr.payslip'
@@ -2131,6 +2133,7 @@ class HrPayslipcus(models.Model):
 
     @api.multi
     def action_payslip_done(self):
+        #this function is modified to have the branch on account move line
         #res = super(HrPayslipcus, self).action_payslip_done()
 
         for slip in self:
@@ -2183,7 +2186,7 @@ class HrPayslipcus(models.Model):
                         'emp_branch_name': slip.contract_id.emp_branch_name.id,
                         'tax_line_id': line.salary_rule_id.account_tax_id.id,
                     })
-                    print('----credit line----',credit_line)
+
                     line_ids.append(credit_line)
                     credit_sum += credit_line[2]['credit'] - credit_line[2]['debit']
 
@@ -2223,7 +2226,7 @@ class HrPayslipcus(models.Model):
             slip.write({'move_id': move.id, 'date': date})
             move.post()
         #return res
-
+        #end of function
 
 class HrVarianceLine(models.Model):
     _name = 'hr.variance.line'
