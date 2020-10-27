@@ -2111,8 +2111,8 @@ class HrPayslipcus(models.Model):
 
     @api.multi
     def action_payslip_done(self):
-        res = super(HrPayslipcus, self).action_payslip_done()
-
+        #res = super(HrPayslipcus, self).action_payslip_done()
+        print('---entered payslip function---')
         for slip in self:
             line_ids = []
             debit_sum = 0.0
@@ -2163,6 +2163,7 @@ class HrPayslipcus(models.Model):
                         'emp_branch_name': slip.contract_id.emp_branch_name.id,
                         'tax_line_id': line.salary_rule_id.account_tax_id.id,
                     })
+                    print('----credit line----',credit_line)
                     line_ids.append(credit_line)
                     credit_sum += credit_line[2]['credit'] - credit_line[2]['debit']
 
@@ -2201,7 +2202,7 @@ class HrPayslipcus(models.Model):
             move = self.env['account.move'].create(move_dict)
             slip.write({'move_id': move.id, 'date': date})
             move.post()
-        return res
+        #return res
 
 
 class HrVarianceLine(models.Model):
@@ -4645,7 +4646,8 @@ class AccountMoveCustomize(models.Model):
 
 class AccountMoveLineCus(models.Model):
     _inherit = 'account.move.line'
-    
+
+    emp_branch_name = fields.Many2one('employee.category.type',string='Branch')
     def _check_reconcile_validity(self):
         #Perform all checks on lines
         company_ids = set()
@@ -4661,6 +4663,7 @@ class AccountMoveLineCus(models.Model):
         #     raise UserError(_('Entries are not from the same account.'))
         if not (all_accounts[0].reconcile or all_accounts[0].internal_type == 'liquidity'):
             raise UserError(_('Account %s (%s) does not allow reconciliation. First change the configuration of this account to allow it.') % (all_accounts[0].name, all_accounts[0].code))
+
 
 # Accounts Customization Part
 

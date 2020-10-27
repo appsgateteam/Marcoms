@@ -2988,6 +2988,17 @@ if record:
         </field>
     </record>
 
+    <record id="account_move_form_line_cus" model="ir.ui.view">
+        <field name="name">account.move.form.Cus</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page[1]/field[@name='line_ids']/tree/field[@name='analytic_account_id']" position="after">
+               <field name="emp_branch_name"/>
+            </xpath>
+        </field>
+    </record>
+
     <record id="product_template_kanbanCus" model="ir.ui.view">
         <field name="name">product.template.kanabanCus</field>
         <field name="model">product.template</field>
