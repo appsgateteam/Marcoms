@@ -2112,7 +2112,7 @@ class HrPayslipcus(models.Model):
     @api.multi
     def action_payslip_done(self):
         #res = super(HrPayslipcus, self).action_payslip_done()
-        print('---entered payslip function---')
+
         for slip in self:
             line_ids = []
             debit_sum = 0.0
@@ -2137,7 +2137,7 @@ class HrPayslipcus(models.Model):
                 if debit_account_id:
                     debit_line = (0, 0, {
                         'name': line.name,
-                        'partner_id': line._get_partner_id(credit_account=False),
+                        'partner_id': slip.contract_id.employee_id.id,
                         'account_id': debit_account_id,
                         'journal_id': slip.journal_id.id,
                         'date': date,
@@ -2153,7 +2153,7 @@ class HrPayslipcus(models.Model):
                 if credit_account_id:
                     credit_line = (0, 0, {
                         'name': line.name,
-                        'partner_id': line._get_partner_id(credit_account=True),
+                        'partner_id': slip.contract_id.employee_id.id,
                         'account_id': credit_account_id,
                         'journal_id': slip.journal_id.id,
                         'date': date,
