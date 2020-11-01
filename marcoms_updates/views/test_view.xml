@@ -1665,11 +1665,13 @@ if record:
                 <field name="department_id"/>
                 <field name="job_id"/>
                 <field name="type_id"/>
+                <field name="emp_branch_name"/>
            		<group expand="1" string="Group By...">
                     <filter string="Employee" icon="terp-personal" name="employee_id" context="{'group_by':'employee_id'}"/>
                     <filter string="Department" icon="terp-personal" name="department_id" context="{'group_by':'department_id'}"/>
                     <filter string="Job" icon="terp-personal" name="job_id" context="{'group_by':'job_id'}"/>
                     <filter string="Contract Type" icon="terp-personal" name="type_id" context="{'group_by':'type_id'}"/>
+                    <filter string="Branch" icon="terp-personal" name="emp_branch_name" context="{'group_by':'emp_branch_name'}"/>
 				</group>
             </search>
         </field>
@@ -1723,6 +1725,9 @@ if record:
             </div>
             <xpath expr="//field[@name='parent_id']" position="after">
                 <field name="join_date" />
+            </xpath>
+            <xpath expr="//field[@name='join_date']" position="after">
+                <field name="emp_branch_name" />
             </xpath>
             <xpath expr="//field[@name='country_id']" position="after">
                 <field name="airfare" />

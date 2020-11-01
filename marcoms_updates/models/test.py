@@ -2010,6 +2010,15 @@ class Hrcontractscus(models.Model):
                 x = x + l.amt
             rec.hr_total_wage = x
 
+    @api.onchange('employee_id')
+    def _onchange_employee_id(self):
+        res = super(Hrcontractscus, self)._onchange_employee_id()
+        if self.employee_id:
+            self.job_id = self.employee_id.job_id
+            self.department_id = self.employee_id.department_id
+            self.emp_branch_name = self.employee_id.emp_branch_name
+            self.resource_calendar_id = self.employee_id.resource_calendar_id
+        return res
 
 class HRallowanceLine(models.Model):
     _name = 'hr.allowance.line'
@@ -2398,6 +2407,7 @@ class HrSalarySheetView(models.Model):
     job_id = fields.Many2one('hr.job',string="Designation")
     employee_id = fields.Many2one('hr.employee',string="Employee")
     department_id = fields.Many2one('hr.department',string="Department")
+    emp_branch_name = fields.Many2one('employee.category.type', string="Branch")
     identification = fields.Char('Identification No.')
     batch_name = fields.Char('Batch')
     date_from = fields.Date('Date From')
@@ -2422,6 +2432,7 @@ class HrSalarySheetView(models.Model):
                     hr_employee.department_id,
                     hr_employee.job_id,
                     hr_contract.type_id,
+                    hr_contract.emp_branch_name,
                     hr_payslip.date_from,
                     hr_payslip.date_to,
                     hr_payslip.date_to - hr_payslip.date_from + 1 AS payslip_days,
@@ -2466,7 +2477,7 @@ class HrSalarySheetView(models.Model):
 
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
-                        WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'DED'::text) AS deductions,
+                        WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'DED'::text) AS deductions,  
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'TRA'::text) AS trans_allowance,
@@ -2475,7 +2486,7 @@ class HrSalarySheetView(models.Model):
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'LOAN'::text) AS loan_deduction,
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
-                        WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'FINE'::text) AS fine_deduction,
+                        WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'DEDF'::text) AS fine_deduction,
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'GROSS'::text) AS gross,
@@ -2510,6 +2521,7 @@ class HrSalarySheetView(models.Model):
                 hr_payslip.date_from,
                 hr_payslip.date_to,
                 hr_contract.type_id, 
+                hr_contract.emp_branch_name,        
                 hr_employee.identification_id, 
                 hr_payslip.struct_id
         """
@@ -2605,6 +2617,7 @@ class HrEmployeescus(models.Model):
     emirates_id = fields.Char('Emirates ID')
     emirates_id_expiry_date = fields.Date('Emirates ID Expiry Date')
     cost_center = fields.Many2one('cost.center',string="Cost Center")
+    emp_branch_name = fields.Many2one('employee.category.type',string='Branch')
 
     def _get_date_start_work(self):
         return self.join_date
