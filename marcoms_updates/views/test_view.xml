@@ -1665,11 +1665,13 @@ if record:
                 <field name="department_id"/>
                 <field name="job_id"/>
                 <field name="type_id"/>
+                <field name="emp_branch_name"/>
            		<group expand="1" string="Group By...">
                     <filter string="Employee" icon="terp-personal" name="employee_id" context="{'group_by':'employee_id'}"/>
                     <filter string="Department" icon="terp-personal" name="department_id" context="{'group_by':'department_id'}"/>
                     <filter string="Job" icon="terp-personal" name="job_id" context="{'group_by':'job_id'}"/>
                     <filter string="Contract Type" icon="terp-personal" name="type_id" context="{'group_by':'type_id'}"/>
+                    <filter string="Branch" icon="terp-personal" name="emp_branch_name" context="{'group_by':'emp_branch_name'}"/>
 				</group>
             </search>
         </field>
@@ -1723,6 +1725,9 @@ if record:
             </div>
             <xpath expr="//field[@name='parent_id']" position="after">
                 <field name="join_date" />
+            </xpath>
+            <xpath expr="//field[@name='join_date']" position="after">
+                <field name="emp_branch_name" />
             </xpath>
             <xpath expr="//field[@name='country_id']" position="after">
                 <field name="airfare" />
@@ -2988,6 +2993,17 @@ if record:
         </field>
     </record>
 
+    <record id="account_move_form_line_cus" model="ir.ui.view">
+        <field name="name">account.move.form.Cus</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page[1]/field[@name='line_ids']/tree/field[@name='analytic_account_id']" position="after">
+               <field name="emp_branch_name"/>
+            </xpath>
+        </field>
+    </record>
+
     <record id="product_template_kanbanCus" model="ir.ui.view">
         <field name="name">product.template.kanabanCus</field>
         <field name="model">product.template</field>
@@ -3389,6 +3405,68 @@ if record:
             </xpath>
         </field>
  </record>
+
+    <!--Access employee category or branch-->
+    <record id="hr_category_type_view_form" model="ir.ui.view">
+            <field name="name">employee.category.type.form</field>
+            <field name="model">employee.category.type</field>
+            <field name="arch" type="xml">
+                <form string="Category Type">
+                    <sheet>
+                        <label for="name" />
+                        <h2><field name="name"/></h2>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+    <record id="hr_category_type_view_tree" model="ir.ui.view">
+            <field name="name">employee.category.type.tree</field>
+            <field name="model">employee.category.type</field>
+            <field name="arch" type="xml">
+                <form string="Category Type">
+                    <field name="name"/>
+                </form>
+            </field>
+        </record>
+
+<!--     <record id="hr_category_type_view_search" model="ir.ui.view">-->
+<!--            <field name="name">employee.category.type.search</field>-->
+<!--            <field name="model">employee.category.type</field>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <search string="Category Type">-->
+<!--                    <field name="emp_category_id" string="Category Type"/>-->
+<!--                    <field name="emp_category_code" string="Sequence"/>-->
+<!--               </search>-->
+<!--            </field>-->
+<!--        </record>-->
+
+    <record id="hr_category_type_action" model="ir.actions.act_window">
+        <field name="name">Employee Category</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">employee.category.type</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+        <menuitem
+            id="hr_menu_category_type"
+            name="Category Type"
+            action="hr_category_type_action"
+            parent="hr.menu_human_resources_configuration"
+            sequence="97"
+            />
+
+    <record id="hr_contract_branch_form_inherit" model="ir.ui.view">
+            <field name="name">hr.contract.branch.form.inherit</field>
+            <field name="model">hr.contract</field>
+            <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='schedule_pay']" position="after">
+                  <field name="emp_branch_name"/>
+                </xpath>
+            </field>
+        </record>
 
 </odoo>
 

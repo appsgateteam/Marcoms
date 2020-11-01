@@ -2000,6 +2000,7 @@ class Hrcontractscus(models.Model):
 
     hr_allowance_line_ids = fields.One2many('hr.allowance.line','contract_id',string='HR Allowance')
     hr_total_wage = fields.Float('Total Salary',compute="_total_wage")
+    emp_branch_name = fields.Many2one('employee.category.type', 'Branch Name')
 
     @api.multi
     def _total_wage(self):
@@ -2009,6 +2010,15 @@ class Hrcontractscus(models.Model):
                 x = x + l.amt
             rec.hr_total_wage = x
 
+    @api.onchange('employee_id')
+    def _onchange_employee_id(self):
+        res = super(Hrcontractscus, self)._onchange_employee_id()
+        if self.employee_id:
+            self.job_id = self.employee_id.job_id
+            self.department_id = self.employee_id.department_id
+            self.emp_branch_name = self.employee_id.emp_branch_name
+            self.resource_calendar_id = self.employee_id.resource_calendar_id
+        return res
 
 class HRallowanceLine(models.Model):
     _name = 'hr.allowance.line'
@@ -2093,6 +2103,28 @@ class HrSalaryRulecus(models.Model):
 
     od_payroll_item = fields.Boolean('Payroll Item',default=False)
 
+class HrPayslipLine(models.Model):
+    # this function is modified only to get partner_id in account_move_line
+    _inherit = 'hr.payslip.line'
+
+    def _get_partner_id(self, credit_account):
+
+        """
+        Get partner_id of slip line to use in account_move_line
+        """
+        # use partner of salary rule or fallback on employee's address
+        register_partner_id = self.slip_id.employee_id.address_home_id.id #self.salary_rule_id.register_id.partner_id
+        partner_id = register_partner_id
+
+        if credit_account:
+            if register_partner_id or self.salary_rule_id.account_credit.internal_type in ('receivable', 'payable'):
+                return partner_id
+        else:
+            if register_partner_id or self.salary_rule_id.account_debit.internal_type in ('receivable', 'payable'):
+                return partner_id
+        return False
+    #end of function
+
 class HrPayslipcus(models.Model):
     _inherit = 'hr.payslip'
 
@@ -2107,6 +2139,103 @@ class HrPayslipcus(models.Model):
                 if rec.hr_variance_line_id:
                     raise UserError(_('You cannot delete a payslip which have payroll transaction(Variance)!'))
         return super(HrPayslipcus, self).unlink()
+
+    @api.multi
+    def action_payslip_done(self):
+        #this function is modified to have the branch on account move line
+        #res = super(HrPayslipcus, self).action_payslip_done()
+
+        for slip in self:
+            line_ids = []
+            debit_sum = 0.0
+            credit_sum = 0.0
+            date = slip.date or slip.date_to
+            currency = slip.company_id.currency_id or slip.journal_id.company_id.currency_id
+
+            name = _('Payslip of %s') % (slip.employee_id.name)
+            move_dict = {
+                'narration': name,
+                'ref': slip.number,
+                'journal_id': slip.journal_id.id,
+                'date': date,
+            }
+            for line in slip.details_by_salary_rule_category:
+                amount = currency.round(slip.credit_note and -line.total or line.total)
+                if currency.is_zero(amount):
+                    continue
+                debit_account_id = line.salary_rule_id.account_debit.id
+                credit_account_id = line.salary_rule_id.account_credit.id
+
+                if debit_account_id:
+                    debit_line = (0, 0, {
+                        'name': line.name,
+                        'partner_id': line._get_partner_id(credit_account=False),
+                        'account_id': debit_account_id,
+                        'journal_id': slip.journal_id.id,
+                        'date': date,
+                        'debit': amount > 0.0 and amount or 0.0,
+                        'credit': amount < 0.0 and -amount or 0.0,
+                        'analytic_account_id': line.salary_rule_id.analytic_account_id.id or slip.contract_id.analytic_account_id.id,
+                        'emp_branch_name': slip.contract_id.emp_branch_name.id,
+                        'tax_line_id': line.salary_rule_id.account_tax_id.id,
+                    })
+                    line_ids.append(debit_line)
+                    debit_sum += debit_line[2]['debit'] - debit_line[2]['credit']
+
+                if credit_account_id:
+                    credit_line = (0, 0, {
+                        'name': line.name,
+                        'partner_id': line._get_partner_id(credit_account=True),
+                        'account_id': credit_account_id,
+                        'journal_id': slip.journal_id.id,
+                        'date': date,
+                        'debit': amount < 0.0 and -amount or 0.0,
+                        'credit': amount > 0.0 and amount or 0.0,
+                        'analytic_account_id': line.salary_rule_id.analytic_account_id.id or slip.contract_id.analytic_account_id.id,
+                        'emp_branch_name': slip.contract_id.emp_branch_name.id,
+                        'tax_line_id': line.salary_rule_id.account_tax_id.id,
+                    })
+
+                    line_ids.append(credit_line)
+                    credit_sum += credit_line[2]['credit'] - credit_line[2]['debit']
+
+            if currency.compare_amounts(credit_sum, debit_sum) == -1:
+                acc_id = slip.journal_id.default_credit_account_id.id
+                if not acc_id:
+                    raise UserError(_('The Expense Journal "%s" has not properly configured the Credit Account!') % (
+                        slip.journal_id.name))
+                adjust_credit = (0, 0, {
+                    'name': _('Adjustment Entry'),
+                    'partner_id': False,
+                    'account_id': acc_id,
+                    'journal_id': slip.journal_id.id,
+                    'date': date,
+                    'debit': 0.0,
+                    'credit': currency.round(debit_sum - credit_sum),
+                })
+                line_ids.append(adjust_credit)
+
+            elif currency.compare_amounts(debit_sum, credit_sum) == -1:
+                acc_id = slip.journal_id.default_debit_account_id.id
+                if not acc_id:
+                    raise UserError(_('The Expense Journal "%s" has not properly configured the Debit Account!') % (
+                        slip.journal_id.name))
+                adjust_debit = (0, 0, {
+                    'name': _('Adjustment Entry'),
+                    'partner_id': False,
+                    'account_id': acc_id,
+                    'journal_id': slip.journal_id.id,
+                    'date': date,
+                    'debit': currency.round(credit_sum - debit_sum),
+                    'credit': 0.0,
+                })
+                line_ids.append(adjust_debit)
+            move_dict['line_ids'] = line_ids
+            move = self.env['account.move'].create(move_dict)
+            slip.write({'move_id': move.id, 'date': date})
+            move.post()
+        #return res
+        #end of function
 
 class HrVarianceLine(models.Model):
     _name = 'hr.variance.line'
@@ -2278,6 +2407,7 @@ class HrSalarySheetView(models.Model):
     job_id = fields.Many2one('hr.job',string="Designation")
     employee_id = fields.Many2one('hr.employee',string="Employee")
     department_id = fields.Many2one('hr.department',string="Department")
+    emp_branch_name = fields.Many2one('employee.category.type', string="Branch")
     identification = fields.Char('Identification No.')
     batch_name = fields.Char('Batch')
     date_from = fields.Date('Date From')
@@ -2302,6 +2432,7 @@ class HrSalarySheetView(models.Model):
                     hr_employee.department_id,
                     hr_employee.job_id,
                     hr_contract.type_id,
+                    hr_contract.emp_branch_name,
                     hr_payslip.date_from,
                     hr_payslip.date_to,
                     hr_payslip.date_to - hr_payslip.date_from + 1 AS payslip_days,
@@ -2346,7 +2477,7 @@ class HrSalarySheetView(models.Model):
 
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
-                        WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'DED'::text) AS deductions,
+                        WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'DED'::text) AS deductions,  
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'TRA'::text) AS trans_allowance,
@@ -2355,7 +2486,7 @@ class HrSalarySheetView(models.Model):
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'LOAN'::text) AS loan_deduction,
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
-                        WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'FINE'::text) AS fine_deduction,
+                        WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'DEDF'::text) AS fine_deduction,
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'GROSS'::text) AS gross,
@@ -2390,6 +2521,7 @@ class HrSalarySheetView(models.Model):
                 hr_payslip.date_from,
                 hr_payslip.date_to,
                 hr_contract.type_id, 
+                hr_contract.emp_branch_name,        
                 hr_employee.identification_id, 
                 hr_payslip.struct_id
         """
@@ -2485,6 +2617,7 @@ class HrEmployeescus(models.Model):
     emirates_id = fields.Char('Emirates ID')
     emirates_id_expiry_date = fields.Date('Emirates ID Expiry Date')
     cost_center = fields.Many2one('cost.center',string="Cost Center")
+    emp_branch_name = fields.Many2one('employee.category.type',string='Branch')
 
     def _get_date_start_work(self):
         return self.join_date
@@ -4549,7 +4682,8 @@ class AccountMoveCustomize(models.Model):
 
 class AccountMoveLineCus(models.Model):
     _inherit = 'account.move.line'
-    
+
+    emp_branch_name = fields.Many2one('employee.category.type',string='Branch')
     def _check_reconcile_validity(self):
         #Perform all checks on lines
         company_ids = set()
@@ -4565,6 +4699,7 @@ class AccountMoveLineCus(models.Model):
         #     raise UserError(_('Entries are not from the same account.'))
         if not (all_accounts[0].reconcile or all_accounts[0].internal_type == 'liquidity'):
             raise UserError(_('Account %s (%s) does not allow reconciliation. First change the configuration of this account to allow it.') % (all_accounts[0].name, all_accounts[0].code))
+
 
 # Accounts Customization Part
 
@@ -5813,6 +5948,12 @@ class AssetsCus(models.Model):
     _inherit = 'account.asset.asset'
 
     tracking_id = fields.One2many('asset.tracking','asset_name',string="Tracking Line")
+
+class EmployeeCategoryType(models.Model):
+    _name = 'employee.category.type'
+
+    name =  fields.Char('Name')
+    #emp_category_code = fields.Integer('Code')
 
 class PaymentRequest(models.Model):
     _name = 'payment.request'

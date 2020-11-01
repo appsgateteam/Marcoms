@@ -46,6 +46,7 @@
                     <filter string="Journal" name='journal_id' context="{'group_by':'journal_id'}"/>
                     <filter string="Product" name='product_id' context="{'group_by':'product_id'}"/>
                     <filter string="Partner" name='partner_id' context="{'group_by':'partner_id'}"/>
+                    <filter string="Branch" name='emp_branch_name' context="{'group_by':'emp_branch_name'}"/>
                     <filter string="Company" name='company_id' context="{'group_by':'company_id'}"/>
                     <filter string="Currency" name='currency_id' context="{'group_by':'currency_id'}"/>
                     <filter string="Taxes" name='tax_ids' context="{'group_by':'tax_ids'}"/>

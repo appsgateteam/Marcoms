@@ -37,6 +37,7 @@ class N2NAccountEntryAnalysis(models.Model):
     partner_id = fields.Many2one('res.partner', string='Partner', ondelete='restrict')
     user_type_id = fields.Many2one('account.account.type', string="Account Type")
     tax_exigible = fields.Boolean(string='Appears in VAT report')
+    emp_branch_name = fields.Many2one('employee.category.type', string='Branch')
 
 
     @api.model_cr
@@ -62,6 +63,7 @@ class N2NAccountEntryAnalysis(models.Model):
 					mvl.write_date, 
 					mvl.payment_id, 
 					mvl.partner_id, 
+					mvl.emp_branch_name,
 					mvl.create_date, 
 					mvl.reconciled, 
 					mvl.amount_residual_currency, 
