@@ -2000,7 +2000,7 @@ class Hrcontractscus(models.Model):
 
     hr_allowance_line_ids = fields.One2many('hr.allowance.line','contract_id',string='HR Allowance')
     hr_total_wage = fields.Float('Total Salary',compute="_total_wage")
-    emp_branch_name = fields.Many2one('employee.category.type', 'Branch Name')
+    emp_branch_name = fields.Many2one('employee.category.type', 'Branch Name',store=True)
 
     @api.multi
     def _total_wage(self):
