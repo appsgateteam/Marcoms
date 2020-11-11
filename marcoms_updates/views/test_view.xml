@@ -1270,7 +1270,7 @@ if record:
                     <tree editable="top">
                     
                        <field name="contract_id" invisible="1"/>
-                       <field name="rule_type" required="1" domain="[('category_id', '=', 'Allowance'),('od_payroll_item','=',False)]" options="{'no_create': True, 'no_create_edit':True}"/>                            
+                       <field name="rule_type" required="1" domain="[('od_payroll_item','=',False)]" options="{'no_create': True, 'no_create_edit':True}"/>
                        <field name="code" invisible="1"/>
                        <field name="amt"/>                              
                            
@@ -1595,6 +1595,11 @@ if record:
                 <field name="hra" string="Housing"/>
                 <field name="trans_allowance" string="Transport Allowance"/>
                 <field name="other_allowance" string="Other Allowance"/>
+                <field name="present" string="Working Days"/>
+                <field name="annual" string="Annual Days"/>
+                <field name="unpaid" string="Unpaid"/>
+                <field name="annual_sal_amt" string="Annual Salary Amount"/>
+<!--                <field name="no_of_ot_hours" string="No.OT Hours"/>-->
                 <!-- <field name="food_allowance" string="Food Allowance"/> -->
                 <field name="ot_allowance" string="OT Allowance"/>
                 <field name="allowances_value" string="Allowances"/>
