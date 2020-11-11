@@ -1486,6 +1486,7 @@ if record:
                         <group>
                             <field name="payslip_id"/>
                             <field name="amount" />
+                            <field name="hours" />
                             <field name="tran_id" />
                         </group>
                         <group>
@@ -1505,6 +1506,7 @@ if record:
         <field name="arch" type="xml">
             <tree string="Variance Line">
                 <field name="payslip_id"/>
+                <field name="hours"/>
                 <field name="amount" />
                 <field name="tran_id" />
                 <field name="date_value"/>
@@ -1599,7 +1601,8 @@ if record:
                 <field name="annual" string="Annual Days"/>
                 <field name="unpaid" string="Unpaid"/>
                 <field name="annual_sal_amt" string="Annual Salary Amount"/>
-<!--                <field name="no_of_ot_hours" string="No.OT Hours"/>-->
+                <field name="no_of_ot_hours" string="No.OT Hours"/>
+                <field name="tot_sal_amt" string="Total Sal with Allowance"/>
                 <!-- <field name="food_allowance" string="Food Allowance"/> -->
                 <field name="ot_allowance" string="OT Allowance"/>
                 <field name="allowances_value" string="Allowances"/>
