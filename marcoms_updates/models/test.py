@@ -2405,7 +2405,7 @@ class HrSalarySheetView(models.Model):
     annual = fields.Float('Annual')
     unpaid = fields.Float('Unpaid')
     trans_allowance = fields.Float('Transport Allowance')
-    tot_sal_amt = fields.Float('Total Salary with Allowances')
+    #tot_sal_amt = fields.Float('Total Salary with Allowances')
     # traveling_allowance = fields.Float('Traveling Allowance')
     payslip_days = fields.Float('Payslip Days')
     structure_id = fields.Many2one('hr.payroll.structure',string="Salary Structure")
@@ -2478,9 +2478,7 @@ class HrSalarySheetView(models.Model):
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'ADTNS'::text) AS additions,
-                    ( SELECT sum(hr_payslip_line.total) AS sum
-                        FROM hr_payslip_line
-                        WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'TOTALL'::text) AS tot_sal_amt,    
+                       
                     
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line

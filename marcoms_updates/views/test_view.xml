@@ -1602,7 +1602,7 @@ if record:
                 <field name="unpaid" string="Unpaid"/>
                 <field name="annual_sal_amt" string="Annual Salary Amount"/>
                 <field name="no_of_ot_hours" string="No.OT Hours"/>
-                <field name="tot_sal_amt" string="Total Sal with Allowance"/>
+<!--                <field name="tot_sal_amt" string="Total Sal with Allowance"/>-->
                 <!-- <field name="food_allowance" string="Food Allowance"/> -->
                 <field name="ot_allowance" string="OT Allowance"/>
                 <field name="allowances_value" string="Allowances"/>
