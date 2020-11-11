@@ -2281,7 +2281,7 @@ class HrPayslipEmployeescus(models.TransientModel):
                                     'rule_id':k.payroll_item.id,
                                     'date_value':l.date_from,
                                     'tran_note':k.tran_note,
-                 
+                                    'hours':k.number_of_hours,
                                     'amount':k.allowance,
                                 }
                                 invoice_line.append((0, 0, datas))
