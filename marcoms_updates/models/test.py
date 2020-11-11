@@ -2000,7 +2000,7 @@ class Hrcontractscus(models.Model):
 
     hr_allowance_line_ids = fields.One2many('hr.allowance.line','contract_id',string='HR Allowance')
     hr_total_wage = fields.Float('Total Salary',compute="_total_wage")
-    emp_branch_name = fields.Many2one('employee.category.type', 'Branch Name')
+    emp_branch_name = fields.Many2one('employee.category.type', 'Branch Name',store=True)
 
     @api.multi
     def _total_wage(self):
@@ -2398,8 +2398,12 @@ class HrSalarySheetView(models.Model):
     gross = fields.Float('Gross')
     loan_deduction = fields.Float('Loan')
     net_salary = fields.Float('Net Salary')
+    annual_sal_amt = fields.Float('Annual Sal Amt')
     present = fields.Float('Present')
+    annual = fields.Float('Annual')
+    unpaid = fields.Float('Unpaid')
     trans_allowance = fields.Float('Transport Allowance')
+   # tot_sal_amt = fields.Float('Total Salary with Allowances')
     # traveling_allowance = fields.Float('Traveling Allowance')
     payslip_days = fields.Float('Payslip Days')
     structure_id = fields.Many2one('hr.payroll.structure',string="Salary Structure")
@@ -2409,9 +2413,20 @@ class HrSalarySheetView(models.Model):
     department_id = fields.Many2one('hr.department',string="Department")
     emp_branch_name = fields.Many2one('employee.category.type', string="Branch")
     identification = fields.Char('Identification No.')
+   # no_of_ot_hours = fields.Float('Overtime Hours')
     batch_name = fields.Char('Batch')
     date_from = fields.Date('Date From')
     date_to = fields.Date('Date To')
+
+
+    # @api.depends('tot_sal_amt')
+    # def _compute_tot_sal(self):
+    #     for obj in self:
+    #
+    #         tot = 0
+    #         tot = obj.basic + obj.other_allowance
+    #         self.tot_sal_amt = tot
+
 
     @api.model_cr
     def init(self):
@@ -2429,6 +2444,7 @@ class HrSalarySheetView(models.Model):
                     hr_payslip.employee_id,
                     hr_employee.identification_id AS identification,
                     hr_payslip.struct_id AS structure_id,
+            
                     hr_employee.department_id,
                     hr_employee.job_id,
                     hr_contract.type_id,
@@ -2446,13 +2462,17 @@ class HrSalarySheetView(models.Model):
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'OTH'::text) AS other_allowance,
+                    
+                    ( SELECT sum(hr_payslip_line.total) AS sum
+                        FROM hr_payslip_line
+                        WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'Annual'::text) AS annual_sal_amt,   
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'OT'::text) AS ot_allowance,
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'ALWCE'::text) AS allowances_value,
-                        
+                           
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'ADTNS'::text) AS additions,
@@ -2473,7 +2493,7 @@ class HrSalarySheetView(models.Model):
                         FROM hr_payslip_line
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'CV100'::text) AS cvd100,
                     
-
+                
 
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
@@ -2493,6 +2513,13 @@ class HrSalarySheetView(models.Model):
                     ( SELECT sum(hr_payslip_worked_days.number_of_days) AS sum
                         FROM hr_payslip_worked_days
                         WHERE hr_payslip_worked_days.payslip_id = hr_payslip.id AND hr_payslip_worked_days.code::text = 'WORK100'::text) AS present,
+                    ( SELECT sum(hr_payslip_worked_days.number_of_days) AS sum
+                        FROM hr_payslip_worked_days
+                        WHERE hr_payslip_worked_days.payslip_id = hr_payslip.id AND hr_payslip_worked_days.code::text = 'Annual'::text) AS annual,    
+                    ( SELECT sum(hr_payslip_worked_days.number_of_days) AS sum
+                        FROM hr_payslip_worked_days
+                        WHERE hr_payslip_worked_days.payslip_id = hr_payslip.id AND hr_payslip_worked_days.code::text = 'Unpaid'::text) AS unpaid,  
+                              
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'NET'::text) AS net_salary
