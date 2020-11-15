@@ -2281,7 +2281,6 @@ class HrPayslipEmployeescus(models.TransientModel):
                                     'rule_id':k.payroll_item.id,
                                     'date_value':l.date_from,
                                     'tran_note':k.tran_note,
-                                    'hours':k.number_of_hours,
                                     'amount':k.allowance,
                                 }
                                 invoice_line.append((0, 0, datas))
@@ -2464,7 +2463,10 @@ class HrSalarySheetView(models.Model):
                         FROM hr_payslip_line
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'OTH'::text) AS other_allowance,
                     
-                    
+                    ( SELECT sum(hr_variance_line.hours) AS sum
+                        FROM hr_variance_line
+                        WHERE hr_variance_line.payslip_id = hr_payslip.id) AS no_of_ot_hours,    
+                        
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'Annual'::text) AS annual_sal_amt,   
@@ -2510,9 +2512,7 @@ class HrSalarySheetView(models.Model):
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'DEDF'::text) AS fine_deduction,
-                    ( SELECT sum(hr_variance_line.hours) AS sum
-                        FROM hr_variance_line
-                        WHERE hr_variance_line.payslip_id = hr_payslip.id) AS no_of_ot_hours,    
+                    
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'GROSS'::text) AS gross,
