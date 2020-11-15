@@ -287,6 +287,8 @@ class MaterialRequisition(models.Model):
 											'analytic_id': res.analytic_id.id,
 											'task_id': res.task_id.id,
 											'requisition_mat_po_id':res.id,
+											'date_end': res.requisition_deadline_date,
+											'ordering_date': res.requisition_date,
 											'origin':res.sequence,
 											})
 		#raise Warning(_('You cant received the product,because picking is not completed'))
