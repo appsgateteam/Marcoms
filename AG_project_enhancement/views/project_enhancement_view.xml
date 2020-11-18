@@ -261,14 +261,14 @@
                         <field name="date_to"/>
                     </group>
                     <group string="Show Dates" name="show">
-                        <field name="date_from"/>
-                        <field name="date_to"/>
+                        <field name="show_date_from"/>
+                        <field name="show_date_to"/>
                     </group>
                 </group>
                 <group>
                     <group string="Dismantling Dates" name="dismantling">
-                        <field name="date_from"/>
-                        <field name="date_to"/>
+                        <field name="dismant_date_from"/>
+                        <field name="dismant_date_to"/>
                     </group>
                 </group>
             </xpath>
