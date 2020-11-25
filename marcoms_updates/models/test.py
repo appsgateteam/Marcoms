@@ -2096,10 +2096,8 @@ class HRpayrolltranLine(models.Model):
     def _get_amount(self):
 
         for rec in self:
-            no_of_days = 0
-            if no_of_days == 31:
-                rec.timesheet_cost = ((rec.employee_id.contract_id.hr_total_wage /31) / 8)
-            rec.allowance = rec.number_of_hours * rec.timesheet_cost
+          rec.timesheet_cost = ((rec.employee_id.contract_id.hr_total_wage /31) / 8)
+          rec.allowance = rec.number_of_hours * rec.timesheet_cost
 
 class HrSalaryRulecus(models.Model):
     _inherit = 'hr.salary.rule'
