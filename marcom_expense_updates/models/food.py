@@ -3962,8 +3962,6 @@ class Labour_Sheet(models.Model):
     @api.multi
     def action_submit_sheet(self):
         self.write({'state': 'submit'})
-        for rec in self.expense_line_ids:
-            rec.write({'state': 'reported'})
         self.activity_update()
 
         
