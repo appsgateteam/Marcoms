@@ -47,6 +47,7 @@
                         <field name="creator_name" />
                         <field name="oppor_id" attrs="{'readonly': [('state', 'not in', ['new'])]}" options="{'no_create': True}"/>
                         <field name="task_id" attrs="{'readonly': [('state', 'not in', ['new'])]}" domain="[('project_id.analytic_account_id','=',oppor_id)]" options="{'no_create': True}"/>
+
                         <field name="show_name" attrs="{'readonly': [('state', 'not in', ['new'])]}"/>
                         <field name="flag" invisible="1" attrs="{'readonly': [('state', 'not in', ['new'])]}"/>
                         <field name="test_requester" invisible="1" attrs="{'readonly': [('state', 'not in', ['new'])]}"/>
