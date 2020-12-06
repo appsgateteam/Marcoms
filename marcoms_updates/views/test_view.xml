@@ -432,7 +432,7 @@ if record:
             </button>
             <xpath expr="//field[@name='team_id']" position="after">
                 <!-- ['|',('stage_id', '=', 1),('stage_id', '=', 2)] -->
-                <field name="assign_to_designer" attrs="{'invisible': [('stage_id', '=', 1)],'required': [('stage_id', '=', 3)]}" groups="marcoms_updates.group_sale_top_manager,marcoms_updates.group_creative_coordinator"/>
+                <field name="assign_to_designer" attrs="{'invisible': [('stage_id', '=', 1)],'required': [('stage_id', '=', 3)]}" groups="marcoms_updates.group_sale_top_manager,marcoms_updates.group_creative_coordinator" widget="many2many_tags"/>
             </xpath>
 
              <xpath expr="//field[@name='lost_reason']" position="attributes">
