@@ -3351,7 +3351,7 @@ class Labour_detals(models.Model):
                 self.name)
             channel_id.message_post(body=body, subject='Labour Expenses Pending Approval', subtype='mail.mt_comment')
         channel_all_employeess = self.env.ref('marcom_expense_updates.channel_all_Labour_expense_po').read()[0]
-        template_new_employees = self.env.reflabour.expense('marcom_expense_updates.email_template_data_labour_expense_po').read()[0]
+        template_new_employees = self.env.ref('marcom_expense_updates.email_template_data_labour_expense_po').read()[0]
         # raise ValidationError(_(template_new_employee))
         if template_new_employees:
             # MailTemplate = self.env['mail.template']
@@ -3628,8 +3628,6 @@ class Labour_detals(models.Model):
             'target': 'current',
             'res_id': self.sheet_id.id
         }
-
-
 
     @api.multi
     def action_submit_expenses(self):
@@ -4215,11 +4213,7 @@ class Labour_Sheet(models.Model):
     @api.multi
     def action_submit_sheet(self):
         self.write({'state': 'submit'})
-        for rec in self.expense_line_ids:
-            rec.write({'state': 'reported'})
         self.activity_update()
-
-
 
     @api.multi
     def approve_expense_sheets(self):
