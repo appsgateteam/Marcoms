@@ -148,9 +148,17 @@
                             <strong>Verified by:</strong>
                             <p t-field="o.verified"/>
                         </div>
-                    </div> 
+                    </div>
+
                 </div>
-                
+                <div class="row">
+                    <div class="col-5">
+                        <div class="text-left" style="padding-top:70px;margin-top:250px;font-size:17px;">
+                            <strong>Notes:</strong>
+                            <span t-field="o.narration"/>
+                        </div>
+                    </div>
+                </div>
                
                 </div>
             </t>

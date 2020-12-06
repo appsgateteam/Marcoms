@@ -26,7 +26,7 @@ from odoo.tools.misc import format_date
 class crm_customize(models.Model):
     _inherit = "crm.lead"
 
-    assign_to_designer = fields.Many2one('res.users',string="Assign to Designer")
+    assign_to_designer = fields.Many2many('res.users',string="Assign to Designer")
     job_number = fields.Integer('Job number',compute="_compute_remaining_date")
     show = fields.Char('Show')
     show_venue = fields.Char('Show Venue')
@@ -2094,9 +2094,10 @@ class HRpayrolltranLine(models.Model):
 
     @api.onchange('number_of_hours')
     def _get_amount(self):
+
         for rec in self:
-            rec.timesheet_cost = rec.employee_id.timesheet_cost
-            rec.allowance = rec.number_of_hours * rec.timesheet_cost
+          rec.timesheet_cost = ((rec.employee_id.contract_id.hr_total_wage /31) / 8)
+          rec.allowance = rec.number_of_hours * rec.timesheet_cost
 
 class HrSalaryRulecus(models.Model):
     _inherit = 'hr.salary.rule'
