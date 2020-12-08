@@ -2128,7 +2128,7 @@ class HRpayrolltranLine(models.Model):
             rec.allowance = rec.number_of_hours * time_cost
 
 
-class HrSalaryRulecus(models.Model):
+class HrSalaryRulecus(models.Model)
     _inherit = 'hr.salary.rule'
 
     od_payroll_item = fields.Boolean('Payroll Item', default=False)
