@@ -53,7 +53,10 @@
                                 <td><span t-field="inv.date_invoice"/></td>
                                 <td><span t-field="inv.number"/></td>
                                  <t t-foreach="inv.invoice_line_ids" t-as="line">
+                                     <t t-if="line.account_analytic_id">
                                     <td><span t-field="line.account_analytic_id.code"/>-<span t-field="line.account_analytic_id.name"/></td>
+
+                                     </t>
                                 </t>
                                 <td class="text-right"><span t-field="inv.amount_total" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></td>
                                 <!-- <t t-foreach="inv.invoice_line_ids" t-as="invs">
