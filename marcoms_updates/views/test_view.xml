@@ -1339,7 +1339,7 @@ if record:
                             <field name="payroll_tran_id" />
                             <field name="deduction" />
                             <field name="state"/>
-                            <field name="timesheet_cost" invisible="1"/>
+                            <field name="timesheet_cost" invisible="0"/>
                             <field name="number_of_hours" widget="time" />
                         </group>
                         <group>
