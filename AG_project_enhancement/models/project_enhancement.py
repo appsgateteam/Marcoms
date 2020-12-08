@@ -557,10 +557,10 @@ class ProjectProject(models.Model):
     venue = fields.Char(string="Venue")
     date_from = fields.Datetime(string="From Date")
     date_to = fields.Datetime(string="To Date")
-   # show_date_from = fields.Datetime(string="From Date")
-    #show_date_to = fields.Datetime(string="To Date")
-    #dismant_date_from = fields.Datetime(string="From Date")
-    #dismant_date_to = fields.Datetime(string="To Date")
+    show_date_from = fields.Datetime(string="From Date")
+    show_date_to = fields.Datetime(string="To Date")
+    dismant_date_from = fields.Datetime(string="From Date")
+    dismant_date_to = fields.Datetime(string="To Date")
     sequence = fields.Char(string='Sequence', readonly=True, copy=False)
 
 
