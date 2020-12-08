@@ -2096,10 +2096,10 @@ class HRpayrolltranLine(models.Model):
     def _get_amount(self):
 
         for rec in self:
-          rec.timesheet_cost = ((rec.employee_id.contract_id.hr_total_wage /31) / 8)
+          rec.timesheet_cost = rec.employee_id.timesheet_cost
           rec.allowance = rec.number_of_hours * rec.timesheet_cost
 
-class HrSalaryRulecus(models.Model):
+class HrSalaryRulecus(models.Model)
     _inherit = 'hr.salary.rule'
 
     od_payroll_item = fields.Boolean('Payroll Item',default=False)
