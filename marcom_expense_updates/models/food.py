@@ -2940,7 +2940,7 @@ class Labour_detals(models.Model):
     labour_type = fields.Many2one('labour.type', string='Type', required=True,  change_default=True, track_visibility='always', help="You can find Type Reference.", readonly=True , states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'refused': [('readonly', False)]})
     project_id = fields.Many2one('project.project', string='Project', required=True , readonly=True , states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'refused': [('readonly', False)]})
     project_manager = fields.Many2one('res.users',string="Project Manager")
-    partner_id = fields.Many2one('res.partner', string='Supplier Name' , required=True,  change_default=True, track_visibility='always', help="You can find a vendor by its Name, TIN, Email or Internal Reference.")
+    partner_id = fields.Many2one('res.partner', string='Supplier Name' , required=True,  change_default=True, track_visibility='always', help="You can find a vendor by its Name, TIN, Email or Internal Reference.",readonly=True , states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'refused': [('readonly', False)]})
     no_of_helpers = fields.Integer( string='Number of People', readonly=True, required=True, states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'refused': [('readonly', False)]})
     time_in = fields.Float(string='Time in', readonly=True, required=True, states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'refused': [('readonly', False)]})
     time_out = fields.Float(string='Time out',  readonly=True, required=True,  states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'refused': [('readonly', False)]})
