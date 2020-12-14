@@ -2865,17 +2865,11 @@ class PurchaseOrderCus(models.Model):
             if self.picking_ids:
                 for pick in self.picking_ids:
                     pick.move_lines.write({'origin': order.interchanging_po_sequence}) 
-            order.update_purchase_pricelist()        
+                    
         return res
     
     
-    def update_purchase_pricelist(self):
-    for order in self:
-        for line in order.order_line:
-            pricelist = self.env['product.supplierinfo'].search([('name','=',order.partner_id.id),('product_tmpl_id','=',line.product_id.product_tmpl_id.id)])
-            if pricelist:
-                for price in pricelist:
-                    price.price = line.price_unit
+    
 
     
     @api.multi
@@ -3178,14 +3172,7 @@ Official receipt should be obtained for cash payments."""
     
     
     
-    @api.multi
-    def action_invoice_open(self):
-        res = super(AccountInvoiceCust, self).action_invoice_open()
-        for order in self:
-            account_analytic = self.env['account.invoice.line'].search([('invoice_id', '=', order.id)])
-            for acc in account_analytic:
-                order.project = acc.account_analytic_id.id
-        return res
+  
     
     @api.multi
     def _document_count(self):
