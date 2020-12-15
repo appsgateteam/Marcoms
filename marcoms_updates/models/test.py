@@ -3173,12 +3173,12 @@ Official receipt should be obtained for cash payments."""
     
     @api.multi
     def action_invoice_open(self):
-    res = super(AccountInvoiceCust, self).action_invoice_open()
-    for order in self:
-        account_analytic = self.env['account.invoice.line'].search([('invoice_id', '=', order.id)])
-        for acc in account_analytic:
-            order.project = acc.account_analytic_id.id
-    return res
+        res = super(AccountInvoiceCust, self).action_invoice_open()
+        for order in self:
+            account_analytic = self.env['account.invoice.line'].search([('invoice_id', '=', order.id)])
+            for acc in account_analytic:
+                order.project = acc.account_analytic_id.id
+        return res
   
     
     @api.multi
