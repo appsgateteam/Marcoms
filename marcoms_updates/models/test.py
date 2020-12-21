@@ -2122,7 +2122,9 @@ class HRpayrolltranLine(models.Model):
 
     @api.onchange('number_of_hours')
     def _get_amount(self):
+
         for rec in self:
+
             rec.timesheet_cost = rec.employee_id.contract_id.hr_total_wage
             time_cost = ((rec.timesheet_cost / 30) / 8)
             rec.allowance = rec.number_of_hours * time_cost
@@ -6421,4 +6423,8 @@ class PaymentRequest(models.Model):
 
     @api.multi
     def set_to_draft(self):
+<<<<<<< HEAD
         self.write({'state': 'Draft', 'account_approve': False, 'approved': False})
+=======
+        self.write({'state':'Draft','account_approve':False,'approved':False})
+>>>>>>> 0a36294a552d0b0da6429556c181a304385a14fe
