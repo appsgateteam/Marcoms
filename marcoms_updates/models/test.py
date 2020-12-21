@@ -2094,11 +2094,9 @@ class HRpayrolltranLine(models.Model):
 
     @api.onchange('number_of_hours')
     def _get_amount(self):
-
         for rec in self:
-          rec.timesheet_cost = rec.employee_id.contract_id.hr_total_wage
-          time_cost = ((rec.timesheet_cost / 30) / 8)
-          rec.allowance = rec.number_of_hours * time_cost
+            rec.timesheet_cost = rec.employee_id.timesheet_cost
+            rec.allowance = rec.number_of_hours * rec.timesheet_cost
 
 class HrSalaryRulecus(models.Model):
     _inherit = 'hr.salary.rule'
@@ -2865,12 +2863,10 @@ class PurchaseOrderCus(models.Model):
             if self.picking_ids:
                 for pick in self.picking_ids:
                     pick.move_lines.write({'origin': order.interchanging_po_sequence}) 
-                    
+               
         return res
     
     
-    
-
     
     @api.multi
     def button_draft(self):
