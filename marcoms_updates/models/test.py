@@ -2130,7 +2130,7 @@ class HRpayrolltranLine(models.Model):
             rec.allowance = rec.number_of_hours * time_cost
 
 
-class HrSalaryRulecus(models.Model)
+class HrSalaryRulecus(models.Model):
     _inherit = 'hr.salary.rule'
 
     od_payroll_item = fields.Boolean('Payroll Item', default=False)
@@ -6423,8 +6423,4 @@ class PaymentRequest(models.Model):
 
     @api.multi
     def set_to_draft(self):
-<<<<<<< HEAD
-        self.write({'state': 'Draft', 'account_approve': False, 'approved': False})
-=======
         self.write({'state':'Draft','account_approve':False,'approved':False})
->>>>>>> 0a36294a552d0b0da6429556c181a304385a14fe
