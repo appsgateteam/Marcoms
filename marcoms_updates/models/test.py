@@ -1,12 +1,12 @@
-from odoo import api, fields, models, tools,_
-from odoo.exceptions import except_orm, ValidationError ,UserError
+from odoo import api, fields, models, tools, _
+from odoo.exceptions import except_orm, ValidationError, UserError
 import odoo.addons.decimal_precision as dp
-from datetime import datetime, timedelta , date
+from datetime import datetime, timedelta, date
 import math
 import time
 from num2words import num2words
 from odoo.exceptions import Warning
-from odoo.tools import float_utils, float_compare ,pycompat ,email_re, email_split, email_escape_char, float_is_zero, date_utils
+from odoo.tools import float_utils, float_compare, pycompat, email_re, email_split, email_escape_char, float_is_zero,  date_utils
 
 from odoo.tools.misc import format_date
 
@@ -22,12 +22,12 @@ from odoo.tools.misc import format_date
 #
 #     ]
 
-#CRM Module Customize Part
+# CRM Module Customize Part
 class crm_customize(models.Model):
     _inherit = "crm.lead"
 
-    assign_to_designer = fields.Many2many('res.users',string="Assign to Designer")
-    job_number = fields.Integer('Job number',compute="_compute_remaining_date")
+    assign_to_designer = fields.Many2many('res.users', string="Assign to Designer")
+    job_number = fields.Integer('Job number', compute="_compute_remaining_date")
     show = fields.Char('Show')
     show_venue = fields.Char('Show Venue')
     show_date = fields.Date('Show Dates')
@@ -40,74 +40,81 @@ class crm_customize(models.Model):
     visual_asset5 = fields.Boolean('Client Mood-board')
     response1 = fields.Boolean('Online Submission')
     response2 = fields.Boolean('Print Submission')
-    sequence_no = fields.Char('Brief No', required=True, copy=False, readonly=True, index=True, default=lambda self: _('New'),track_visibility="onchange")
-    eval_detail1 = fields.Many2one('details.sheet',string='Client History with Marcoms')
-    eval_detail2 = fields.Many2one('details.sheet',string='Scalability')
-    eval_detail3 = fields.Many2one('details.sheet',string='Brand Guidelines')
-    eval_detail4 = fields.Many2one('details.sheet',string='Floor Plan and Requirements')
-    eval_detail5 = fields.Many2one('details.sheet',string='Client Approach Time')
-    eval_detail6 = fields.Many2one('details.sheet',string='Multi Shows')
-    eval_detail7 = fields.Many2one('details.sheet',string='Design Time Line')
-    eval_detail8 = fields.Many2one('details.sheet',string='Account Manager % of Project Approval')
-    eval_detail9 = fields.Many2one('details.sheet',string='Budget Evaluated by Sales')
-    eval_detail10 = fields.Many2one('details.sheet',string='Brief Details Evaluated by Sales')
-    eval_detail11 = fields.Many2one('details.sheet',string='Number Of companies Pitching')
-    rate1 = fields.Char('Client History with Marcoms Rate',related='eval_detail1.rate',store=True,readonly=True)
-    rate2 = fields.Char('Scalability Rate',related='eval_detail2.rate',store=True,readonly=True)
-    rate3 = fields.Char('Brand Guidelines Rate',related='eval_detail3.rate',store=True,readonly=True)
-    rate4 = fields.Char('Floor Plan and Requirements Rate',related='eval_detail4.rate',store=True,readonly=True)
-    rate5 = fields.Char('Client Approach Time Rate',related='eval_detail5.rate',store=True,readonly=True)
-    rate6 = fields.Char('Multi Shows Rate',related='eval_detail6.rate',store=True,readonly=True)
-    rate7 = fields.Char('Design Time Line Rate',related='eval_detail7.rate',store=True,readonly=True)
-    rate8 = fields.Char('Account Manager % of Project Approval Rate',related='eval_detail8.rate',store=True,readonly=True)
-    rate9 = fields.Char('Budget Evaluated by Sales Rate',related='eval_detail9.rate',store=True,readonly=True)
-    rate10 = fields.Char('Brief Details " Evaluated by Sales Rate',related='eval_detail10.rate',store=True,readonly=True)
-    rate11 = fields.Char('Number Of companies Pitching Rate',related='eval_detail11.rate',store=True,readonly=True)
-    rate_sum = fields.Integer('Total Points',compute="_compute_remaining_date")
-    grade = fields.Char('Grade',compute="_compute_remaining_date")
-    design_deadline = fields.Date('Design Deadline',copy=False)
-    design_complete = fields.Date('Design Completion',copy=False)
-    quotation_deadline = fields.Date('Quotation Deadline',copy=False)
-    quotation_complete = fields.Date('Quotation Completion',copy=False)
-    remaining_dates_design = fields.Char('Design Timeline',compute="_compute_remaining_date")
-    remaining_dates = fields.Char('Quotation Timeline',compute="_compute_remaining_date")
+    sequence_no = fields.Char('Brief No', required=True, copy=False, readonly=True, index=True,
+                              default=lambda self: _('New'), track_visibility="onchange")
+    eval_detail1 = fields.Many2one('details.sheet', string='Client History with Marcoms')
+    eval_detail2 = fields.Many2one('details.sheet', string='Scalability')
+    eval_detail3 = fields.Many2one('details.sheet', string='Brand Guidelines')
+    eval_detail4 = fields.Many2one('details.sheet', string='Floor Plan and Requirements')
+    eval_detail5 = fields.Many2one('details.sheet', string='Client Approach Time')
+    eval_detail6 = fields.Many2one('details.sheet', string='Multi Shows')
+    eval_detail7 = fields.Many2one('details.sheet', string='Design Time Line')
+    eval_detail8 = fields.Many2one('details.sheet', string='Account Manager % of Project Approval')
+    eval_detail9 = fields.Many2one('details.sheet', string='Budget Evaluated by Sales')
+    eval_detail10 = fields.Many2one('details.sheet', string='Brief Details Evaluated by Sales')
+    eval_detail11 = fields.Many2one('details.sheet', string='Number Of companies Pitching')
+    rate1 = fields.Char('Client History with Marcoms Rate', related='eval_detail1.rate', store=True, readonly=True)
+    rate2 = fields.Char('Scalability Rate', related='eval_detail2.rate', store=True, readonly=True)
+    rate3 = fields.Char('Brand Guidelines Rate', related='eval_detail3.rate', store=True, readonly=True)
+    rate4 = fields.Char('Floor Plan and Requirements Rate', related='eval_detail4.rate', store=True, readonly=True)
+    rate5 = fields.Char('Client Approach Time Rate', related='eval_detail5.rate', store=True, readonly=True)
+    rate6 = fields.Char('Multi Shows Rate', related='eval_detail6.rate', store=True, readonly=True)
+    rate7 = fields.Char('Design Time Line Rate', related='eval_detail7.rate', store=True, readonly=True)
+    rate8 = fields.Char('Account Manager % of Project Approval Rate', related='eval_detail8.rate', store=True,
+                        readonly=True)
+    rate9 = fields.Char('Budget Evaluated by Sales Rate', related='eval_detail9.rate', store=True, readonly=True)
+    rate10 = fields.Char('Brief Details " Evaluated by Sales Rate', related='eval_detail10.rate', store=True,
+                         readonly=True)
+    rate11 = fields.Char('Number Of companies Pitching Rate', related='eval_detail11.rate', store=True, readonly=True)
+    rate_sum = fields.Integer('Total Points', compute="_compute_remaining_date")
+    grade = fields.Char('Grade', compute="_compute_remaining_date")
+    design_deadline = fields.Date('Design Deadline', copy=False)
+    design_complete = fields.Date('Design Completion', copy=False)
+    quotation_deadline = fields.Date('Quotation Deadline', copy=False)
+    quotation_complete = fields.Date('Quotation Completion', copy=False)
+    remaining_dates_design = fields.Char('Design Timeline', compute="_compute_remaining_date")
+    remaining_dates = fields.Char('Quotation Timeline', compute="_compute_remaining_date")
     stand_size = fields.Char('Stand Size')
-    brief_type = fields.Selection([('exhibition', 'Exhibition'), ('event', 'Segments')],string='Type of Brief')
-    brief_status = fields.Selection([('approve', 'Approved'), ('reject', 'Reject')],string='Brief Status')
+    brief_type = fields.Selection([('exhibition', 'Exhibition'), ('event', 'Segments')], string='Type of Brief')
+    brief_status = fields.Selection([('approve', 'Approved'), ('reject', 'Reject')], string='Brief Status')
     document_count = fields.Integer(compute='_document_count', string='# Documents')
-    Service_ids = fields.Many2many('crm.lead.service', 'crm_lead_service_rel', 'lead_id', 'tag_id', string='Services', help="Classify and analyze your lead/opportunity categories like: Training, Service")
+    Service_ids = fields.Many2many('crm.lead.service', 'crm_lead_service_rel', 'lead_id', 'tag_id', string='Services',
+                                   help="Classify and analyze your lead/opportunity categories like: Training, Service")
     des_reason = fields.Text('Lost Reason Description')
-    flag = fields.Boolean('flag',store=True,compute='_compute_sale_amount_total')
-    team_ids = fields.Many2one('crm.team', string='Sales Team',compute='_compute_sale_amount_total')
+    flag = fields.Boolean('flag', store=True, compute='_compute_sale_amount_total')
+    team_ids = fields.Many2one('crm.team', string='Sales Team', compute='_compute_sale_amount_total')
     team1 = fields.Char('team')
     team2 = fields.Char('team')
-    quotation_value = fields.Float('Quotation Value',compute="_get_quo_value")
+    quotation_value = fields.Float('Quotation Value', compute="_get_quo_value")
     quotation_value2 = fields.Float('Quotation Value')
-    submit_leadd = fields.Boolean('Submit Lead',default=False,copy=False)
+    submit_leadd = fields.Boolean('Submit Lead', default=False, copy=False)
     reason_for_lost = fields.Text('Reason For Lost')
-    #reason_for_drop = fields.Text(related='name.lost_reason',string='Drop Reason')
+    # reason_for_drop = fields.Text(related='name.lost_reason',string='Drop Reason')
     reason_for_cancel = fields.Text('Reason For Cancel')
-    tag_ids = fields.Many2one('crm.lead.tag',string='Tags', help="Classify and analyze your lead/opportunity categories like: Training, Service")
-    source_master = fields.Many2one('source.master',string="Source")
-    is_oppor = fields.Boolean('print lead form oppourtunity',default=False)
-    mobile_from_contact = fields.Char('Contact Person Mobile', help="Mobile Number of the contact", track_visibility='onchange', track_sequence=5, index=True)
-    email_from_contact = fields.Char('Contact Person Email', help="Email address of the contact", track_visibility='onchange', track_sequence=4, index=True)
+    tag_ids = fields.Many2one('crm.lead.tag', string='Tags',
+                              help="Classify and analyze your lead/opportunity categories like: Training, Service")
+    source_master = fields.Many2one('source.master', string="Source")
+    is_oppor = fields.Boolean('print lead form oppourtunity', default=False)
+    mobile_from_contact = fields.Char('Contact Person Mobile', help="Mobile Number of the contact",
+                                      track_visibility='onchange', track_sequence=5, index=True)
+    email_from_contact = fields.Char('Contact Person Email', help="Email address of the contact",
+                                     track_visibility='onchange', track_sequence=4, index=True)
 
     @api.multi
     def action_duplicate(self):
-        self.copy(default={'type':'opportunity'})
+        self.copy(default={'type': 'opportunity'})
         return {
-                'type': 'ir.actions.client',
-                'tag': 'reload',
-            }
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
         # raise UserError('Duplicate is done')
-        # return 
+        # return
 
     @api.multi
     def mark_as_lost(self):
         for rec in self:
             if rec.reason_for_lost:
-                rec.write({'stage_id':11})
+                rec.write({'stage_id': 11})
             else:
                 raise UserError(_("You should add the reason for lost field ,then click the button again"))
 
@@ -115,11 +122,9 @@ class crm_customize(models.Model):
     def mark_as_cancel(self):
         for rec in self:
             if rec.reason_for_cancel:
-                rec.write({'stage_id':12})
+                rec.write({'stage_id': 12})
             else:
                 raise UserError(_("You should add the reason for cancel field ,then click the button again"))
-            
-
 
     @api.multi
     def submit_lead(self):
@@ -135,20 +140,21 @@ class crm_customize(models.Model):
                 # raise ValidationError(_('%s %s ') % (body_html,subject))
                 ids = channel_all_employees['id']
                 channel_id = self.env['mail.channel'].search([('id', '=', ids)])
-                channel_id.message_post(body='Hello there are New lead generated Please Check it with name '+str(self.name), subject='New Lead',subtype='mail.mt_comment')
-            
+                channel_id.message_post(
+                    body='Hello there are New lead generated Please Check it with name ' + str(self.name),
+                    subject='New Lead', subtype='mail.mt_comment')
 
-    @api.depends('sale_number','quotation_value')
+    @api.depends('sale_number', 'quotation_value')
     def _get_quo_value(self):
         for rec in self:
             x = 0.0
             if rec.sale_number:
-                com = self.env['sale.order'].search([('opportunity_id','=',rec.id)])
+                com = self.env['sale.order'].search([('opportunity_id', '=', rec.id)])
                 for l in com:
                     if l.quo_optional == False:
                         x = x + l.amount_total
             rec.quotation_value = x
-            rec.write({'quotation_value2':x})
+            rec.write({'quotation_value2': x})
             # rec.write({'planned_revenue': x})
 
     @api.multi
@@ -176,36 +182,36 @@ class crm_customize(models.Model):
         if vals.get('stage_id') == 7:
             vals['quotation_complete'] = date.today()
             if self.sale_number:
-                com = self.env['sale.order'].search([('opportunity_id','=',self.id)])
+                com = self.env['sale.order'].search([('opportunity_id', '=', self.id)])
                 for l in com:
                     l.write({
-                        'state':'sent',
+                        'state': 'sent',
                     })
         if vals.get('stage_id') == 8:
             # vals['quotation_complete'] = date.today()
             if self.sale_number:
-                com = self.env['sale.order'].search([('opportunity_id','=',self.id)])
+                com = self.env['sale.order'].search([('opportunity_id', '=', self.id)])
                 for l in com:
                     l.write({
-                        'state':'reject',
+                        'state': 'reject',
                     })
         if vals.get('stage_id') == 5:
-            if not self.assign_to_designer.id == 80 : 
+            if not self.assign_to_designer.id == 80:
                 vals['design_complete'] = date.today()
                 if not self.design_deadline:
                     raise ValidationError(_("You should add the Design Deadline Date"))
             if self.sale_number:
-                com = self.env['sale.order'].search([('opportunity_id','=',self.id)])
+                com = self.env['sale.order'].search([('opportunity_id', '=', self.id)])
                 for l in com:
                     l.write({
-                        'state':'draft',
+                        'state': 'draft',
                     })
         if vals.get('stage_id') == 6:
             if self.sale_number:
-                com = self.env['sale.order'].search([('opportunity_id','=',self.id)])
+                com = self.env['sale.order'].search([('opportunity_id', '=', self.id)])
                 for l in com:
                     l.write({
-                        'state':'approve',
+                        'state': 'approve',
                     })
 
         return super(crm_customize, self).write(vals)
@@ -218,7 +224,6 @@ class crm_customize(models.Model):
 
     #         if rec.stage_id == 8:
     #             rec.design_complete = date.today()
-
 
     @api.multi
     def _document_count(self):
@@ -233,11 +238,12 @@ class crm_customize(models.Model):
             nbr = 0
             company_currency = lead.company_currency or self.env.user.company_id.currency_id
             for order in lead.order_ids:
-                if order.state in ('draft', 'sent','approve','sale','reject','cancel'):
+                if order.state in ('draft', 'sent', 'approve', 'sale', 'reject', 'cancel'):
                     nbr += 1
                 if order.state not in ('draft', 'sent', 'cancel'):
                     total += order.currency_id._convert(
-                        order.amount_untaxed, company_currency, order.company_id, order.date_order or fields.Date.today())
+                        order.amount_untaxed, company_currency, order.company_id,
+                        order.date_order or fields.Date.today())
             lead.sale_amount_total = total
             lead.sale_number = nbr
             for x in lead.team_id.member_ids:
@@ -248,10 +254,8 @@ class crm_customize(models.Model):
                     lead.flag = False
                     # lead.team_ids = 1
             lead.team_ids = self.env['crm.team'].sudo()._get_default_team_id(user_id=self.env.uid)
-            
 
-
-    @api.onchange('team_ids','team_id')
+    @api.onchange('team_ids', 'team_id')
     def _compute_sale_amount_total2(self):
         for rec in self:
             # use = self.env['res.users'].search([('id','=',self.env.uid)])
@@ -263,15 +267,15 @@ class crm_customize(models.Model):
     @api.multi
     def next_stage_6(self):
         return {
-                # 'name': _('Quotation'),
-                'view_type': 'form',
-                'view_mode': 'form',
-                'res_model': 'add.qty.purchase',
-                'view_id': self.env.ref('marcoms_updates.add_next_stage_form').id,
-                'type': 'ir.actions.act_window',
-                # 'context': vals,
-                'target': 'new'
-            }
+            # 'name': _('Quotation'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'add.qty.purchase',
+            'view_id': self.env.ref('marcoms_updates.add_next_stage_form').id,
+            'type': 'ir.actions.act_window',
+            # 'context': vals,
+            'target': 'new'
+        }
 
     # @api.multi
     # def handle_partner_assignation(self,  action='create', partner_id=False):
@@ -302,7 +306,7 @@ class crm_customize(models.Model):
     #     return partner_ids
 
     @api.multi
-    def handle_partner_assignation(self,  action='create', partner_id=False):
+    def handle_partner_assignation(self, action='create', partner_id=False):
         """ Handle partner assignation during a lead conversion.
             if action is 'create', create new partner with contact and assign lead to new partner_id.
             otherwise assign lead to the specified partner_id
@@ -321,7 +325,7 @@ class crm_customize(models.Model):
                 partner_ids[lead.id] = lead.partner_id.id
                 # continue
             # if lead.email_from:  # search through the existing partners based on the lead's email
-                
+
             #     if Partners.search([('email', '=', lead.email_from)], limit=1):
             #         continue
             #     else:
@@ -334,7 +338,7 @@ class crm_customize(models.Model):
                     partner_id = partner.id
                 partner.team_id = lead.team_id
             if action == 'exist':
-                if lead.contact_name :  # search through the existing partners based on the lead's email
+                if lead.contact_name:  # search through the existing partners based on the lead's email
                     # raise UserError('test2 %s'% (lead.contact_name) )
                     if Partners.search([('email', '=', lead.email_from)], limit=1):
                         if lead.partner_id.parent_id:
@@ -350,7 +354,7 @@ class crm_customize(models.Model):
                             partner_id = partner.id
                         partner.team_id = lead.team_id
             # else:
-                
+
             if partner_id:
                 lead.partner_id = partner_id
             partner_ids[lead.id] = partner_id
@@ -374,7 +378,8 @@ class crm_customize(models.Model):
         #     partner_company = None
         partner_company = Partner.browse(self.partner_id.id)
         if contact_name:
-            return Partner.create(self._create_lead_partner_data(contact_name, False, partner_company.id if partner_company else False))
+            return Partner.create(
+                self._create_lead_partner_data(contact_name, False, partner_company.id if partner_company else False))
 
     @api.multi
     def document_view(self):
@@ -398,44 +403,46 @@ class crm_customize(models.Model):
 
     @api.multi
     def lead_form_print_report(self):
-        return self.env.ref('marcoms_updates.lead_form_report').report_action(self) 
-    
-    @api.constrains('design_deadline','quotation_deadline','create_date')
+        return self.env.ref('marcoms_updates.lead_form_report').report_action(self)
+
+    @api.constrains('design_deadline', 'quotation_deadline', 'create_date')
     def check_inv_date(self):
         for rec in self:
             if rec.quotation_deadline and rec.design_deadline:
-                if rec.design_deadline >=  rec.quotation_deadline :
-                    raise ValidationError(_("Design Deadline Date Should Not Be Bigger or equal Quotation Deadline Date"))
+                if rec.design_deadline >= rec.quotation_deadline:
+                    raise ValidationError(
+                        _("Design Deadline Date Should Not Be Bigger or equal Quotation Deadline Date"))
             if rec.design_deadline:
-                if rec.create_date.date() >=  rec.design_deadline :
-                    raise ValidationError(_("Date of receiving Date Should Not Be Bigger or equal Design Deadline Date"))
+                if rec.create_date.date() >= rec.design_deadline:
+                    raise ValidationError(
+                        _("Date of receiving Date Should Not Be Bigger or equal Design Deadline Date"))
 
     @api.multi
     def _compute_remaining_date(self):
         for rec in self:
-            # rec.flag = self.pool.get('res.users').has_group(cr, uid, 'marcoms_updates.group_sale_top_manager') 
+            # rec.flag = self.pool.get('res.users').has_group(cr, uid, 'marcoms_updates.group_sale_top_manager')
             if rec.design_deadline:
                 delta1 = (rec.design_deadline - rec.create_date.date()).days
                 rec.remaining_dates_design = delta1 + 1
             if rec.quotation_deadline and rec.design_deadline:
                 delta = (rec.quotation_deadline - rec.design_deadline).days
                 rec.remaining_dates = delta
-            if rec.rate1 or rec.rate2 or rec.rate3 or rec.rate4 or rec.rate5 or rec.rate6 or rec.rate7 or rec.rate8 or rec.rate9 or rec.rate10 or rec.rate11 : 
-                rec.rate_sum = int(rec.rate1) + int(rec.rate2) + int(rec.rate3) + int(rec.rate4) + int(rec.rate5) + int(rec.rate6) + int(rec.rate7) + int(rec.rate8) + int(rec.rate9) + int(rec.rate10) + int(rec.rate11)
-                if rec.rate_sum >= 31 :
+            if rec.rate1 or rec.rate2 or rec.rate3 or rec.rate4 or rec.rate5 or rec.rate6 or rec.rate7 or rec.rate8 or rec.rate9 or rec.rate10 or rec.rate11:
+                rec.rate_sum = int(rec.rate1) + int(rec.rate2) + int(rec.rate3) + int(rec.rate4) + int(rec.rate5) + int(
+                    rec.rate6) + int(rec.rate7) + int(rec.rate8) + int(rec.rate9) + int(rec.rate10) + int(rec.rate11)
+                if rec.rate_sum >= 31:
                     rec.grade = 'A'
-                elif rec.rate_sum >= 19 and rec.rate_sum <= 30 :
+                elif rec.rate_sum >= 19 and rec.rate_sum <= 30:
                     rec.grade = 'B'
-                elif rec.rate_sum < 19 :
+                elif rec.rate_sum < 19:
                     rec.grade = 'C'
-            
+
             x = 0
-            job_obj = self.env['sale.order'].search([('lead_id','=',rec.id)])
+            job_obj = self.env['sale.order'].search([('lead_id', '=', rec.id)])
             if job_obj:
                 for l in job_obj:
                     x = x + 1
             rec.job_number = x
-
 
     # @api.multi
     # @api.onchange('eval_detail1','eval_detail2','eval_detail3','eval_detail4','eval_detail5','eval_detail6','eval_detail7','eval_detail8','eval_detail9','eval_detail10','eval_detail11')
@@ -449,23 +456,22 @@ class crm_customize(models.Model):
     #         elif rec.rate_sum < 19 :
     #             rec.grade = 'C'
 
-
     # @api.multi
     # def _get_job_number(self):
-        # x = 0
-        # for rec in self:
-        #     job_obj = self.env['job.estimate'].search([('lead_id','=',rec.id)])
-        #     if job_obj:
-        #         for l in job_obj:
-        #             x = x + 1
-        #     rec.job_number = x
+    # x = 0
+    # for rec in self:
+    #     job_obj = self.env['job.estimate'].search([('lead_id','=',rec.id)])
+    #     if job_obj:
+    #         for l in job_obj:
+    #             x = x + 1
+    #     rec.job_number = x
 
     @api.multi
     def create_quotations(self):
         job_obj = self.env['sale.order']
         vals = {
             'default_partner_id': self.partner_id.id,
-            'default_team_id':self.team_id.id,
+            'default_team_id': self.team_id.id,
             'default_campaign_id': self.campaign_id.id,
             'default_medium_id': self.medium_id.id,
             'default_origin': self.name,
@@ -477,21 +483,20 @@ class crm_customize(models.Model):
             'default_state': 'draft',
         }
         return {
-                # 'name': _('Quotation'),
-                'view_type': 'form',
-                'view_mode': 'form',
-                'res_model': 'sale.order',
-                'view_id': self.env.ref('sale.view_order_form').id,
-                'type': 'ir.actions.act_window',
-                'context': vals,
-                'target': 'new'
-            }
-    
+            # 'name': _('Quotation'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'sale.order',
+            'view_id': self.env.ref('sale.view_order_form').id,
+            'type': 'ir.actions.act_window',
+            'context': vals,
+            'target': 'new'
+        }
+
     # def quo_action_view(self):
     #     action = self.env.ref('marcoms_updates.quo_action_view_action').read()[0]
     #     return action
 
-    
     @api.model
     def create(self, vals):
         # set up context used to find the lead's Sales Team which is needed
@@ -505,7 +510,7 @@ class crm_customize(models.Model):
         if vals.get('user_id') and 'date_open' not in vals:
             vals['date_open'] = fields.Datetime.now()
         if vals.get('sequence_no', _('New')) == _('New'):
-            vals['sequence_no'] = self.env['ir.sequence'].next_by_code('crm.lead') or 'New'   
+            vals['sequence_no'] = self.env['ir.sequence'].next_by_code('crm.lead') or 'New'
 
         partner_id = vals.get('partner_id') or context.get('default_partner_id')
         onchange_values = self._onchange_partner_id_values(partner_id)
@@ -515,10 +520,12 @@ class crm_customize(models.Model):
         # context: no_log, because subtype already handle this
         return super(crm_customize, self.with_context(context, mail_create_nolog=True)).create(vals)
 
+
 class ResUsersCus(models.Model):
     _inherit = "res.users"
 
-    team_ids = fields.Many2one('crm.team', string='Sales Team',compute='get_team_id')
+    team_ids = fields.Many2one('crm.team', string='Sales Team', compute='get_team_id')
+
     # in_sale = fields.Char('is sale',compute='get_team_id')
 
     @api.multi
@@ -535,11 +542,11 @@ class ResUsersCus(models.Model):
             #             if x.id == rec.id :
             #                 rec.in_sale = '1'
             #                 break
-                        # else:
-                        #     rec.in_sale = False
+            # else:
+            #     rec.in_sale = False
+
 
 class ServiceLead(models.Model):
-    
     _name = "crm.lead.service"
     _description = "Lead Service"
 
@@ -550,6 +557,7 @@ class ServiceLead(models.Model):
         ('name_uniq', 'unique (name)', "Tag name already exists !"),
     ]
 
+
 class CRMLeadDocument(models.Model):
     _name = 'crm.lead.document'
     _description = 'CRM Documents'
@@ -559,64 +567,70 @@ class CRMLeadDocument(models.Model):
     description = fields.Text(string='Description', copy=False)
     expiry_date = fields.Date(string='Expiry Date', copy=False)
     lead_ref = fields.Many2one('crm.lead', invisible=1, copy=False)
-    doc_attachment_id = fields.Many2many('ir.attachment', 'doc_attach_rels', 'doc_id', 'attach_id3', string="Attachment",
+    doc_attachment_id = fields.Many2many('ir.attachment', 'doc_attach_rels', 'doc_id', 'attach_id3',
+                                         string="Attachment",
                                          help='You can attach the copy of your document', copy=False)
     issue_date = fields.Date(string='Issue Date', copy=False)
     active = fields.Boolean(default=True)
+
 
 class CRMLeadAttachment(models.Model):
     _inherit = 'ir.attachment'
 
     doc_attach_rels = fields.Many2many('crm.lead.document', 'doc_attachment_id', 'attach_id3', 'doc_id',
-                                      string="Attachment", invisible=1)
+                                       string="Attachment", invisible=1)
     doc_attachs_rels = fields.Many2many('sale.order.document', 'docss_attachment_id', 'attach_id3', 'doc_id',
-                                      string="Attachment", invisible=1)
+                                        string="Attachment", invisible=1)
     doc_attachs_account = fields.Many2many('account.move.document', 'docss_attachment_ids', 'attach_id3', 'doc_id',
-                                      string="Attachment", invisible=1)
+                                           string="Attachment", invisible=1)
     bill_attachs_account = fields.Many2many('account.invoice.document', 'bill_attachment_ids', 'attach_id3', 'doc_id',
-                                      string="Attachment", invisible=1)
-
+                                            string="Attachment", invisible=1)
 
 
 class SaleOrderDocument(models.Model):
     _name = 'sale.order.document'
     _description = 'Sales Documents'
-    
+
     name = fields.Char(string='Document Number', required=True, copy=False, help='You can give your'
                                                                                  'Document number.')
     description = fields.Text(string='Description', copy=False)
     expiry_date = fields.Date(string='Expiry Date', copy=False)
     sale_ref = fields.Many2one('sale.order', invisible=1, copy=False)
-    docss_attachment_id = fields.Many2many('ir.attachment', 'doc_attachs_rels', 'doc_id', 'attach_id3', string="Attachment",
-                                         help='You can attach the copy of your document', copy=False)
+    docss_attachment_id = fields.Many2many('ir.attachment', 'doc_attachs_rels', 'doc_id', 'attach_id3',
+                                           string="Attachment",
+                                           help='You can attach the copy of your document', copy=False)
     issue_date = fields.Date(string='Issue Date', copy=False)
     active = fields.Boolean(default=True)
+
 
 class accountmoveDocument(models.Model):
     _name = 'account.move.document'
     _description = 'Journal Documents'
-    
+
     name = fields.Char(string='Document Number', required=True, copy=False, help='You can give your'
                                                                                  'Document number.')
     description = fields.Text(string='Description', copy=False)
     expiry_date = fields.Date(string='Expiry Date', copy=False)
     pay_ref = fields.Many2one('acount.payment', invisible=1, copy=False)
-    docss_attachment_ids = fields.Many2many('ir.attachment', 'doc_attachs_account', 'doc_id', 'attach_id3', string="Attachment",
-                                         help='You can attach the copy of your document', copy=False)
+    docss_attachment_ids = fields.Many2many('ir.attachment', 'doc_attachs_account', 'doc_id', 'attach_id3',
+                                            string="Attachment",
+                                            help='You can attach the copy of your document', copy=False)
     issue_date = fields.Date(string='Issue Date', copy=False)
     active = fields.Boolean(default=True)
+
 
 class accountinvoiceDocument(models.Model):
     _name = 'account.invoice.document'
     _description = 'Vendor bills Documents'
-    
+
     name = fields.Char(string='Document Number', required=True, copy=False, help='You can give your'
                                                                                  'Document number.')
     description = fields.Text(string='Description', copy=False)
     expiry_date = fields.Date(string='Expiry Date', copy=False)
     pay_ref = fields.Many2one('acount.payment', invisible=1, copy=False)
-    bill_attachment_ids = fields.Many2many('ir.attachment', 'bill_attachs_account', 'doc_id', 'attach_id3', string="Attachment",
-                                         help='You can attach the copy of your document', copy=False)
+    bill_attachment_ids = fields.Many2many('ir.attachment', 'bill_attachs_account', 'doc_id', 'attach_id3',
+                                           string="Attachment",
+                                           help='You can attach the copy of your document', copy=False)
     issue_date = fields.Date(string='Issue Date', copy=False)
     active = fields.Boolean(default=True)
 
@@ -626,10 +640,10 @@ class Uom(models.Model):
 
     show_sale = fields.Boolean('To Show in Sales')
 
+
 class SaleAdvancePaymentInv(models.TransientModel):
     _inherit = "sale.advance.payment.inv"
 
-  
     @api.multi
     def create_invoices(self):
         sale_orders = self.env['sale.order'].browse(self._context.get('active_ids', []))
@@ -649,15 +663,18 @@ class SaleAdvancePaymentInv(models.TransientModel):
             for order in sale_orders:
                 if self.advance_payment_method == 'percentage':
                     amount = order.amount_untaxed * self.amount / 100
-                    invoicename = """Invoice %s %s : %s""" % (self.amount,'%',time.strftime('%d %m %Y'))
+                    invoicename = """Invoice %s %s : %s""" % (self.amount, '%', time.strftime('%d %m %Y'))
                 else:
                     amount = self.amount
                     invoicename = """Invoice : %s""" % (time.strftime('%d %m %Y'))
                 if self.product_id.invoice_policy != 'order':
-                    raise UserError(_('The product used to invoice a down payment should have an invoice policy set to "Ordered quantities". Please update your deposit product to be able to create a deposit invoice.'))
+                    raise UserError(_(
+                        'The product used to invoice a down payment should have an invoice policy set to "Ordered quantities". Please update your deposit product to be able to create a deposit invoice.'))
                 if self.product_id.type != 'service':
-                    raise UserError(_("The product used to invoice a down payment should be of type 'Service'. Please use another product or update this product."))
-                taxes = self.product_id.taxes_id.filtered(lambda r: not order.company_id or r.company_id == order.company_id)
+                    raise UserError(_(
+                        "The product used to invoice a down payment should be of type 'Service'. Please use another product or update this product."))
+                taxes = self.product_id.taxes_id.filtered(
+                    lambda r: not order.company_id or r.company_id == order.company_id)
                 if order.fiscal_position_id and taxes:
                     tax_ids = order.fiscal_position_id.map_tax(taxes, self.product_id, order.partner_shipping_id).ids
                 else:
@@ -681,18 +698,21 @@ class SaleAdvancePaymentInv(models.TransientModel):
                 del context
                 invoo = self._create_invoice(order, so_line, amount)
                 invoo.write({'project_name': order.project_name,
-                            'project': order.analytic_account_id.id,
-                            'LPO': order.lpo_number,})
+                             'project': order.analytic_account_id.id,
+                             'LPO': order.lpo_number, })
         if self._context.get('open_invoices', False):
-            return sale_orders.action_view_invoice()
+            billo = sale_orders.action_view_invoice()
+            billo.write({
+                'project':order.analytic_id,
+            })
+            return billo
         return {'type': 'ir.actions.act_window_close'}
 
 
 class SaleOrder_customize(models.Model):
     _inherit = "sale.order"
 
-
-    lead_id = fields.Many2one('crm_lead',string="Opportunity Reference",invisble=True)
+    lead_id = fields.Many2one('crm_lead', string="Opportunity Reference", invisble=True)
     lead_name = fields.Char(string="Opportunity Reference")
     state = fields.Selection([
         ('draft', 'Quotation'),
@@ -702,32 +722,37 @@ class SaleOrder_customize(models.Model):
         ('done', 'Locked'),
         ('cancel', 'Cancelled'),
         ('reject', 'Rejected'),
-        ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', track_sequence=3, default='draft')
+    ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', track_sequence=3,
+        default='draft')
     project_name = fields.Char('Show Name')
     message = fields.Text('Report Message')
-    sign_man = fields.Many2one('hr.employee','Signatory Name',copy=True)
+    sign_man = fields.Many2one('hr.employee', 'Signatory Name', copy=True)
     sum_without_dis = fields.Float('Total Without Discount')
     # optional_total = fields.Float('Optional Products Total',compute="_requisition_count")
     # amount_total_venue = fields.Float('Venue Total',compute="count_discount")
-    remaining_dates = fields.Char('Remaining Dates for Design',compute="message_change")
+    remaining_dates = fields.Char('Remaining Dates for Design', compute="message_change")
     sale_order_venue_ids = fields.One2many(
         'sale.order.venue', 'order_id', 'Venue',
         copy=True, readonly=True,
         states={'draft': [('readonly', False)], 'sent': [('readonly', False)]})
-    amount_tax_venue = fields.Monetary(string='Taxes',compute="_amount_all2")
-    amount_untaxed_venue = fields.Monetary(string='Untaxed Amount',compute="_amount_all2",   track_visibility='onchange', track_sequence=5)
-    amount_total_venue = fields.Monetary(string='Total',compute="_amount_all2",   track_visibility='always', track_sequence=6)
-    amount_tax_optional = fields.Monetary(string='Taxes',compute="_amount_all2" )
-    amount_untaxed_optional = fields.Monetary(string='Untaxed Amount',compute="_amount_all2",   track_visibility='onchange', track_sequence=5)
-    amount_total_optional = fields.Monetary(string='Total',compute="_amount_all2",  track_visibility='always', track_sequence=6)
+    amount_tax_venue = fields.Monetary(string='Taxes', compute="_amount_all2")
+    amount_untaxed_venue = fields.Monetary(string='Untaxed Amount', compute="_amount_all2", track_visibility='onchange',
+                                           track_sequence=5)
+    amount_total_venue = fields.Monetary(string='Total', compute="_amount_all2", track_visibility='always',
+                                         track_sequence=6)
+    amount_tax_optional = fields.Monetary(string='Taxes', compute="_amount_all2")
+    amount_untaxed_optional = fields.Monetary(string='Untaxed Amount', compute="_amount_all2",
+                                              track_visibility='onchange', track_sequence=5)
+    amount_total_optional = fields.Monetary(string='Total', compute="_amount_all2", track_visibility='always',
+                                            track_sequence=6)
     # discount_type_venue = fields.Selection([('percent', 'Percentage'), ('amount', 'Amount')],
     #                                            string='Discount Type', readonly=True,
     #                                            states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},
     #                                            default='percent')
     # discount_rate_venue = fields.Float('Discount', readonly=True,
     #                                        states={'draft': [('readonly', False)], 'sent': [('readonly', False)]})
-    amount_discount_venue = fields.Monetary(string='Discount', 
-                                         track_visibility='always')
+    amount_discount_venue = fields.Monetary(string='Discount',
+                                            track_visibility='always')
     # discount_type_op = fields.Selection([('percent', 'Percentage'), ('amount', 'Amount')],
     #                                            string='Discount Type', readonly=True,
     #                                            states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},
@@ -753,36 +778,36 @@ class SaleOrder_customize(models.Model):
     # Netvat4 = fields.Float('Discount',compute='_amount_all2')
     # Net4 = fields.Float('Discount',compute='_amount_all2')
     requisition_count = fields.Integer(compute='_requisition_count', string='# Requisitions')
-    contact_name = fields.Char('Contact Name',store=True,related="partner_id.name")
+    contact_name = fields.Char('Contact Name', store=True, related="partner_id.name")
     comtype = fields.Selection(string='Company Type',
-        selection=[('person', 'Individual'), ('company', 'Company')],store=True,related="partner_id.company_type")
-    user_id = fields.Many2one('res.users', string='Salesperson', index=True, track_visibility='onchange', track_sequence=2)
+                               selection=[('person', 'Individual'), ('company', 'Company')], store=True,
+                               related="partner_id.company_type")
+    user_id = fields.Many2one('res.users', string='Salesperson', index=True, track_visibility='onchange',
+                              track_sequence=2)
     account_remark = fields.Text(string="Account Remarks")
     po_contract = fields.Boolean('LPO/Contract')
     contract_type = fields.Char('Contract Type')
     certificate_com = fields.Boolean('Completion Certificate')
     # date_today = fields.Date('today',compute='_requisition_count',invisible=True)
-    partner_no = fields.Char(related="partner_id.sequence_no",store=True)
+    partner_no = fields.Char(related="partner_id.sequence_no", store=True)
     document_count = fields.Integer(compute='_requisition_count', string='# Documents')
     pro_show = fields.Char('Quote Name')
     quo_optional = fields.Boolean('Optional Quotation')
-    sec_subtotal = fields.Boolean('Section Subtotal',default=False)
-    discount_value = fields.Float('Discount',compute="_amount_all")
-    discount_value_op = fields.Float('Discount',compute="_amount_all2")
-    discount_value_venue = fields.Float('Discount',compute="_amount_all2")
-    normal_total_name = fields.Char('Main Qutation',default="Main Quotation Value")
-    optional_total_name = fields.Char('Optionals',default="Optional elements")
-    venue_total_name = fields.Char('Venue Charges',default="Venue charges")
-    date_order = fields.Datetime(string='Order Date', required=True,readonly=False, index=True, copy=False, default=fields.Datetime.now)
+    sec_subtotal = fields.Boolean('Section Subtotal', default=False)
+    discount_value = fields.Float('Discount', compute="_amount_all")
+    discount_value_op = fields.Float('Discount', compute="_amount_all2")
+    discount_value_venue = fields.Float('Discount', compute="_amount_all2")
+    normal_total_name = fields.Char('Main Qutation', default="Main Quotation Value")
+    optional_total_name = fields.Char('Optionals', default="Optional elements")
+    venue_total_name = fields.Char('Venue Charges', default="Venue charges")
+    date_order = fields.Datetime(string='Order Date', required=True, readonly=False, index=True, copy=False,
+                                 default=fields.Datetime.now)
     lpo_number = fields.Char('LPO Number')
 
-
-    
-
-    @api.onchange('partner_id','project_name')
+    @api.onchange('partner_id', 'project_name')
     def pro_show_view(self):
         for rec in self:
-            rec.pro_show = "%s@%s"%(rec.partner_id.name,rec.project_name)
+            rec.pro_show = "%s@%s" % (rec.partner_id.name, rec.project_name)
 
     # @api.multi
     # def _document_count(self):
@@ -808,14 +833,12 @@ class SaleOrder_customize(models.Model):
             'limit': 80,
             'context': "{'default_sale_ref': '%s'}" % self.id
         }
-        
 
     @api.multi
     def set_to_draft(self):
         self.write({
-            'state':'draft',
+            'state': 'draft',
         })
-
 
     @api.multi
     @api.onchange('project_name')
@@ -890,14 +913,13 @@ class SaleOrder_customize(models.Model):
             'partner_shipping_id': addr['delivery'],
             # 'user_id': self.partner_id.user_id.id or self.partner_id.commercial_partner_id.user_id.id or self.env.uid
         }
-        if self.env['ir.config_parameter'].sudo().get_param('sale.use_sale_note') and self.env.user.company_id.sale_note:
+        if self.env['ir.config_parameter'].sudo().get_param(
+                'sale.use_sale_note') and self.env.user.company_id.sale_note:
             values['note'] = self.with_context(lang=self.partner_id.lang).env.user.company_id.sale_note
 
         if self.partner_id.team_id:
             values['team_id'] = self.partner_id.team_id.id
         self.update(values)
-
-    
 
     @api.multi
     # @api.depends('order_line.price_total','order_line')
@@ -930,21 +952,20 @@ class SaleOrder_customize(models.Model):
             #                 # rec.price_subtotal = -x
             #                 rec.write({'price_subtotal':-x,'price_total':-x})
             #                 rec.update({'price_subtotal':-x,'price_total':-x})
-                            
-                            
+
             #     # each._amount_all()
             #     each.discount_value = x
-                
-                # each.amount_untaxed = each.amount_untaxed - x
-                # # raise UserError(each.amount_untaxed)
-                # each.amount_total = each.amount_untaxed + each.amount_tax
 
-                # if y == 1:
-                #     each.amount_untaxed = each.amount_untaxed - x
-                #     each.amount_total = each.amount_untaxed + each.amount_tax
+            # each.amount_untaxed = each.amount_untaxed - x
+            # # raise UserError(each.amount_untaxed)
+            # each.amount_total = each.amount_untaxed + each.amount_tax
+
+            # if y == 1:
+            #     each.amount_untaxed = each.amount_untaxed - x
+            #     each.amount_total = each.amount_untaxed + each.amount_tax
 
             # for order in self:
-            
+
             y = 0.0
             if each.sale_order_option_ids:
                 for n in each.sale_order_option_ids:
@@ -987,8 +1008,7 @@ class SaleOrder_customize(models.Model):
             #                 # rec.price_subtotal = -x
             #                 rec.write({'price_subtotal':-x,'price_total':-x})
             #                 rec.update({'price_subtotal':-x,'price_total':-x})
-                            
-                            
+
             #     # each._amount_all()
             #     order.discount_value = x
             amount_untaxed = amount_tax = 0.0
@@ -996,7 +1016,6 @@ class SaleOrder_customize(models.Model):
             y = 0
             for lines in order.order_line:
                 if lines.is_discount != True:
-                    
                     amount_untaxed += lines.price_subtotal
                     amount_tax += lines.price_tax
 
@@ -1004,10 +1023,12 @@ class SaleOrder_customize(models.Model):
                 # amount_untaxed += line.price_subtotal
                 # amount_tax += line.price_tax
                 if line.is_discount == True and not line.discount:
-                    
+
                     if line.price_unit:
                         x = x + abs(line.price_subtotal)
-                        taxes = line.tax_id.compute_all(-line.price_unit, line.order_id.currency_id, line.product_uom_qty, product=line.product_id, partner=line.order_id.partner_shipping_id)
+                        taxes = line.tax_id.compute_all(-line.price_unit, line.order_id.currency_id,
+                                                        line.product_uom_qty, product=line.product_id,
+                                                        partner=line.order_id.partner_shipping_id)
                         tax = sum(t.get('amount', 0.0) for t in taxes.get('taxes', []))
                         amount_tax = amount_tax + -tax
                     amount_untaxed = amount_untaxed + line.price_subtotal
@@ -1017,13 +1038,12 @@ class SaleOrder_customize(models.Model):
                 #     'amount_tax': amount_taxs,
                 #     'amount_total': amount_untaxeds + amount_taxs,
                 # })
-                    
-            
-            # for lines in order.order_line:
-            #     amount_untaxed += lines.price_subtotal
-            #     amount_tax += lines.price_tax
+
+                # for lines in order.order_line:
+                #     amount_untaxed += lines.price_subtotal
+                #     amount_tax += lines.price_tax
                 if line.is_discount == True and line.discount:
-                    
+
                     # if order.discount_value:
                     # raise UserError(amount_untaxed)
                     if line.discount:
@@ -1033,7 +1053,9 @@ class SaleOrder_customize(models.Model):
                         # lines.write({'price_subtotal':-x,'price_total':-x})
                         line.price_unit = -z
                         x = x + abs(line.price_subtotal)
-                        taxes = line.tax_id.compute_all(z, line.order_id.currency_id, line.product_uom_qty, product=line.product_id, partner=line.order_id.partner_shipping_id)
+                        taxes = line.tax_id.compute_all(z, line.order_id.currency_id, line.product_uom_qty,
+                                                        product=line.product_id,
+                                                        partner=line.order_id.partner_shipping_id)
                         tax = sum(t.get('amount', 0.0) for t in taxes.get('taxes', []))
                         amount_tax = amount_tax + -tax
                     amount_untaxed = amount_untaxed + line.price_subtotal
@@ -1048,7 +1070,7 @@ class SaleOrder_customize(models.Model):
     # @api.multi
     # def write(self, vals):
     #     # stage change: update date_last_stage_update
-        
+
     #     res =  super(SaleOrder_customize, self).write(vals)
 
     #     if self.order_line:
@@ -1064,7 +1086,7 @@ class SaleOrder_customize(models.Model):
     #                         # rec.price_subtotal = -x
     #                         rec.update({'price_subtotal':-x})
     #                 # # raise UserError(each.amount_untaxed)
-    #                 # res['amount_total'] = 
+    #                 # res['amount_total'] =
     #     # self._amount_all()
     #     return res
     # @api.onchange('order_line')
@@ -1074,16 +1096,16 @@ class SaleOrder_customize(models.Model):
     #     """
     #     for order in self:
     #         for rec in order.order_line:
-    #             if rec.discount: 
+    #             if rec.discount:
     #                 x = (order.amount_untaxed * (rec.discount or 0.0) / 100.0)
     #                 rec.price_subtotal = -x
-    
+
     # @api.multi
     # @api.depends('discount_value')
     # def amount_change(self):
     #     for rec in self:
     #         rec.amount_untaxed = rec.amount_untaxed - rec.discount_value
-            # raise UserError(rec.amount_untaxed)
+    # raise UserError(rec.amount_untaxed)
     #     for order in self:
     #         amount_untaxed = amount_tax = amount_total = 0.0
     #         for line in order.order_line:
@@ -1099,25 +1121,25 @@ class SaleOrder_customize(models.Model):
     #             'amount_total': amount_total,
     #         })
 
-        # return super(SaleOrder_customize, self).write(vals)
+    # return super(SaleOrder_customize, self).write(vals)
 
     @api.multi
     def requisition_view(self):
         self.ensure_one()
         task_id = []
         for res in self:
-            for line in res.order_line: 
+            for line in res.order_line:
                 if line.display_type == 'line_section' or line.display_type == 'line_note':
                     continue
                 else:
                     data = {
-                        'product_id':line.product_id.id,
-                                'description':line.name,
-                                'qty':line.product_uom_qty,
-                                'uom_id':line.product_uom.id
+                        'product_id': line.product_id.id,
+                        'description': line.name,
+                        'qty': line.product_uom_qty,
+                        'uom_id': line.product_uom.id
                     }
-                    task_id.append((0,0,data))
-            
+                    task_id.append((0, 0, data))
+
             domain = [
                 ('sales_id', '=', res.id)]
             vals = {
@@ -1143,44 +1165,40 @@ class SaleOrder_customize(models.Model):
             'context': vals,
         }
 
-    
-
     @api.multi
     def create_purchase_requisition_from_sales(self):
-        
+
         purchase_req_obj = self.env['material.requisition.sales']
         # purchase_req_line_obj = self.env['material.requisition.sales.line']
         for res in self:
             task_id = []
-            for line in res.order_line: 
+            for line in res.order_line:
                 if line.display_type == 'line_section' or line.display_type == 'line_note':
                     continue
                 else:
                     data = {
-                        'product_id':line.product_id.id,
-                                'description':line.name,
-                                'qty':line.product_uom_qty,
-                                'uom_id':line.product_uom.id
+                        'product_id': line.product_id.id,
+                        'description': line.name,
+                        'qty': line.product_uom_qty,
+                        'uom_id': line.product_uom.id
                     }
-                    task_id.append((0,0,data))
+                    task_id.append((0, 0, data))
             purchase_req_obj.create({
-                                    'sales_id': res.id,
-                                    'oppor_id': res.opportunity_id.id,
-                                    'partner_id': res.partner_id.id,
-                                    'show_name': res.project_name,
-                                    'state':'draft',
-                                    'requisition_line_ids': task_id,
-                                    })
-         
-            
-            
-                # req_line_vals = purchase_req_line_obj.create({
-                #     'product_id':line.product_id.id,
-                #     'description':line.name,
-                #     'product_qty':line.product_uom_qty,
-                #     'product_uom_id':line.product_uom.id,
-                #     'requisition_id':req_vals.id,
-                #     })
+                'sales_id': res.id,
+                'oppor_id': res.opportunity_id.id,
+                'partner_id': res.partner_id.id,
+                'show_name': res.project_name,
+                'state': 'draft',
+                'requisition_line_ids': task_id,
+            })
+
+            # req_line_vals = purchase_req_line_obj.create({
+            #     'product_id':line.product_id.id,
+            #     'description':line.name,
+            #     'product_qty':line.product_uom_qty,
+            #     'product_uom_id':line.product_uom.id,
+            #     'requisition_id':req_vals.id,
+            #     })
 
     # @api.multi
     # def ks_calculate_discount(self):
@@ -1195,7 +1213,7 @@ class SaleOrder_customize(models.Model):
     #                 rec.ks_amount_discount = 0
     #         rec.amount_total = rec.amount_untaxed + rec.amount_tax - rec.ks_amount_discount
 
-    @api.depends('sale_order_venue_ids','sale_order_option_ids')
+    @api.depends('sale_order_venue_ids', 'sale_order_option_ids')
     # @api.onchange('sale_order_venue_ids','sale_order_option_ids')
     def _amount_all2(self):
         """
@@ -1209,7 +1227,7 @@ class SaleOrder_customize(models.Model):
                 for line in order.sale_order_venue_ids:
                     amount_untaxed += line.price_subtotal
                     amount_tax += line.price_tax
-                    
+
                     if line.is_discount == True:
                         if line.price_unit:
                             x = x + abs(line.price_subtotal)
@@ -1218,13 +1236,12 @@ class SaleOrder_customize(models.Model):
                         x = (amount_untaxed * (lines.discount or 0.0) / 100.0)
                         # rec.price_subtotal = -x
                         # lines.write({'price_subtotal':-x,'price_total':-x})
-                        lines.update({'price_subtotal':-x,'price_total':-x})
+                        lines.update({'price_subtotal': -x, 'price_total': -x})
                         amount_untaxed = amount_untaxed + lines.price_subtotal
                 total = amount_untaxed + amount_tax
                 order.discount_value_venue = x
                 # for rec in each.order_line:
-                    
-                
+
             # if order.discount_type_venue == 'percent':
             #     # dis = (total - total * (order.discount_rate_venue or 0.0) / 100.0)
             #     disc3 = (amount_untaxed - amount_untaxed * (order.discount_rate_venue or 0.0) / 100.0)
@@ -1239,7 +1256,7 @@ class SaleOrder_customize(models.Model):
             #     })
             # else:
             # order.update({
-                
+
             # })
 
             amount_untaxed2 = amount_tax2 = total2 = dis_venue2 = disc = disc2 = dis2 = 0.0
@@ -1257,11 +1274,11 @@ class SaleOrder_customize(models.Model):
                         y = (amount_untaxed2 * (lines.discount or 0.0) / 100.0)
                         # rec.price_subtotal = -x
                         # lines.write({'price_subtotal':-x,'price_total':-x})
-                        lines.update({'price_subtotal':-y,'price_total':-y})
+                        lines.update({'price_subtotal': -y, 'price_total': -y})
                         amount_untaxed2 = amount_untaxed2 + lines.price_subtotal
                 total2 = amount_untaxed2 + amount_tax2
                 order.discount_value_op = y
-                    
+
             # if order.discount_type_op == 'percent':
             #     # dis2 = (total2 - total2 * (order.discount_rate_op or 0.0) / 100.0)
             #     disc = (amount_untaxed2 - amount_untaxed2 * (order.discount_rate_op or 0.0) / 100.0)
@@ -1283,9 +1300,9 @@ class SaleOrder_customize(models.Model):
                 'amount_untaxed_venue': amount_untaxed,
                 'amount_tax_venue': amount_tax,
                 # 'amount_discount_venue': order.discount_rate_venue,
-                'amount_total_venue': total ,
+                'amount_total_venue': total,
             })
-        
+
             # net1 = net2 = net3 = 0.0
             # net1 = order.amount_untaxed - order.ks_amount_discount
             # net2 = order.amount_untaxed_optional - order.amount_discount_op
@@ -1349,10 +1366,6 @@ class SaleOrder_customize(models.Model):
             'target': 'new',
             'context': ctx,
         }
-            
-
-
-    
 
     # @api.multi
     # @api.depends('validity_date')
@@ -1367,7 +1380,7 @@ class SaleOrder_customize(models.Model):
     #             rec.remaining_dates = ' '
 
     @api.multi
-    @api.onchange('partner_id','project_name','remaining_dates','validity_date')
+    @api.onchange('partner_id', 'project_name', 'remaining_dates', 'validity_date')
     def message_change(self):
         for rec in self:
             if rec.validity_date:
@@ -1389,22 +1402,23 @@ an assurance of our policy of best quality and sensible prices with prompt and p
 Please note that the prices offered in this quotation are valid for %s days from the time of receipt. Please
 call us if you have any questions or require additional information.
 
-Sincerely,"""  % (rec.partner_id.name, rec.project_name, rec.remaining_dates)
-#             else:
-            
-#                 rec.message = """Dear All,
+Sincerely,""" % (rec.partner_id.name, rec.project_name, rec.remaining_dates)
 
-# Thank you for providing us with the opportunity to quote on building your stand %s@%s As per the brief and scope of work, we are enclosing here with our preliminary quotation for your
-# consideration.
+    #             else:
 
-# Attached you can find the stand design with specifications.
+    #                 rec.message = """Dear All,
 
-# If all is in order, let us know how and when you wish to proceed. As discussed earlier. We can offer you
-# an assurance of our policy of best quality and sensible prices with prompt and professional services.
-# Please note that the prices offered in this quotation are valid for %s days from the time of receipt. Please
-# call us if you have any questions or require additional information.
+    # Thank you for providing us with the opportunity to quote on building your stand %s@%s As per the brief and scope of work, we are enclosing here with our preliminary quotation for your
+    # consideration.
 
-# Sincerely,"""  % (rec.partner_id.parent_id.name, rec.project_name, rec.remaining_dates)
+    # Attached you can find the stand design with specifications.
+
+    # If all is in order, let us know how and when you wish to proceed. As discussed earlier. We can offer you
+    # an assurance of our policy of best quality and sensible prices with prompt and professional services.
+    # Please note that the prices offered in this quotation are valid for %s days from the time of receipt. Please
+    # call us if you have any questions or require additional information.
+
+    # Sincerely,"""  % (rec.partner_id.parent_id.name, rec.project_name, rec.remaining_dates)
 
     # @api.multi
     # def count_discount(self):
@@ -1442,8 +1456,8 @@ Sincerely,"""  % (rec.partner_id.name, rec.project_name, rec.remaining_dates)
         if self.env['ir.config_parameter'].sudo().get_param('sale.auto_done_setting'):
             self.action_done()
 
-        sale_order = self.env['sale.order'].search([('opportunity_id','=',self.opportunity_id.id)])
-        job_obj = self.env['crm.lead'].search([('id','=',self.opportunity_id.id)])
+        sale_order = self.env['sale.order'].search([('opportunity_id', '=', self.opportunity_id.id)])
+        job_obj = self.env['crm.lead'].search([('id', '=', self.opportunity_id.id)])
         if job_obj:
             for sale in sale_order:
                 if sale.state == 'sale':
@@ -1451,8 +1465,7 @@ Sincerely,"""  % (rec.partner_id.name, rec.project_name, rec.remaining_dates)
                         k.write({'stage_id': 9})
                 else:
                     for l in job_obj:
-                        l.write({'stage_id': 13,'probability':70})
-
+                        l.write({'stage_id': 13, 'probability': 70})
 
         channel_all_employees = self.env.ref('marcoms_updates.channel_all_confirmed_sales').read()[0]
         template_new_employee = self.env.ref('marcoms_updates.email_template_data_confirm_sales').read()[0]
@@ -1464,17 +1477,17 @@ Sincerely,"""  % (rec.partner_id.name, rec.project_name, rec.remaining_dates)
             # raise ValidationError(_('%s %s ') % (body_html,subject))
             ids = channel_all_employees['id']
             channel_id = self.env['mail.channel'].search([('id', '=', ids)])
-            channel_id.message_post(body='Hello, New Confirmed sale order Please Check Sale order '+str(self.name), subject='Confirmed Sale Order',subtype='mail.mt_comment')
-                
-        return True
+            channel_id.message_post(body='Hello, New Confirmed sale order Please Check Sale order ' + str(self.name),
+                                    subject='Confirmed Sale Order', subtype='mail.mt_comment')
 
+        return True
 
     @api.multi
     def action_to_approve(self):
-        job_obj = self.env['crm.lead'].search([('id','=',self.opportunity_id.id)])
+        job_obj = self.env['crm.lead'].search([('id', '=', self.opportunity_id.id)])
         if job_obj:
             for k in job_obj:
-                k.write({'stage_id': 6}) 
+                k.write({'stage_id': 6})
         channel_all_employees = self.env.ref('marcoms_updates.channel_all_pending_approvals').read()[0]
         template_new_employee = self.env.ref('marcoms_updates.email_template_data_pending_approvals').read()[0]
         # raise ValidationError(_(template_new_employee))
@@ -1485,27 +1498,28 @@ Sincerely,"""  % (rec.partner_id.name, rec.project_name, rec.remaining_dates)
             # raise ValidationError(_('%s %s ') % (body_html,subject))
             ids = channel_all_employees['id']
             channel_id = self.env['mail.channel'].search([('id', '=', ids)])
-            body = """Hello, Quotation with number %s waiting for your approval"""% (self.name)
-            channel_id.message_post(body=body, subject='Sales Pending Approval',subtype='mail.mt_comment')
+            body = """Hello, Quotation with number %s waiting for your approval""" % (self.name)
+            channel_id.message_post(body=body, subject='Sales Pending Approval', subtype='mail.mt_comment')
         return self.write({'state': 'approve'})
 
     @api.multi
     def action_to_Reject(self):
-        job_obj = self.env['crm.lead'].search([('id','=',self.opportunity_id.id)])
+        job_obj = self.env['crm.lead'].search([('id', '=', self.opportunity_id.id)])
         if job_obj:
             for k in job_obj:
-                k.write({'stage_id': 8}) 
+                k.write({'stage_id': 8})
         return self.write({'state': 'reject'})
 
     @api.multi
     def action_approved(self):
-        job_obj = self.env['crm.lead'].search([('id','=',self.opportunity_id.id)])
-        
+        job_obj = self.env['crm.lead'].search([('id', '=', self.opportunity_id.id)])
+
         if job_obj:
             for k in job_obj:
-                k.write({'stage_id': 7}) 
-        com = self.env['hr.employee'].search([('user_id','=',self.env.uid)])
+                k.write({'stage_id': 7})
+        com = self.env['hr.employee'].search([('user_id', '=', self.env.uid)])
         return self.write({'state': 'sent'})
+
 
 class SaleAdvancePaymentInvcus(models.TransientModel):
     _inherit = "sale.advance.payment.inv"
@@ -1517,13 +1531,15 @@ class SaleAdvancePaymentInvcus(models.TransientModel):
 
         account_id = False
         if self.product_id.id:
-            account_id = order.fiscal_position_id.map_account(self.product_id.property_account_income_id or self.product_id.categ_id.property_account_income_categ_id).id
+            account_id = order.fiscal_position_id.map_account(
+                self.product_id.property_account_income_id or self.product_id.categ_id.property_account_income_categ_id).id
         if not account_id:
             inc_acc = ir_property_obj.get('property_account_income_categ_id', 'product.category')
             account_id = order.fiscal_position_id.map_account(inc_acc).id if inc_acc else False
         if not account_id:
             raise UserError(
-                _('There is no income account defined for this product: "%s". You may have to install a chart of account from Accounting app, settings menu.') %
+                _(
+                    'There is no income account defined for this product: "%s". You may have to install a chart of account from Accounting app, settings menu.') %
                 (self.product_id.name,))
 
         if self.amount <= 0.00:
@@ -1573,10 +1589,9 @@ class SaleAdvancePaymentInvcus(models.TransientModel):
         })
         invoice.compute_taxes()
         invoice.message_post_with_view('mail.message_origin_link',
-                    values={'self': invoice, 'origin': order},
-                    subtype_id=self.env.ref('mail.mt_note').id)
+                                       values={'self': invoice, 'origin': order},
+                                       subtype_id=self.env.ref('mail.mt_note').id)
         return invoice
-        
 
 
 class SaleOrderOptioncus(models.Model):
@@ -1585,7 +1600,8 @@ class SaleOrderOptioncus(models.Model):
     product_id = fields.Many2one('product.product', 'Product', default=2, domain=[('sale_ok', '=', True)])
     price_subtotal = fields.Monetary(compute='_compute_amount', string='Subtotal', readonly=True, store=True)
     tax_id = fields.Many2many('account.tax', string='Taxes')
-    currency_id = fields.Many2one(related='order_id.currency_id', depends=['order_id'], store=True, string='Currency', readonly=True)
+    currency_id = fields.Many2one(related='order_id.currency_id', depends=['order_id'], store=True, string='Currency',
+                                  readonly=True)
     price_tax = fields.Float(compute='_compute_amount', string='Total Tax', readonly=True, store=True)
     price_total = fields.Monetary(compute='_compute_amount', string='Total', readonly=True, store=True)
     company_id = fields.Many2one(related='order_id.company_id', string='Company', store=True, readonly=True)
@@ -1597,8 +1613,7 @@ class SaleOrderOptioncus(models.Model):
     @api.multi
     def action_duplicate(self):
 
-
-         self.copy(default={'order_id':self.order_id.id})
+        self.copy(default={'order_id': self.order_id.id})
 
     @api.onchange('product_id', 'uom_id')
     def _onchange_product_id(self):
@@ -1615,11 +1630,10 @@ class SaleOrderOptioncus(models.Model):
         pricelist = self.order_id.pricelist_id
         if pricelist and product:
             partner_id = self.order_id.partner_id.id
-            self.price_unit = pricelist.with_context(uom=self.uom_id.id).get_product_price(product, self.quantity, partner_id)
+            self.price_unit = pricelist.with_context(uom=self.uom_id.id).get_product_price(product, self.quantity,
+                                                                                           partner_id)
         domain = {'uom_id': [('category_id', '=', self.product_id.uom_id.category_id.id)]}
         return {'domain': domain}
-
-    
 
     @api.depends('quantity', 'discount', 'price_unit', 'tax_id')
     def _compute_amount(self):
@@ -1628,7 +1642,8 @@ class SaleOrderOptioncus(models.Model):
         """
         for line in self:
             price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
-            taxes = line.tax_id.compute_all(price, line.order_id.currency_id, line.quantity, product=line.product_id, partner=line.order_id.partner_shipping_id)
+            taxes = line.tax_id.compute_all(price, line.order_id.currency_id, line.quantity, product=line.product_id,
+                                            partner=line.order_id.partner_shipping_id)
             line.update({
                 'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                 'price_total': taxes['total_included'],
@@ -1668,7 +1683,7 @@ class SaleOrderOptioncus(models.Model):
             'product_name': self.product_name,
             'is_discount': self.is_discount,
             'company_id': self.order_id.company_id.id,
-            'tax_id':[(6, 0, tax)],
+            'tax_id': [(6, 0, tax)],
         }
 
 
@@ -1688,7 +1703,8 @@ class SaleOrderVenue(models.Model):
     sequence = fields.Integer('Sequence', help="Gives the sequence order when displaying a list of optional products.")
     price_subtotal = fields.Monetary(compute='_compute_amount', string='Subtotal', readonly=True, store=True)
     tax_id = fields.Many2many('account.tax', string='Taxes')
-    currency_id = fields.Many2one(related='order_id.currency_id', depends=['order_id'], store=True, string='Currency', readonly=True)
+    currency_id = fields.Many2one(related='order_id.currency_id', depends=['order_id'], store=True, string='Currency',
+                                  readonly=True)
     price_tax = fields.Float(compute='_compute_amount', string='Total Tax', readonly=True, store=True)
     price_total = fields.Monetary(compute='_compute_amount', string='Total', readonly=True, store=True)
     company_id = fields.Many2one(related='order_id.company_id', string='Company', store=True, readonly=True)
@@ -1698,7 +1714,7 @@ class SaleOrderVenue(models.Model):
 
     @api.multi
     def action_duplicate(self):
-         self.copy(default={'order_id':self.order_id.id})
+        self.copy(default={'order_id': self.order_id.id})
 
     @api.depends('quantity', 'discount', 'price_unit', 'tax_id')
     def _compute_amount(self):
@@ -1707,13 +1723,13 @@ class SaleOrderVenue(models.Model):
         """
         for line in self:
             price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
-            taxes = line.tax_id.compute_all(price, line.order_id.currency_id, line.quantity, product=line.product_id, partner=line.order_id.partner_shipping_id)
+            taxes = line.tax_id.compute_all(price, line.order_id.currency_id, line.quantity, product=line.product_id,
+                                            partner=line.order_id.partner_shipping_id)
             line.update({
                 'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                 'price_total': taxes['total_included'],
                 'price_subtotal': taxes['total_excluded'],
             })
-
 
     @api.onchange('product_id', 'uom_id')
     def _onchange_product_id(self):
@@ -1730,14 +1746,14 @@ class SaleOrderVenue(models.Model):
         pricelist = self.order_id.pricelist_id
         if pricelist and product:
             partner_id = self.order_id.partner_id.id
-            self.price_unit = pricelist.with_context(uom=self.uom_id.id).get_product_price(product, self.quantity, partner_id)
+            self.price_unit = pricelist.with_context(uom=self.uom_id.id).get_product_price(product, self.quantity,
+                                                                                           partner_id)
         domain = {'uom_id': [('category_id', '=', self.product_id.uom_id.category_id.id)]}
         return {'domain': domain}
 
     # @api.multi
     # def _compute_tax_id(self):
     #     for line in self:
-            
 
     @api.multi
     def button_add_to_order(self):
@@ -1777,8 +1793,9 @@ class SaleOrderVenue(models.Model):
             'product_name': self.product_name,
             'is_discount': self.is_discount,
             'company_id': self.order_id.company_id.id,
-            'tax_id':[(6, 0, tax)],
+            'tax_id': [(6, 0, tax)],
         }
+
 
 class protemplateCus(models.Model):
     _inherit = "product.template"
@@ -1823,39 +1840,45 @@ class protemplateCus(models.Model):
             ids = channel_all_employees['id']
             channel_id = self.env['mail.channel'].search([('id', '=', ids)])
             if templates['default_code']:
-                body = """Hello, there is new product created with name %s and code %s"""% (templates['name'],templates['default_code'])
+                body = """Hello, there is new product created with name %s and code %s""" % (
+                templates['name'], templates['default_code'])
             else:
-                body = """Hello, there is new product created with name %s """% (templates['name'])
-            channel_id.message_post(body=body, subject='New Product Created',subtype='mail.mt_comment')
+                body = """Hello, there is new product created with name %s """ % (templates['name'])
+            channel_id.message_post(body=body, subject='New Product Created', subtype='mail.mt_comment')
 
         return templates
+
 
 class evaluation_sheet(models.Model):
     _name = "evaluation.sheet"
 
     name = fields.Char('Type')
     description = fields.Char('Description')
-    details_id = fields.One2many('details.sheet','detail_id',string='Details')
+    details_id = fields.One2many('details.sheet', 'detail_id', string='Details')
 
     @api.depends('name')
     def _name_detail(self):
         for rec in self:
             rec.details_id.detail_id = rec.id
 
+
 class details_sheet(models.Model):
     _name = "details.sheet"
 
-    detail_id = fields.Char(string="type",invisible=True)
+    detail_id = fields.Char(string="type", invisible=True)
     name = fields.Char('Code')
     description = fields.Char('Description')
-    rate =  fields.Char('Rate')
-#CRM Module Customize Part
+    rate = fields.Char('Rate')
+
+
+# CRM Module Customize Part
 # $?$?$?$?$?$?$?$?$?$?$?$?$?$?$?$?$?$?$???$?$?$?$?$?$?$?$?$$??$?$?$$?$?$?$?$?$?$$?$$??$?
-#product image partion
+# product image partion
 class SaleOrderLinecus(models.Model):
     _inherit = 'sale.order.line'
 
-    product_id = fields.Many2one('product.product', string='Product', domain=[('sale_ok', '=', True)], default=2, ondelete='restrict')
+    product_id = fields.Many2one('product.product', string='Product', domain=[('sale_ok', '=', True)], default=2,
+                                 ondelete='restrict')
     product_name = fields.Char(string='Product')
     image_pro = fields.Binary('Product Image')
     is_space = fields.Boolean('Is space')
@@ -1863,6 +1886,7 @@ class SaleOrderLinecus(models.Model):
     is_discount = fields.Boolean(string='Is Discount')
     # select = fields.Boolean('Select',default=False)
     sale_order_venue_ids = fields.One2many('sale.order.venue', 'line_id', 'Venue Lines')
+
     # price_subtotal = fields.Monetary(compute='_compute_amount', string='Subtotal',readonly=False,  store=True)
 
     @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id')
@@ -1875,7 +1899,8 @@ class SaleOrderLinecus(models.Model):
                 price = line.price_unit * (1 - 0.0 / 100.0)
             else:
                 price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
-            taxes = line.tax_id.compute_all(price, line.order_id.currency_id, line.product_uom_qty, product=line.product_id, partner=line.order_id.partner_shipping_id)
+            taxes = line.tax_id.compute_all(price, line.order_id.currency_id, line.product_uom_qty,
+                                            product=line.product_id, partner=line.order_id.partner_shipping_id)
             line.update({
                 'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                 'price_total': taxes['total_included'],
@@ -1884,7 +1909,7 @@ class SaleOrderLinecus(models.Model):
 
     @api.multi
     def add_space(self):
-        self.create({'order_id':self.order_id.id,'display_type':'line_section','is_space':True})
+        self.create({'order_id': self.order_id.id, 'display_type': 'line_section', 'is_space': True})
 
     # @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id')
     # def _compute_amount(self):
@@ -1922,10 +1947,10 @@ class SaleOrderLinecus(models.Model):
                 uom=self.product_uom.id,
                 fiscal_position=self.env.context.get('fiscal_position')
             )
-            self.price_unit = self.env['account.tax']._fix_tax_included_price_company(self._get_display_price(product), product.taxes_id, self.tax_id, self.company_id)
+            self.price_unit = self.env['account.tax']._fix_tax_included_price_company(self._get_display_price(product),
+                                                                                      product.taxes_id, self.tax_id,
+                                                                                      self.company_id)
 
-    
-            
     @api.multi
     @api.onchange('product_id')
     def product_id_change(self):
@@ -1966,7 +1991,8 @@ class SaleOrderLinecus(models.Model):
         self._compute_tax_id()
 
         if self.order_id.pricelist_id and self.order_id.partner_id:
-            vals['price_unit'] = self.env['account.tax']._fix_tax_included_price_company(self._get_display_price(product), product.taxes_id, self.tax_id, self.company_id)
+            vals['price_unit'] = self.env['account.tax']._fix_tax_included_price_company(
+                self._get_display_price(product), product.taxes_id, self.tax_id, self.company_id)
         self.update(vals)
 
         title = False
@@ -1985,22 +2011,35 @@ class SaleOrderLinecus(models.Model):
 
     @api.multi
     def action_duplicate(self):
-         self.copy(default={'order_id':self.order_id.id})
+        self.copy(default={'order_id': self.order_id.id})
+
 
 class SaleOrdercus(models.Model):
     _inherit = 'sale.order'
 
     image_product = fields.Binary('Project Image')
-#product image partion
+
+
+# product image partion
 
 # $?$?$?$?$?$?$?$?$?$?$?$?$?$?$?$?$?$?$???$?$?$?$?$?$?$?$?$$??$?$?$$?$?$?$?$?$?$$?$$??$?
-#HR Contract and Payroll Customize Part
+# HR Contract and Payroll Customize Part
 class Hrcontractscus(models.Model):
     _inherit = 'hr.contract'
 
-    hr_allowance_line_ids = fields.One2many('hr.allowance.line','contract_id',string='HR Allowance')
-    hr_total_wage = fields.Float('Total Salary',compute="_total_wage")
-    emp_branch_name = fields.Many2one('employee.category.type', 'Branch Name',store=True)
+    hr_allowance_line_ids = fields.One2many('hr.allowance.line', 'contract_id', string='HR Allowance')
+    hr_total_wage = fields.Float('Total Salary', compute="_total_wage")
+    emp_branch_name = fields.Many2one('employee.category.type', 'Branch Name', store=True)
+    top_approve = fields.Boolean('Test Approve', compute='_compute_test_approve')
+
+    def _compute_test_approve(self):
+        current_employee = self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1)
+        is_top_manager = self.env.user.has_group('marcoms_updates.group_hr_contract_top_manager')
+        if is_top_manager:
+            self.top_approve = True
+        else:
+            self.top_approve = False
+
 
     @api.multi
     def _total_wage(self):
@@ -2020,30 +2059,33 @@ class Hrcontractscus(models.Model):
             self.resource_calendar_id = self.employee_id.resource_calendar_id
         return res
 
+
 class HRallowanceLine(models.Model):
     _name = 'hr.allowance.line'
 
     contract_id = fields.Many2one('hr.contract')
-    rule_type = fields.Many2one('hr.salary.rule',string="Allowance Rule")
-    code = fields.Char('Code',related="rule_type.code",store=True,readonly=True)
+    rule_type = fields.Many2one('hr.salary.rule', string="Allowance Rule")
+    code = fields.Char('Code', related="rule_type.code", store=True, readonly=True)
     amt = fields.Float('Amount')
+
 
 class HRpayrolltran(models.Model):
     _name = 'hr.payroll.transactions'
 
     state = fields.Selection(string='Status', selection=[
-        ('draft','New'),
-        ('confirm','Waiting Approval'),
-        ('accepted','Approved'),
-        ('done','Done'),
-        ('paid','Paid'),
-        ('cancelled','Refused')],
-        copy=False, index=True, readonly=True,default="draft")
+        ('draft', 'New'),
+        ('confirm', 'Waiting Approval'),
+        ('accepted', 'Approved'),
+        ('done', 'Done'),
+        ('paid', 'Paid'),
+        ('cancelled', 'Refused')],
+                             copy=False, index=True, readonly=True, default="draft")
     date_from = fields.Date('Date')
     date_to = fields.Date('To')
     date = fields.Date('Date')
     name = fields.Char('Description')
-    payroll_tran_line = fields.One2many('hr.payroll.transactions.line','payroll_tran_id',string='Payroll Transactions')
+    payroll_tran_line = fields.One2many('hr.payroll.transactions.line', 'payroll_tran_id',
+                                        string='Payroll Transactions')
 
     @api.multi
     def unlink(self):
@@ -2070,27 +2112,27 @@ class HRpayrolltran(models.Model):
     @api.multi
     def loans_set_draft(self):
         return self.write({'state': 'draft'})
-            
+
 
 class HRpayrolltranLine(models.Model):
     _name = 'hr.payroll.transactions.line'
 
     payroll_tran_id = fields.Many2one('hr.payroll.transactions')
-    employee_id = fields.Many2one('hr.employee',string="Employee",required=True)
+    employee_id = fields.Many2one('hr.employee', string="Employee", required=True)
     timesheet_cost = fields.Float('Timesheet Cost')
     number_of_hours = fields.Float('No of Hours')
     tran_note = fields.Char('Transaction')
     allowance = fields.Float('Allowance')
     deduction = fields.Float('Deduction')
-    payroll_item = fields.Many2one('hr.salary.rule',string="Payroll Item",required=True)
-    analytic_account = fields.Many2one('account.analytic.account',string="Analytic Account")
+    payroll_item = fields.Many2one('hr.salary.rule', string="Payroll Item", required=True)
+    analytic_account = fields.Many2one('account.analytic.account', string="Analytic Account")
     state = fields.Selection(string='Status', selection=[
-        ('draft','New'),
-        ('cancelled','Refused'),
-        ('confirm','Waiting Approval'),
-        ('accepted','Approved'),
-        ('done','Waiting Payment'),
-        ('paid','Paid')],readonly=True)
+        ('draft', 'New'),
+        ('cancelled', 'Refused'),
+        ('confirm', 'Waiting Approval'),
+        ('accepted', 'Approved'),
+        ('done', 'Waiting Payment'),
+        ('paid', 'Paid')], readonly=True)
 
     @api.onchange('number_of_hours')
     def _get_amount(self):
@@ -2098,10 +2140,16 @@ class HRpayrolltranLine(models.Model):
             rec.timesheet_cost = rec.employee_id.timesheet_cost
             rec.allowance = rec.number_of_hours * rec.timesheet_cost
 
+
+            rec.timesheet_cost = rec.employee_id.contract_id.hr_total_wage
+            time_cost = ((rec.timesheet_cost / 30) / 8)
+            rec.allowance = rec.number_of_hours * time_cost
+
 class HrSalaryRulecus(models.Model):
     _inherit = 'hr.salary.rule'
 
-    od_payroll_item = fields.Boolean('Payroll Item',default=False)
+    od_payroll_item = fields.Boolean('Payroll Item', default=False)
+
 
 class HrPayslipLine(models.Model):
     # this function is modified only to get partner_id in account_move_line
@@ -2113,7 +2161,7 @@ class HrPayslipLine(models.Model):
         Get partner_id of slip line to use in account_move_line
         """
         # use partner of salary rule or fallback on employee's address
-        register_partner_id = self.slip_id.employee_id.address_home_id.id #self.salary_rule_id.register_id.partner_id
+        register_partner_id = self.slip_id.employee_id.address_home_id.id  # self.salary_rule_id.register_id.partner_id
         partner_id = register_partner_id
 
         if credit_account:
@@ -2123,12 +2171,13 @@ class HrPayslipLine(models.Model):
             if register_partner_id or self.salary_rule_id.account_debit.internal_type in ('receivable', 'payable'):
                 return partner_id
         return False
-    #end of function
+    # end of function
+
 
 class HrPayslipcus(models.Model):
     _inherit = 'hr.payslip'
 
-    hr_variance_line_id = fields.One2many('hr.variance.line','payslip_id',string="Variance")
+    hr_variance_line_id = fields.One2many('hr.variance.line', 'payslip_id', string="Variance")
 
     @api.multi
     def unlink(self):
@@ -2142,8 +2191,8 @@ class HrPayslipcus(models.Model):
 
     @api.multi
     def action_payslip_done(self):
-        #this function is modified to have the branch on account move line
-        #res = super(HrPayslipcus, self).action_payslip_done()
+        # this function is modified to have the branch on account move line
+        # res = super(HrPayslipcus, self).action_payslip_done()
 
         for slip in self:
             line_ids = []
@@ -2234,19 +2283,21 @@ class HrPayslipcus(models.Model):
             move = self.env['account.move'].create(move_dict)
             slip.write({'move_id': move.id, 'date': date})
             move.post()
-        #return res
-        #end of function
+        # return res
+        # end of function
+
 
 class HrVarianceLine(models.Model):
     _name = 'hr.variance.line'
 
     payslip_id = fields.Many2one('hr.payslip')
-    tran_id = fields.Many2one('hr.payroll.transactions',string="Transaction")
-    rule_id = fields.Many2one('hr.salary.rule',string="Rule")
+    tran_id = fields.Many2one('hr.payroll.transactions', string="Transaction")
+    rule_id = fields.Many2one('hr.salary.rule', string="Rule")
     date_value = fields.Date('Date')
     tran_note = fields.Char('Transaction Note')
     hours = fields.Float('OT Hours')
     amount = fields.Float('Amount')
+
 
 class HrPayslipEmployeescus(models.TransientModel):
     _inherit = 'hr.payslip.employees'
@@ -2256,15 +2307,15 @@ class HrPayslipEmployeescus(models.TransientModel):
         payslips = self.env['hr.payslip']
         [data] = self.read()
         active_id = self.env.context.get('active_id')
-        
+
         if active_id:
             [run_data] = self.env['hr.payslip.run'].browse(active_id).read(['date_start', 'date_end', 'credit_note'])
         from_date = run_data.get('date_start')
         to_date = run_data.get('date_end')
         # add payroll transaction
-        
+
         datas = {}
-        obj = self.env['hr.payroll.transactions'].search([('date_from','>=',from_date),('date_from','<=',to_date)])
+        obj = self.env['hr.payroll.transactions'].search([('date_from', '>=', from_date), ('date_from', '<=', to_date)])
         # add payroll transaction
         if not data['employee_ids']:
             raise UserError(_("You must select employee(s) to generate payslip(s)."))
@@ -2275,13 +2326,13 @@ class HrPayslipEmployeescus(models.TransientModel):
                 if l.state == 'done':
                     for k in l.payroll_tran_line:
                         if k.state != 'paid':
-                            if k.employee_id.id == employee.id :
+                            if k.employee_id.id == employee.id:
                                 datas = {
-                                    'tran_id':l.id,
-                                    'rule_id':k.payroll_item.id,
-                                    'date_value':l.date_from,
-                                    'tran_note':k.tran_note,
-                                    'amount':k.allowance,
+                                    'tran_id': l.id,
+                                    'rule_id': k.payroll_item.id,
+                                    'date_value': l.date_from,
+                                    'tran_note': k.tran_note,
+                                    'amount': k.allowance,
                                 }
                                 invoice_line.append((0, 0, datas))
                                 k.state = 'paid'
@@ -2292,8 +2343,6 @@ class HrPayslipEmployeescus(models.TransientModel):
                 else:
                     continue
 
-            
-            
             # add payroll transaction
             slip_data = self.env['hr.payslip'].onchange_employee_id(from_date, to_date, employee.id, contract_id=False)
             res = {
@@ -2317,6 +2366,8 @@ class HrPayslipEmployeescus(models.TransientModel):
         return {'type': 'ir.actions.act_window_close'}
 
     # view of payroll transaction Report
+
+
 class HrPayrollTranSheetView(models.Model):
     _name = 'hr.payroll.tran.sheet.view'
     _description = "Payroll transaction Report"
@@ -2324,8 +2375,8 @@ class HrPayrollTranSheetView(models.Model):
 
     amount = fields.Float('Amount')
     date = fields.Date('Date')
-    employee_id = fields.Many2one('hr.employee',string="Employee")
-    payroll_item = fields.Many2one('hr.salary.rule',string="Payroll Item")
+    employee_id = fields.Many2one('hr.employee', string="Employee")
+    payroll_item = fields.Many2one('hr.salary.rule', string="Payroll Item")
     tran = fields.Char('Transaction')
     description = fields.Char('Description')
 
@@ -2349,7 +2400,7 @@ class HrPayrollTranSheetView(models.Model):
                     ptl.allowance as amount,
                     pt.date_from as date,
                     pt.name as description
-                    
+
         """
         return select_str
 
@@ -2375,6 +2426,8 @@ class HrPayrollTranSheetView(models.Model):
     # view of payroll transaction Report
 
     # view of Salary Sheet
+
+
 class HrSalarySheetView(models.Model):
     _name = 'hr.salary.sheet.view'
     _description = "Salary Sheet"
@@ -2404,21 +2457,20 @@ class HrSalarySheetView(models.Model):
     annual = fields.Float('Annual')
     unpaid = fields.Float('Unpaid')
     trans_allowance = fields.Float('Transport Allowance')
-    #tot_sal_amt = fields.Float('Total Salary with Allowances')
+    # tot_sal_amt = fields.Float('Total Salary with Allowances')
     # traveling_allowance = fields.Float('Traveling Allowance')
     payslip_days = fields.Float('Payslip Days')
-    structure_id = fields.Many2one('hr.payroll.structure',string="Salary Structure")
-    type_id = fields.Many2one('hr.contract.type',string="Contract Type")
-    job_id = fields.Many2one('hr.job',string="Designation")
-    employee_id = fields.Many2one('hr.employee',string="Employee")
-    department_id = fields.Many2one('hr.department',string="Department")
+    structure_id = fields.Many2one('hr.payroll.structure', string="Salary Structure")
+    type_id = fields.Many2one('hr.contract.type', string="Contract Type")
+    job_id = fields.Many2one('hr.job', string="Designation")
+    employee_id = fields.Many2one('hr.employee', string="Employee")
+    department_id = fields.Many2one('hr.department', string="Department")
     emp_branch_name = fields.Many2one('employee.category.type', string="Branch")
     identification = fields.Char('Identification No.')
     no_of_ot_hours = fields.Float('Overtime Hours')
     batch_name = fields.Char('Batch')
     date_from = fields.Date('Date From')
     date_to = fields.Date('Date To')
-
 
     # @api.depends('tot_sal_amt')
     # def _compute_tot_sal(self):
@@ -2427,7 +2479,6 @@ class HrSalarySheetView(models.Model):
     #         tot = 0
     #         tot = obj.basic + obj.other_allowance
     #         self.tot_sal_amt = tot
-
 
     @api.model_cr
     def init(self):
@@ -2462,11 +2513,11 @@ class HrSalarySheetView(models.Model):
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'OTH'::text) AS other_allowance,
-                    
+
                     ( SELECT sum(hr_variance_line.hours) AS sum
                         FROM hr_variance_line
                         WHERE hr_variance_line.payslip_id = hr_payslip.id) AS no_of_ot_hours,    
-                        
+
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'Annual'::text) AS annual_sal_amt,   
@@ -2476,12 +2527,12 @@ class HrSalarySheetView(models.Model):
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'ALWCE'::text) AS allowances_value,
-                           
+
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'ADTNS'::text) AS additions,
-                       
-                    
+
+
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'CVD0'::text) AS cvd0,
@@ -2497,8 +2548,8 @@ class HrSalarySheetView(models.Model):
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'CV100'::text) AS cvd100,
-                    
-                
+
+
 
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
@@ -2512,7 +2563,7 @@ class HrSalarySheetView(models.Model):
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'DEDF'::text) AS fine_deduction,
-                    
+
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'GROSS'::text) AS gross,
@@ -2525,11 +2576,11 @@ class HrSalarySheetView(models.Model):
                     ( SELECT sum(hr_payslip_worked_days.number_of_days) AS sum
                         FROM hr_payslip_worked_days
                         WHERE hr_payslip_worked_days.payslip_id = hr_payslip.id AND hr_payslip_worked_days.code::text = 'Unpaid'::text) AS unpaid,  
-                              
+
                     ( SELECT sum(hr_payslip_line.total) AS sum
                         FROM hr_payslip_line
                         WHERE hr_payslip_line.slip_id = hr_payslip.id AND hr_payslip_line.code::text = 'NET'::text) AS net_salary
-                    
+
         """
         return select_str
 
@@ -2561,19 +2612,21 @@ class HrSalarySheetView(models.Model):
         return group_by_str
 
     # view of Salary Sheet
+
+
 class LeaveAnalysis(models.Model):
     _name = 'leave.analysis'
     _description = "Leaves Analysis"
     _auto = False
 
     # abs_deduction = fields.Float('Absent')
-    employee_id = fields.Many2one('hr.employee',string='Employee Name')
-    holiday_status_id = fields.Many2one('hr.leave.type',string='Leaves Type')
+    employee_id = fields.Many2one('hr.employee', string='Employee Name')
+    holiday_status_id = fields.Many2one('hr.leave.type', string='Leaves Type')
     # number_of_days = fields.Float('No of Days')
     # the_month = fields.Datetime('Date')
     total_leave_days = fields.Float('Total Leaves Days')
     total_allocated_days = fields.Float('Total Allocated Days')
-    #total_unpaid_allocated_days = fields.Float('total unpaid allocated')
+    # total_unpaid_allocated_days = fields.Float('total unpaid allocated')
     pending_leaves = fields.Float('Pending Leaves')
 
     # @api.depends('total_leave_days','total_allocated_days')
@@ -2581,25 +2634,23 @@ class LeaveAnalysis(models.Model):
     #     for rec in self:
     #         rec.pending_leave = rec.total_allocated_days - rec.total_leave_days
 
-    
-
     @api.model_cr
     def init(self):
         # self._table = sale_report
-        tools.drop_view_if_exists(self.env.cr,'leave_analysis')
+        tools.drop_view_if_exists(self.env.cr, 'leave_analysis')
         self.env.cr.execute("""CREATE or REPLACE view leave_analysis as (
                 SELECT row_number() over(ORDER BY e.id) as id,
                         e.id as employee_id,
                         l.holiday_status_id as holiday_status_id,
                         sum(l.number_of_days) as total_leave_days,
-                        
-                        
+
+
                         (select sum(a.number_of_days)
                         from hr_leave_allocation a
                         where e.id = a.employee_id AND l.holiday_status_id = a.holiday_status_id
                         ) as total_allocated_days,
-                        
-                    
+
+
                         ((select sum(a.number_of_days)
                             from hr_leave_allocation a
                             where e.id = a.employee_id AND l.holiday_status_id = a.holiday_status_id
@@ -2608,33 +2659,38 @@ class LeaveAnalysis(models.Model):
                             hr_leave l  
                         where 	e.id=l.employee_id  
                     group by e.id, l.holiday_status_id
-            );""" )
-   
-#HR Contract and Payroll Customize Part
+            );""")
 
-# Employee Master edits 
+
+# HR Contract and Payroll Customize Part
+
+# Employee Master edits
 class CostCenter(models.Model):
     _name = 'cost.center'
     _inherit = 'mail.thread'
 
-    name =  fields.Char('Name')
+    name = fields.Char('Name')
+
 
 class SourceMaster(models.Model):
     _name = 'source.master'
     _inherit = 'mail.thread'
 
-    name =  fields.Char('Name')
+    name = fields.Char('Name')
+
 
 class DocumentType(models.Model):
     _name = 'document.type'
     _inherit = 'mail.thread'
 
-    name =  fields.Char('Name')
+    name = fields.Char('Name')
+
 
 class HrEmployeesdocumentcus(models.Model):
     _inherit = 'hr.employee.document'
 
-    document_type = fields.Many2one('document.type',string="Document Type")
+    document_type = fields.Many2one('document.type', string="Document Type")
+
 
 class HrEmployeescus(models.Model):
     _inherit = 'hr.employee'
@@ -2649,8 +2705,8 @@ class HrEmployeescus(models.Model):
     leaves_count_2 = fields.Float('Number of Leaves', compute='_compute_leaves_count2')
     emirates_id = fields.Char('Emirates ID')
     emirates_id_expiry_date = fields.Date('Emirates ID Expiry Date')
-    cost_center = fields.Many2one('cost.center',string="Cost Center")
-    emp_branch_name = fields.Many2one('employee.category.type',string='Branch')
+    cost_center = fields.Many2one('cost.center', string="Cost Center")
+    emp_branch_name = fields.Many2one('employee.category.type', string='Branch')
 
     def _get_date_start_work(self):
         return self.join_date
@@ -2670,7 +2726,6 @@ class HrEmployeescus(models.Model):
         for each in self:
             air_ids = self.env['hr.airticket'].sudo().search([('name', '=', each.id)])
             each.airticket_count = len(air_ids)
-
 
     @api.multi
     def airticket_view(self):
@@ -2710,14 +2765,14 @@ class HrEmployeescus(models.Model):
         action = self.env.ref('marcoms_updates.hr_employee_document_cus_action2').read()[0]
         return action
 
+
 class HRAirticket(models.Model):
     _name = 'hr.airticket'
     _description = 'HR Air Ticket'
 
-
-    name = fields.Many2one('hr.employee',string="Employee Name")
-    depart = fields.Many2one('hr.department',string="Department")
-    designation = fields.Many2one('hr.job',string="Designation")
+    name = fields.Many2one('hr.employee', string="Employee Name")
+    depart = fields.Many2one('hr.department', string="Department")
+    designation = fields.Many2one('hr.job', string="Designation")
     join_date = fields.Date('Join Date')
     Airfare = fields.Float('Airfare')
     amount = fields.Float('Ticket Amount')
@@ -2730,9 +2785,10 @@ class Countriesscus(models.Model):
 
     airfare = fields.Float('Airfare')
 
-# Employee Master edits 
 
-#CRM Lost Reason
+# Employee Master edits
+
+# CRM Lost Reason
 class CrmLeadLostcus(models.TransientModel):
     _inherit = 'crm.lead.lost'
 
@@ -2743,10 +2799,11 @@ class CrmLeadLostcus(models.TransientModel):
         leads = self.env['crm.lead'].browse(self.env.context.get('active_ids'))
         leads.write({'lost_reason': self.lost_reason_id.id,
                      'des_reason': self.description,
-                     'stage_id': 10,})
+                     'stage_id': 10, })
         return leads.action_set_lost()
 
-#CRM Lost Reason
+
+# CRM Lost Reason
 
 # Purchase Customization Part
 class PurchaseOrderLineCus(models.Model):
@@ -2755,8 +2812,8 @@ class PurchaseOrderLineCus(models.Model):
     state_id = fields.Selection([
         ('confirm', 'Confirmd'),
         ('cancel', 'Cancelled'),
-        ], string='State', readonly=True, copy=False, index=True,)
-    requ = fields.Many2one('purchase.requisition',invisible=True)
+    ], string='State', readonly=True, copy=False, index=True, )
+    requ = fields.Many2one('purchase.requisition', invisible=True)
 
     @api.multi
     def action_add_confirm(self):
@@ -2769,29 +2826,31 @@ class PurchaseOrderLineCus(models.Model):
     @api.multi
     def action_update_qty(self):
         return {
-                # 'name': _('Quotation'),
-                'view_type': 'form',
-                'view_mode': 'form',
-                'res_model': 'add.qty.purchase',
-                'view_id': self.env.ref('marcoms_updates.add_qty_purchase_form').id,
-                'type': 'ir.actions.act_window',
-                # 'context': vals,
-                'target': 'new'
-            }
+            # 'name': _('Quotation'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'add.qty.purchase',
+            'view_id': self.env.ref('marcoms_updates.add_qty_purchase_form').id,
+            'type': 'ir.actions.act_window',
+            # 'context': vals,
+            'target': 'new'
+        }
 
 
 class setting_config(models.TransientModel):
     _inherit = "res.config.settings"
 
-    po_double_validation_amount_top = fields.Monetary(related='company_id.po_double_validation_amount_top', string="Second Level Of Approve", currency_field='company_currency_id', readonly=False)
-   
+    po_double_validation_amount_top = fields.Monetary(related='company_id.po_double_validation_amount_top',
+                                                      string="Second Level Of Approve",
+                                                      currency_field='company_currency_id', readonly=False)
 
 
 class company_configcus(models.Model):
     _inherit = "res.company"
 
-    po_double_validation_amount_top = fields.Monetary(string='Double validation amount top manager', default=50000,help="Minimum amount for which a double validation is required")   
-    date_today = fields.Date('today',compute='_requisition_count',invisible=True)
+    po_double_validation_amount_top = fields.Monetary(string='Double validation amount top manager', default=50000,
+                                                      help="Minimum amount for which a double validation is required")
+    date_today = fields.Date('today', compute='_requisition_count', invisible=True)
 
     @api.multi
     def _requisition_count(self):
@@ -2813,8 +2872,6 @@ class PurchaseOrderCus(models.Model):
     #     ('cancel', 'Cancelled')
     # ], string='Status', readonly=True, index=True, copy=False, default='draft', track_visibility='onchange')
 
-
-
     # @api.multi
     # def button_confirm(self):
     #     for order in self:
@@ -2834,59 +2891,65 @@ class PurchaseOrderCus(models.Model):
     #         else:
     #             order.write({'state': 'to approve'})
     #     return True
-    text = fields.Char('Price in Text',compute="_com_price2")
-    rfq_name = fields.Char('Rfq Reference', required=True, index=True, copy=False,help="Unique number of the purchase order,computed automatically when the purchase order is created.")
+    text = fields.Char('Price in Text', compute="_com_price2")
+    rfq_name = fields.Char('Rfq Reference', required=True, index=True, copy=False,
+                           help="Unique number of the purchase order,computed automatically when the purchase order is created.")
     interchanging_rfq_sequence = fields.Char('RFQ Sequence', copy=False)
     interchanging_po_sequence = fields.Char('Sequence', copy=False)
     received_by = fields.Char('Received by')
     delivery_location = fields.Char('Delivery Location')
-                
+
     @api.model
     def create(self, vals):
-        if vals.get('name','New') == 'New':
+        if vals.get('name', 'New') == 'New':
             name = self.env['ir.sequence'].next_by_code('purchase.order.quot') or 'New'
             vals['rfq_name'] = vals['name'] = name
-            
+
         return super(PurchaseOrderCus, self).create(vals)
-        
+
     @api.multi
     def button_confirm(self):
-        res =  super(PurchaseOrderCus, self).button_confirm()
+        res = super(PurchaseOrderCus, self).button_confirm()
         for order in self:
             if order.interchanging_rfq_sequence:
                 order.write({'name': order.interchanging_po_sequence})
             else:
                 new_name = self.env['ir.sequence'].next_by_code('purchase.order') or '/'
-                order.write({'interchanging_rfq_sequence':order.name})
+                order.write({'interchanging_rfq_sequence': order.name})
                 order.write({'name': new_name})
             self.picking_ids.write({'origin': order.interchanging_po_sequence})
             if self.picking_ids:
                 for pick in self.picking_ids:
-                    pick.move_lines.write({'origin': order.interchanging_po_sequence}) 
-               
+
+                    pick.move_lines.write({'origin': order.interchanging_po_sequence})
+            order.update_purchase_pricelist()
         return res
-    
-    
-    
+
+    def update_purchase_pricelist(self):
+        for order in self:
+            for line in order.order_line:
+                pricelist = self.env['product.supplierinfo'].search(
+                    [('name', '=', order.partner_id.id), ('product_tmpl_id', '=', line.product_id.product_tmpl_id.id)])
+                if pricelist:
+                    for price in pricelist:
+                        price.price = line.price_unit
+
     @api.multi
     def button_draft(self):
         res = super(PurchaseOrderCus, self).button_draft()
         if self.interchanging_rfq_sequence:
-            self.write({'interchanging_po_sequence':self.name})
-            self.write({'name':self.interchanging_rfq_sequence})
+            self.write({'interchanging_po_sequence': self.name})
+            self.write({'name': self.interchanging_rfq_sequence})
         # else:
         #     self.write({'interchanging_po_sequence':self.name})
         #     self.write({'name':self.interchanging_rfq_sequence})
-            
-            
-        
+
         return res
 
-
-    @api.depends('amount_total','currency_id')
+    @api.depends('amount_total', 'currency_id')
     def _com_price2(self):
         for rec in self:
-        # res = super(pur_order_inherit, self)._onchange_amount()
+            # res = super(pur_order_inherit, self)._onchange_amount()
             rec.text = rec.currency_id.amount_to_text(rec.amount_total) if rec.currency_id else ''
             rec.text = rec.text.replace(' And ', ' ')
 
@@ -2917,7 +2980,8 @@ class PurchaseOrderCus(models.Model):
             if self.env.context.get('send_rfq', False):
                 template_id = ir_model_data.get_object_reference('marcoms_updates', 'purchase_send_mail_template')[1]
             else:
-                template_id = ir_model_data.get_object_reference('marcoms_updates', 'purchase_send_mail_template_done')[1]
+                template_id = ir_model_data.get_object_reference('marcoms_updates', 'purchase_send_mail_template_done')[
+                    1]
         except ValueError:
             template_id = False
         try:
@@ -2964,20 +3028,16 @@ class PurchaseOrderCus(models.Model):
         }
 
 
-             
-   
-
 class PurchaseRequisitionCus(models.Model):
     _inherit = 'purchase.requisition'
 
+    requisition_so_id = fields.Many2one('material.requisition.sales', string="Requisition From Sales")
 
-    requisition_so_id = fields.Many2one('material.requisition.sales',string="Requisition From Sales")
     # state = state = fields.Selection(PURCHASE_REQUISITION_STATES_IN,
     #                           'Status', track_visibility='onchange', required=True,
     #                           copy=False, default='draft')
     # state_blanket_order = fields.Selection(PURCHASE_REQUISITION_STATES_IN, compute='_set_state')
-    #po_sequence = fields.Many2one('purchase.order',string='PO Sequence', readonly=True)
-
+    # po_sequence = fields.Many2one('purchase.order',string='PO Sequence', readonly=True)
 
     @api.multi
     def action_compare(self):
@@ -2995,10 +3055,8 @@ class PurchaseRequisitionCus(models.Model):
     #             'state': 'pm_approval',
     #         })
 
-
-
     @api.model
-    def create(self,vals):
+    def create(self, vals):
         """ Broadcast the welcome message to all users in the employee company. """
 
         # self.ensure_one()
@@ -3019,24 +3077,26 @@ class PurchaseRequisitionCus(models.Model):
                 # raise ValidationError(_('%s %s ') % (body_html,subject))
                 ids = channel_all_employees['id']
                 channel_id = self.env['mail.channel'].search([('id', '=', ids)])
-                channel_id.message_post(body='Hello there are New Purchase Tender Created Please Check the Purchase Requisition NO is '+str(vals['origin']), subject=subject,subtype='mail.mt_comment')
-
+                channel_id.message_post(
+                    body='Hello there are New Purchase Tender Created Please Check the Purchase Requisition NO is ' + str(
+                        vals['origin']), subject=subject, subtype='mail.mt_comment')
 
         result = super(PurchaseRequisitionCus, self).create(vals)
         return result
-            # self.env['mail.message'].create({'message_type':"notification",
-            #     "subtype": self.env.ref("mail.mt_comment").id,
-            #     'body': body_html,
-            #     'subject': subject,
-            #     'needaction_partner_ids': [(4, self.user_id.partner_id.id)],
-            #     'model': self._name,
-            #     'res_id': ids,
-            #     })
+        # self.env['mail.message'].create({'message_type':"notification",
+        #     "subtype": self.env.ref("mail.mt_comment").id,
+        #     'body': body_html,
+        #     'subject': subject,
+        #     'needaction_partner_ids': [(4, self.user_id.partner_id.id)],
+        #     'model': self._name,
+        #     'res_id': ids,
+        #     })
         # return True
+
 
 class PurchaseReportcus(models.Model):
     _inherit = "purchase.report"
-   
+
     name = fields.Many2one('purchase.order', 'Purchase Reference', readonly=True)
 
     def _select(self):
@@ -3074,7 +3134,6 @@ class PurchaseReportcus(models.Model):
         """ % self.env['res.currency']._select_companies_rates()
         return select_str
 
-
     def _group_by(self):
         group_by_str = """
             GROUP BY
@@ -3106,6 +3165,7 @@ class PurchaseReportcus(models.Model):
         """
         return group_by_str
 
+
 # Purchase Customization Part
 
 # Accounts Customization Part
@@ -3113,36 +3173,50 @@ class AccountInvoiceRefundCus(models.TransientModel):
     _inherit = 'account.invoice.refund'
 
     date_invoice = fields.Date(string='Debit Note Date', default=fields.Date.context_today, required=True)
-    filter_refund = fields.Selection([('refund', 'Create a draft debit note'), ('cancel', 'Cancel: create debit note and reconcile'), ('modify', 'Modify: create debit note, reconcile and create a new draft invoice')],default='refund', string='Credit Method', required=True, help='Choose how you want to credit this invoice. You cannot Modify and Cancel if the invoice is already reconciled')
+    filter_refund = fields.Selection(
+        [('refund', 'Create a draft debit note'), ('cancel', 'Cancel: create debit note and reconcile'),
+         ('modify', 'Modify: create debit note, reconcile and create a new draft invoice')], default='refund',
+        string='Credit Method', required=True,
+        help='Choose how you want to credit this invoice. You cannot Modify and Cancel if the invoice is already reconciled')
+
 
 class AccountInvoiceCust(models.Model):
     _inherit = 'account.invoice'
 
-    term = fields.Many2one('bank.details',string='Bank Details')
+    term = fields.Many2one('bank.details', string='Bank Details')
     LPO = fields.Char('LPO No.')
     project_name = fields.Char('Event')
-    text = fields.Char('Price in Text',compute="_com_price2",invisible=True)
-    project = fields.Many2one('account.analytic.account',string="project")
+    text = fields.Char('Price in Text', compute="_com_price2", invisible=True)
+    project = fields.Many2one('account.analytic.account', string="project")
     document_count = fields.Integer(compute='_document_count', string='# Documents')
     comment = fields.Text('Additional Information')
-    
-#     @api.model
-#     def _default_commentt(self,vals):
-#         # picking_type_id = self._context.get('default_picking_type_id')
-#         if self.type != ['in_invoice','out_refund','in_refund']:
-#             return """Terms and Conditions:
-# Goods will remain the property of MARCOMS until payment of this invoice is settled in full.
-# Cheque Payments should be made under the name of "MARCOMS LLC".
-# Official receipt should be obtained for cash payments."""
-#         else:
-#             return " "
+
+    #     @api.model
+    #     def _default_commentt(self,vals):
+    #         # picking_type_id = self._context.get('default_picking_type_id')
+    #         if self.type != ['in_invoice','out_refund','in_refund']:
+    #             return """Terms and Conditions:
+    # Goods will remain the property of MARCOMS until payment of this invoice is settled in full.
+    # Cheque Payments should be made under the name of "MARCOMS LLC".
+    # Official receipt should be obtained for cash payments."""
+    #         else:
+    #             return " "
+
+    @api.multi
+    def action_invoice_open(self):
+        res = super(AccountInvoiceCust, self).action_invoice_open()
+        for order in self:
+            account_analytic = self.env['account.invoice.line'].search([('invoice_id', '=', order.id)])
+            for acc in account_analytic:
+                order.project = acc.account_analytic_id.id
+        return res
 
     @api.model
     def create(self, vals):
         if not vals.get('journal_id') and vals.get('type'):
             vals['journal_id'] = self.with_context(type=vals.get('type'))._default_journal().id
 
-        if vals.get('type') != ['in_invoice','out_refund','in_refund']:
+        if vals.get('type') != ['in_invoice', 'out_refund', 'in_refund']:
             vals['comment'] = """Terms and Conditions:
 Goods will remain the property of MARCOMS until payment of this invoice is settled in full.
 Cheque Payments should be made under the name of "MARCOMS LLC".
@@ -3202,46 +3276,50 @@ Official receipt should be obtained for cash payments."""
             'context': "{'default_pay_ref': '%s'}" % self.id
         }
 
-    @api.depends('amount_total','currency_id')
+    @api.depends('amount_total', 'currency_id')
     def _com_price2(self):
         for rec in self:
-        # res = super(pur_order_inherit, self)._onchange_amount()
+            # res = super(pur_order_inherit, self)._onchange_amount()
             rec.text = rec.currency_id.amount_to_text(rec.amount_total) if rec.currency_id else ''
-            rec.text = rec.text.replace(' And ', ' ').replace(',',' ')
-        #self.text = self.text.replace(' Dirham ', ' ')
-
+            rec.text = rec.text.replace(' And ', ' ').replace(',', ' ')
+        # self.text = self.text.replace(' Dirham ', ' ')
 
 
 counter_array = []
+
+
 class AccountpaymentCust(models.Model):
     _inherit = 'account.payment'
 
-    text = fields.Char('Price in Text',compute="_com_price2",invisible=True)
+    text = fields.Char('Price in Text', compute="_com_price2", invisible=True)
     # cheque_date = fields.Date('Cheque Date')
     remarks = fields.Text('Remarks')
-    seal = fields.Boolean('Include Company Seal',default=False)
-    pdc_account = fields.Many2one('account.account',string="PDC Account")
-    release_count = fields.Integer('Count',default=0,copy=False)
+    seal = fields.Boolean('Include Company Seal', default=False)
+    pdc_account = fields.Many2one('account.account', string="PDC Account")
+    release_count = fields.Integer('Count', default=0, copy=False)
     move_relase_id = fields.Integer('Move id')
     move_entry_id = fields.Integer('Move id')
-    release_check = fields.Boolean('Is Release',default=False)
+    release_check = fields.Boolean('Is Release', default=False)
     # variance_id = fields.One2many('payment.variance.inv','payment_ids',string="Payment Variance")
-    variance_count = fields.Integer('Count',default=0,copy=False)
-    add_variance_count = fields.Integer('Count',default=0,copy=False)
-    var_account = fields.Many2one('account.account',string="Variance Account")
-    var_amount = fields.Float(string="Variance Amount",compute='_var_amount')
+    variance_count = fields.Integer('Count', default=0, copy=False)
+    add_variance_count = fields.Integer('Count', default=0, copy=False)
+    var_account = fields.Many2one('account.account', string="Variance Account")
+    var_amount = fields.Float(string="Variance Amount", compute='_var_amount')
     invoice_lines_outstand = fields.One2many('payment.invoice.line.outstand', 'payment_id', string="Outstanding Line")
-    accountname = fields.Many2one('account.account',string='account')
-    company_id = fields.Many2one('res.company', string='Company', change_default=True,required=True, readonly=True, states={'draft': [('readonly', False)]},default=lambda self: self.env['res.company']._company_default_get('account.invoice'))
-    flag_acc = fields.Boolean('Flag',default=False)
+    accountname = fields.Many2one('account.account', string='account')
+    company_id = fields.Many2one('res.company', string='Company', change_default=True, required=True, readonly=True,
+                                 states={'draft': [('readonly', False)]},
+                                 default=lambda self: self.env['res.company']._company_default_get('account.invoice'))
+    flag_acc = fields.Boolean('Flag', default=False)
+
     # prepare = fields.Char('Prepared by')
     # checked = fields.Char('Checked by')
     # received = fields.Char('Received by')
     # approved = fields.Char('Approved by')
     # verified = fields.Char('Verified by')
-    
+
     @api.multi
-    @api.depends('invoice_lines','amount','invoice_lines_outstand')
+    @api.depends('invoice_lines', 'amount', 'invoice_lines_outstand')
     def _var_amount(self):
         for rec in self:
             y = 0.0
@@ -3256,23 +3334,25 @@ class AccountpaymentCust(models.Model):
                 amt = amt + z
             rec.var_amount = amt - y
 
-    @api.onchange('amount','currency_id')
+    @api.onchange('amount', 'currency_id')
     def _onchange_amount(self):
         res = super(AccountpaymentCust, self)._onchange_amount()
         self.check_amount_in_words = self.currency_id.amount_to_text(self.amount) if self.currency_id else ''
-        self.check_amount_in_words = self.check_amount_in_words.replace(' Dirham ', ' ').replace(' Dirham',' ').replace(' And ',' ')
+        self.check_amount_in_words = self.check_amount_in_words.replace(' Dirham ', ' ').replace(' Dirham',
+                                                                                                 ' ').replace(' And ',
+                                                                                                              ' ')
 
         return res
 
-    @api.depends('amount','currency_id')
+    @api.depends('amount', 'currency_id')
     def _com_price2(self):
         for rec in self:
-        # res = super(pur_order_inherit, self)._onchange_amount()
+            # res = super(pur_order_inherit, self)._onchange_amount()
             rec.text = rec.currency_id.amount_to_text(rec.amount) if rec.currency_id else ''
-            rec.text = rec.text.replace(' And ', ' ').replace(',',' ').replace(' Dirham ',' ').replace(' Fils',' ').replace(' Dirham',' ')
+            rec.text = rec.text.replace(' And ', ' ').replace(',', ' ').replace(' Dirham ', ' ').replace(' Fils',
+                                                                                                         ' ').replace(
+                ' Dirham', ' ')
             # rec.check_amount_in_words = rec.check_amount_in_words.replace(' Dirham ', ' ').replace(' Dirham',' ')
-
-    
 
     def _create_payment_entry(self, amount):
         """ Create a journal entry corresponding to a payment, if the payment references invoice(s) they are reconciled.
@@ -3280,11 +3360,12 @@ class AccountpaymentCust(models.Model):
         """
         aml_obj = self.env['account.move.line'].with_context(check_move_validity=False)
         if self.payment_method_code == 'pdc':
-            debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amount, self.currency_id, self.company_id.currency_id)
+            debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                date=self.payment_date)._compute_amount_fields(amount, self.currency_id, self.company_id.currency_id)
         else:
-            debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amount, self.currency_id, self.company_id.currency_id)
+            debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                date=self.payment_date)._compute_amount_fields(amount, self.currency_id, self.company_id.currency_id)
 
-    
         move = self.env['account.move'].create(self._get_move_vals())
         self.move_entry_id = move.id
 
@@ -3296,8 +3377,8 @@ class AccountpaymentCust(models.Model):
             if self.var_amount != 0:
                 amt = 0.0
                 # for l in self.invoice_lines:
-                    # if l.allocation :
-                
+                # if l.allocation :
+
                 # if self.payment_method_code == 'pdc':
                 # debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.effective_date)._compute_amount_fields(amount, self.currency_id, self.company_id.currency_id)
                 # else:
@@ -3307,190 +3388,248 @@ class AccountpaymentCust(models.Model):
                     if self.partner_type == 'customer':
                         for l in self.invoice_lines:
                             if l.allocation:
-                                
+
                                 amt = l.allocation
                                 amountss = -amt
                                 if self.payment_method_code == 'pdc':
-                                    debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amountss, self.currency_id, self.company_id.currency_id)
+                                    debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                        date=self.payment_date)._compute_amount_fields(amountss, self.currency_id,
+                                                                                       self.company_id.currency_id)
                                 else:
-                                    debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amountss, self.currency_id, self.company_id.currency_id)
+                                    debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                        date=self.payment_date)._compute_amount_fields(amountss, self.currency_id,
+                                                                                       self.company_id.currency_id)
 
-                                counterpart_aml_dict = self._get_shared_move_line_vals(debit,credit, amount_currency, move.id, False)
+                                counterpart_aml_dict = self._get_shared_move_line_vals(debit, credit, amount_currency,
+                                                                                       move.id, False)
                                 counterpart_aml_dict.update(self._get_counterpart_move_line_vals(l.invoice))
                                 counterpart_aml_dict.update({'currency_id': currency_id})
                                 counterpart_aml_dict.update({'date_maturity': self.payment_date})
-                            # counterpart_aml_dict.update({'account_id': self.pdc_account.id})
+                                # counterpart_aml_dict.update({'account_id': self.pdc_account.id})
                                 # raise ValidationError(_(counterpart_aml_dict))
                                 counterpart_aml = aml_obj.create(counterpart_aml_dict)
-                                com = ino.search([('number','=',l.invoice)])
+                                com = ino.search([('number', '=', l.invoice)])
                                 com.register_payment(counterpart_aml)
 
                     else:
                         if self.var_amount != 0:
                             for l in self.invoice_lines:
                                 if l.allocation:
-                                    
+
                                     amt = l.allocation
                                     amountss = -amt
                                     if self.payment_method_code == 'pdc':
-                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amountss, self.currency_id, self.company_id.currency_id)
+                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                            date=self.payment_date)._compute_amount_fields(amountss, self.currency_id,
+                                                                                           self.company_id.currency_id)
                                     else:
-                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amountss, self.currency_id, self.company_id.currency_id)
+                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                            date=self.payment_date)._compute_amount_fields(amountss, self.currency_id,
+                                                                                           self.company_id.currency_id)
 
-                                    counterpart_aml_dict = self._get_shared_move_line_vals( credit,debit, amount_currency, move.id, False)
+                                    counterpart_aml_dict = self._get_shared_move_line_vals(credit, debit,
+                                                                                           amount_currency, move.id,
+                                                                                           False)
                                     counterpart_aml_dict.update(self._get_counterpart_move_line_vals(l.invoice))
                                     counterpart_aml_dict.update({'currency_id': currency_id})
                                     counterpart_aml_dict.update({'date_maturity': self.payment_date})
                                     # counterpart_aml_dict.update({'account_id': self.pdc_account.id})
                                     counterpart_aml = aml_obj.create(counterpart_aml_dict)
-                                    com = ino.search([('number','=',l.invoice)])
+                                    com = ino.search([('number', '=', l.invoice)])
                                     com.register_payment(counterpart_aml)
                             # raise ValidationError(_(counterpart_aml_dict))
                         else:
                             for l in self.invoice_lines:
                                 if l.allocation:
-                                    
+
                                     amt = l.allocation
                                     amountss = -amt
                                     if self.payment_method_code == 'pdc':
-                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amountss, self.currency_id, self.company_id.currency_id)
+                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                            date=self.payment_date)._compute_amount_fields(amountss, self.currency_id,
+                                                                                           self.company_id.currency_id)
                                     else:
-                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amountss, self.currency_id, self.company_id.currency_id)
+                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                            date=self.payment_date)._compute_amount_fields(amountss, self.currency_id,
+                                                                                           self.company_id.currency_id)
 
-                                    counterpart_aml_dict = self._get_shared_move_line_vals( debit,credit, amount_currency, move.id, False)
+                                    counterpart_aml_dict = self._get_shared_move_line_vals(debit, credit,
+                                                                                           amount_currency, move.id,
+                                                                                           False)
                                     counterpart_aml_dict.update(self._get_counterpart_move_line_vals(l.invoice))
                                     counterpart_aml_dict.update({'currency_id': currency_id})
                                     counterpart_aml_dict.update({'date_maturity': self.payment_date})
                                     # counterpart_aml_dict.update({'account_id': self.pdc_account.id})
                                     counterpart_aml = aml_obj.create(counterpart_aml_dict)
-                                    com = ino.search([('number','=',l.invoice)])
+                                    com = ino.search([('number', '=', l.invoice)])
                                     com.register_payment(counterpart_aml)
                         # raise ValidationError(_(counterpart_aml_dict))
                 else:
                     if self.partner_type == 'customer':
                         for l in self.invoice_lines:
                             if l.allocation:
-                                
+
                                 amt = l.allocation
                                 amountss = -amt
                                 if self.payment_method_code == 'pdc':
-                                    debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amountss, self.currency_id, self.company_id.currency_id)
+                                    debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                        date=self.payment_date)._compute_amount_fields(amountss, self.currency_id,
+                                                                                       self.company_id.currency_id)
                                 else:
-                                    debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amountss, self.currency_id, self.company_id.currency_id)
+                                    debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                        date=self.payment_date)._compute_amount_fields(amountss, self.currency_id,
+                                                                                       self.company_id.currency_id)
 
-                                counterpart_aml_dict = self._get_shared_move_line_vals(debit, credit, amount_currency, move.id, False)
+                                counterpart_aml_dict = self._get_shared_move_line_vals(debit, credit, amount_currency,
+                                                                                       move.id, False)
                                 counterpart_aml_dict.update(self._get_counterpart_move_line_vals(l.invoice))
                                 counterpart_aml_dict.update({'currency_id': currency_id})
                                 counterpart_aml = aml_obj.create(counterpart_aml_dict)
-                                com = ino.search([('number','=',l.invoice)])
+                                com = ino.search([('number', '=', l.invoice)])
                                 com.register_payment(counterpart_aml)
                         # raise ValidationError(_(counterpart_aml_dict))
                     else:
                         for l in self.invoice_lines:
                             if l.allocation:
-                               
+
                                 amt = l.allocation
                                 amountss = -amt
                                 if self.payment_method_code == 'pdc':
-                                    debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amountss, self.currency_id, self.company_id.currency_id)
+                                    debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                        date=self.payment_date)._compute_amount_fields(amountss, self.currency_id,
+                                                                                       self.company_id.currency_id)
                                 else:
-                                    debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amountss, self.currency_id, self.company_id.currency_id)
+                                    debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                        date=self.payment_date)._compute_amount_fields(amountss, self.currency_id,
+                                                                                       self.company_id.currency_id)
 
-                                counterpart_aml_dict = self._get_shared_move_line_vals(credit,debit,  amount_currency, move.id, False)
+                                counterpart_aml_dict = self._get_shared_move_line_vals(credit, debit, amount_currency,
+                                                                                       move.id, False)
                                 counterpart_aml_dict.update(self._get_counterpart_move_line_vals(l.invoice))
                                 counterpart_aml_dict.update({'currency_id': currency_id})
                                 counterpart_aml = aml_obj.create(counterpart_aml_dict)
-                                com = ino.search([('number','=',l.invoice)])
+                                com = ino.search([('number', '=', l.invoice)])
                                 com.register_payment(counterpart_aml)
                                 # raise ValidationError(_(counterpart_aml_dict))
-            #Write line corresponding to invoice payment
+            # Write line corresponding to invoice payment
             else:
                 if self.payment_method_code == 'pdc':
                     if self.partner_type == 'customer':
                         for l in self.invoice_lines:
                             if l.allocation:
-                                
-                                if self.payment_method_code == 'pdc':
-                                    debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id, self.company_id.currency_id)
-                                else:
-                                    debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id, self.company_id.currency_id)
 
-                                counterpart_aml_dict = self._get_shared_move_line_vals(debit,credit, amount_currency, move.id, False)
+                                if self.payment_method_code == 'pdc':
+                                    debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                        date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id,
+                                                                                       self.company_id.currency_id)
+                                else:
+                                    debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                        date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id,
+                                                                                       self.company_id.currency_id)
+
+                                counterpart_aml_dict = self._get_shared_move_line_vals(debit, credit, amount_currency,
+                                                                                       move.id, False)
                                 counterpart_aml_dict.update(self._get_counterpart_move_line_vals(l.invoice))
                                 counterpart_aml_dict.update({'currency_id': currency_id})
                                 counterpart_aml_dict.update({'date_maturity': self.payment_date})
-                            # counterpart_aml_dict.update({'account_id': self.pdc_account.id})
+                                # counterpart_aml_dict.update({'account_id': self.pdc_account.id})
                                 counterpart_aml = aml_obj.create(counterpart_aml_dict)
-                                com = ino.search([('number','=',l.invoice)])
+                                com = ino.search([('number', '=', l.invoice)])
                                 com.register_payment(counterpart_aml)
                     else:
                         if self.var_amount != 0:
                             for l in self.invoice_lines:
                                 if l.allocation:
-                                    
-                                    if self.payment_method_code == 'pdc':
-                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id, self.company_id.currency_id)
-                                    else:
-                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id, self.company_id.currency_id)
 
-                                    counterpart_aml_dict = self._get_shared_move_line_vals( credit,debit, amount_currency, move.id, False)
+                                    if self.payment_method_code == 'pdc':
+                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                            date=self.payment_date)._compute_amount_fields(-l.allocation,
+                                                                                           self.currency_id,
+                                                                                           self.company_id.currency_id)
+                                    else:
+                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                            date=self.payment_date)._compute_amount_fields(-l.allocation,
+                                                                                           self.currency_id,
+                                                                                           self.company_id.currency_id)
+
+                                    counterpart_aml_dict = self._get_shared_move_line_vals(credit, debit,
+                                                                                           amount_currency, move.id,
+                                                                                           False)
                                     counterpart_aml_dict.update(self._get_counterpart_move_line_vals(l.invoice))
                                     counterpart_aml_dict.update({'currency_id': currency_id})
                                     counterpart_aml_dict.update({'date_maturity': self.payment_date})
                                     # counterpart_aml_dict.update({'account_id': self.pdc_account.id})
                                     counterpart_aml = aml_obj.create(counterpart_aml_dict)
-                                    com = ino.search([('number','=',l.invoice)])
+                                    com = ino.search([('number', '=', l.invoice)])
                                     com.register_payment(counterpart_aml)
                                     # raise ValidationError(_(counterpart_aml_dict))
                         else:
                             for l in self.invoice_lines:
                                 if l.allocation:
-                                    
-                                    if self.payment_method_code == 'pdc':
-                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id, self.company_id.currency_id)
-                                    else:
-                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id, self.company_id.currency_id)
 
-                                    counterpart_aml_dict = self._get_shared_move_line_vals( credit,debit, amount_currency, move.id, False)
+                                    if self.payment_method_code == 'pdc':
+                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                            date=self.payment_date)._compute_amount_fields(-l.allocation,
+                                                                                           self.currency_id,
+                                                                                           self.company_id.currency_id)
+                                    else:
+                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                            date=self.payment_date)._compute_amount_fields(-l.allocation,
+                                                                                           self.currency_id,
+                                                                                           self.company_id.currency_id)
+
+                                    counterpart_aml_dict = self._get_shared_move_line_vals(credit, debit,
+                                                                                           amount_currency, move.id,
+                                                                                           False)
                                     counterpart_aml_dict.update(self._get_counterpart_move_line_vals(l.invoice))
                                     counterpart_aml_dict.update({'currency_id': currency_id})
                                     counterpart_aml_dict.update({'date_maturity': self.payment_date})
                                     # counterpart_aml_dict.update({'account_id': self.pdc_account.id})
                                     counterpart_aml = aml_obj.create(counterpart_aml_dict)
-                                    com = ino.search([('number','=',l.invoice)])
+                                    com = ino.search([('number', '=', l.invoice)])
                                     com.register_payment(counterpart_aml)
                                     # raise ValidationError(_(counterpart_aml_dict))
                 else:
                     if self.partner_type == 'customer':
                         for l in self.invoice_lines:
                             if l.allocation:
-                                
-                                if self.payment_method_code == 'pdc':
-                                    debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id, self.company_id.currency_id)
-                                else:
-                                    debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id, self.company_id.currency_id)
 
-                                counterpart_aml_dict = self._get_shared_move_line_vals(debit, credit, amount_currency, move.id, False)
+                                if self.payment_method_code == 'pdc':
+                                    debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                        date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id,
+                                                                                       self.company_id.currency_id)
+                                else:
+                                    debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                        date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id,
+                                                                                       self.company_id.currency_id)
+
+                                counterpart_aml_dict = self._get_shared_move_line_vals(debit, credit, amount_currency,
+                                                                                       move.id, False)
                                 counterpart_aml_dict.update(self._get_counterpart_move_line_vals(l.invoice))
                                 counterpart_aml_dict.update({'currency_id': currency_id})
                                 counterpart_aml = aml_obj.create(counterpart_aml_dict)
-                                com = ino.search([('number','=',l.invoice)])
+                                com = ino.search([('number', '=', l.invoice)])
                                 com.register_payment(counterpart_aml)
                         # raise ValidationError(_(counterpart_aml_dict))
                     else:
                         for l in self.invoice_lines:
                             if l.allocation:
-                                
-                                if self.payment_method_code == 'pdc':
-                                    debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id, self.company_id.currency_id)
-                                else:
-                                    debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id, self.company_id.currency_id)
 
-                                counterpart_aml_dict = self._get_shared_move_line_vals(credit,debit,  amount_currency, move.id, False)
+                                if self.payment_method_code == 'pdc':
+                                    debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                        date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id,
+                                                                                       self.company_id.currency_id)
+                                else:
+                                    debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                        date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id,
+                                                                                       self.company_id.currency_id)
+
+                                counterpart_aml_dict = self._get_shared_move_line_vals(credit, debit, amount_currency,
+                                                                                       move.id, False)
                                 counterpart_aml_dict.update(self._get_counterpart_move_line_vals(l.invoice))
                                 counterpart_aml_dict.update({'currency_id': currency_id})
                                 counterpart_aml = aml_obj.create(counterpart_aml_dict)
-                                com = ino.search([('number','=',l.invoice)])
+                                com = ino.search([('number', '=', l.invoice)])
                                 com.register_payment(counterpart_aml)
                                 # raise ValidationError(_(counterpart_aml_dict))
         else:
@@ -3501,206 +3640,287 @@ class AccountpaymentCust(models.Model):
                 for l in self.invoice_lines:
                     invoice_namm = l.invoice
                     if l.allocation:
-                        debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id, self.company_id.currency_id)
+                        debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                            date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id,
+                                                                           self.company_id.currency_id)
                         if self.var_amount != 0:
                             if self.payment_method_code == 'pdc':
                                 if self.partner_type == 'customer':
                                     # for l in self.invoice_lines:
-                                        # if l.allocation:
-                                            
-                                        amt = l.allocation
-                                        amountss = -amt
-                                        if self.payment_method_code == 'pdc':
-                                            debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amountss, self.currency_id, self.company_id.currency_id)
-                                        else:
-                                            debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amountss, self.currency_id, self.company_id.currency_id)
+                                    # if l.allocation:
 
-                                        counterpart_aml_dict = self._get_shared_move_line_vals(debit,credit, amount_currency, move.id, False)
-                                        counterpart_aml_dict.update(self._get_counterpart_move_line_vals(l.invoice))
-                                        counterpart_aml_dict.update({'currency_id': currency_id})
-                                        counterpart_aml_dict.update({'date_maturity': self.payment_date})
-                                        # raise ValidationError(_(counterpart_aml_dict))
+                                    amt = l.allocation
+                                    amountss = -amt
+                                    if self.payment_method_code == 'pdc':
+                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                            date=self.payment_date)._compute_amount_fields(amountss, self.currency_id,
+                                                                                           self.company_id.currency_id)
+                                    else:
+                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                            date=self.payment_date)._compute_amount_fields(amountss, self.currency_id,
+                                                                                           self.company_id.currency_id)
+
+                                    counterpart_aml_dict = self._get_shared_move_line_vals(debit, credit,
+                                                                                           amount_currency, move.id,
+                                                                                           False)
+                                    counterpart_aml_dict.update(self._get_counterpart_move_line_vals(l.invoice))
+                                    counterpart_aml_dict.update({'currency_id': currency_id})
+                                    counterpart_aml_dict.update({'date_maturity': self.payment_date})
+                                    # raise ValidationError(_(counterpart_aml_dict))
                                     # counterpart_aml_dict.update({'account_id': self.pdc_account.id})
-                                        counterpart_aml = aml_obj.create(counterpart_aml_dict)
-                                        com = ino.search([('number','=',l.invoice)])
-                                        com.register_payment(counterpart_aml)
+                                    counterpart_aml = aml_obj.create(counterpart_aml_dict)
+                                    com = ino.search([('number', '=', l.invoice)])
+                                    com.register_payment(counterpart_aml)
 
                                 else:
                                     if self.var_amount != 0:
                                         # for l in self.invoice_lines:
                                         #     if l.allocation:
-                                                
+
                                         amt = l.allocation
                                         amountss = -amt
                                         if self.payment_method_code == 'pdc':
-                                            debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amountss, self.currency_id, self.company_id.currency_id)
+                                            debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                                date=self.payment_date)._compute_amount_fields(amountss,
+                                                                                               self.currency_id,
+                                                                                               self.company_id.currency_id)
                                         else:
-                                            debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amountss, self.currency_id, self.company_id.currency_id)
+                                            debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                                date=self.payment_date)._compute_amount_fields(amountss,
+                                                                                               self.currency_id,
+                                                                                               self.company_id.currency_id)
 
-                                        counterpart_aml_dict = self._get_shared_move_line_vals( credit,debit, amount_currency, move.id, False)
+                                        counterpart_aml_dict = self._get_shared_move_line_vals(credit, debit,
+                                                                                               amount_currency, move.id,
+                                                                                               False)
                                         counterpart_aml_dict.update(self._get_counterpart_move_line_vals(l.invoice))
                                         counterpart_aml_dict.update({'currency_id': currency_id})
                                         counterpart_aml_dict.update({'date_maturity': self.payment_date})
                                         # counterpart_aml_dict.update({'account_id': self.pdc_account.id})
                                         counterpart_aml = aml_obj.create(counterpart_aml_dict)
-                                        com = ino.search([('number','=',l.invoice)])
+                                        com = ino.search([('number', '=', l.invoice)])
                                         com.register_payment(counterpart_aml)
                                         # raise ValidationError(_(counterpart_aml_dict))
                                     else:
                                         # for l in self.invoice_lines:
-                                            # if l.allocation:
-                                                
+                                        # if l.allocation:
+
                                         amt = l.allocation
                                         amountss = -amt
                                         if self.payment_method_code == 'pdc':
-                                            debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amountss, self.currency_id, self.company_id.currency_id)
+                                            debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                                date=self.payment_date)._compute_amount_fields(amountss,
+                                                                                               self.currency_id,
+                                                                                               self.company_id.currency_id)
                                         else:
-                                            debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amountss, self.currency_id, self.company_id.currency_id)
+                                            debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                                date=self.payment_date)._compute_amount_fields(amountss,
+                                                                                               self.currency_id,
+                                                                                               self.company_id.currency_id)
 
-                                        counterpart_aml_dict = self._get_shared_move_line_vals( credit,debit, amount_currency, move.id, False)
+                                        counterpart_aml_dict = self._get_shared_move_line_vals(credit, debit,
+                                                                                               amount_currency, move.id,
+                                                                                               False)
                                         counterpart_aml_dict.update(self._get_counterpart_move_line_vals(l.invoice))
                                         counterpart_aml_dict.update({'currency_id': currency_id})
                                         counterpart_aml_dict.update({'date_maturity': self.payment_date})
                                         # counterpart_aml_dict.update({'account_id': self.pdc_account.id})
                                         counterpart_aml = aml_obj.create(counterpart_aml_dict)
-                                        com = ino.search([('number','=',l.invoice)])
+                                        com = ino.search([('number', '=', l.invoice)])
                                         com.register_payment(counterpart_aml)
                                         # raise ValidationError(_(counterpart_aml_dict))
                             else:
                                 if self.partner_type == 'customer':
                                     # for l in self.invoice_lines:
                                     #     if l.allocation:
-                                            
+
                                     amt = l.allocation
                                     amountss = -amt
                                     if self.payment_method_code == 'pdc':
-                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amountss, self.currency_id, self.company_id.currency_id)
+                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                            date=self.payment_date)._compute_amount_fields(amountss, self.currency_id,
+                                                                                           self.company_id.currency_id)
                                     else:
-                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amountss, self.currency_id, self.company_id.currency_id)
+                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                            date=self.payment_date)._compute_amount_fields(amountss, self.currency_id,
+                                                                                           self.company_id.currency_id)
 
-                                    counterpart_aml_dict = self._get_shared_move_line_vals(debit, credit, amount_currency, move.id, False)
+                                    counterpart_aml_dict = self._get_shared_move_line_vals(debit, credit,
+                                                                                           amount_currency, move.id,
+                                                                                           False)
                                     counterpart_aml_dict.update(self._get_counterpart_move_line_vals(l.invoice))
                                     counterpart_aml_dict.update({'currency_id': currency_id})
                                     counterpart_aml = aml_obj.create(counterpart_aml_dict)
-                                    com = ino.search([('number','=',l.invoice)])
+                                    com = ino.search([('number', '=', l.invoice)])
                                     com.register_payment(counterpart_aml)
                                     # raise ValidationError(_(counterpart_aml_dict))
                                 else:
                                     # for l in self.invoice_lines:
                                     #     if l.allocation:
-                                        
+
                                     amt = l.allocation
                                     amountss = -amt
                                     if self.payment_method_code == 'pdc':
-                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amountss, self.currency_id, self.company_id.currency_id)
+                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                            date=self.payment_date)._compute_amount_fields(amountss, self.currency_id,
+                                                                                           self.company_id.currency_id)
                                     else:
-                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amountss, self.currency_id, self.company_id.currency_id)
+                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                            date=self.payment_date)._compute_amount_fields(amountss, self.currency_id,
+                                                                                           self.company_id.currency_id)
 
-                                    counterpart_aml_dict = self._get_shared_move_line_vals(credit,debit,  amount_currency, move.id, False)
+                                    counterpart_aml_dict = self._get_shared_move_line_vals(credit, debit,
+                                                                                           amount_currency, move.id,
+                                                                                           False)
                                     counterpart_aml_dict.update(self._get_counterpart_move_line_vals(l.invoice))
                                     counterpart_aml_dict.update({'currency_id': currency_id})
                                     counterpart_aml = aml_obj.create(counterpart_aml_dict)
-                                    com = ino.search([('number','=',l.invoice)])
+                                    com = ino.search([('number', '=', l.invoice)])
                                     com.register_payment(counterpart_aml)
                                     # raise ValidationError(_(counterpart_aml_dict))
-                    #Write line corresponding to invoice payment
+                        # Write line corresponding to invoice payment
                         else:
                             if self.payment_method_code == 'pdc':
                                 if self.partner_type == 'customer':
                                     # for l in self.invoice_lines:
                                     #     if l.allocation:
-                                            
-                                    if self.payment_method_code == 'pdc':
-                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id, self.company_id.currency_id)
-                                    else:
-                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id, self.company_id.currency_id)
 
-                                    counterpart_aml_dict = self._get_shared_move_line_vals(debit,credit, amount_currency, move.id, False)
+                                    if self.payment_method_code == 'pdc':
+                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                            date=self.payment_date)._compute_amount_fields(-l.allocation,
+                                                                                           self.currency_id,
+                                                                                           self.company_id.currency_id)
+                                    else:
+                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                            date=self.payment_date)._compute_amount_fields(-l.allocation,
+                                                                                           self.currency_id,
+                                                                                           self.company_id.currency_id)
+
+                                    counterpart_aml_dict = self._get_shared_move_line_vals(debit, credit,
+                                                                                           amount_currency, move.id,
+                                                                                           False)
                                     counterpart_aml_dict.update(self._get_counterpart_move_line_vals(l.invoice))
                                     counterpart_aml_dict.update({'currency_id': currency_id})
                                     counterpart_aml_dict.update({'date_maturity': self.payment_date})
-                                # counterpart_aml_dict.update({'account_id': self.pdc_account.id})
+                                    # counterpart_aml_dict.update({'account_id': self.pdc_account.id})
                                     counterpart_aml = aml_obj.create(counterpart_aml_dict)
-                                    com = ino.search([('number','=',l.invoice)])
+                                    com = ino.search([('number', '=', l.invoice)])
                                     com.register_payment(counterpart_aml)
                                 else:
                                     if self.var_amount != 0:
                                         # for l in self.invoice_lines:
                                         #     if l.allocation:
-                                                
-                                        if self.payment_method_code == 'pdc':
-                                            debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id, self.company_id.currency_id)
-                                        else:
-                                            debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id, self.company_id.currency_id)
 
-                                        counterpart_aml_dict = self._get_shared_move_line_vals( credit,debit, amount_currency, move.id, False)
+                                        if self.payment_method_code == 'pdc':
+                                            debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                                date=self.payment_date)._compute_amount_fields(-l.allocation,
+                                                                                               self.currency_id,
+                                                                                               self.company_id.currency_id)
+                                        else:
+                                            debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                                date=self.payment_date)._compute_amount_fields(-l.allocation,
+                                                                                               self.currency_id,
+                                                                                               self.company_id.currency_id)
+
+                                        counterpart_aml_dict = self._get_shared_move_line_vals(credit, debit,
+                                                                                               amount_currency, move.id,
+                                                                                               False)
                                         counterpart_aml_dict.update(self._get_counterpart_move_line_vals(l.invoice))
                                         counterpart_aml_dict.update({'currency_id': currency_id})
                                         counterpart_aml_dict.update({'date_maturity': self.payment_date})
                                         # counterpart_aml_dict.update({'account_id': self.pdc_account.id})
                                         counterpart_aml = aml_obj.create(counterpart_aml_dict)
-                                        com = ino.search([('number','=',l.invoice)])
+                                        com = ino.search([('number', '=', l.invoice)])
                                         com.register_payment(counterpart_aml)
                                         # raise ValidationError(_(counterpart_aml_dict))
                                     else:
                                         # for l in self.invoice_lines:
                                         #     if l.allocation:
-                                                
-                                        if self.payment_method_code == 'pdc':
-                                            debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id, self.company_id.currency_id)
-                                        else:
-                                            debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id, self.company_id.currency_id)
 
-                                        counterpart_aml_dict = self._get_shared_move_line_vals( debit,credit, amount_currency, move.id, False)
+                                        if self.payment_method_code == 'pdc':
+                                            debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                                date=self.payment_date)._compute_amount_fields(-l.allocation,
+                                                                                               self.currency_id,
+                                                                                               self.company_id.currency_id)
+                                        else:
+                                            debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                                date=self.payment_date)._compute_amount_fields(-l.allocation,
+                                                                                               self.currency_id,
+                                                                                               self.company_id.currency_id)
+
+                                        counterpart_aml_dict = self._get_shared_move_line_vals(debit, credit,
+                                                                                               amount_currency, move.id,
+                                                                                               False)
                                         counterpart_aml_dict.update(self._get_counterpart_move_line_vals(l.invoice))
                                         counterpart_aml_dict.update({'currency_id': currency_id})
                                         counterpart_aml_dict.update({'date_maturity': self.payment_date})
                                         # counterpart_aml_dict.update({'account_id': self.pdc_account.id})
                                         counterpart_aml = aml_obj.create(counterpart_aml_dict)
-                                        com = ino.search([('number','=',l.invoice)])
+                                        com = ino.search([('number', '=', l.invoice)])
                                         com.register_payment(counterpart_aml)
                                         # raise ValidationError(_(counterpart_aml_dict))
                             else:
                                 if self.partner_type == 'customer':
                                     # for l in self.invoice_lines:
                                     #     if l.allocation:
-                                            
-                                    if self.payment_method_code == 'pdc':
-                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id, self.company_id.currency_id)
-                                    else:
-                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id, self.company_id.currency_id)
 
-                                    counterpart_aml_dict = self._get_shared_move_line_vals(debit, credit, amount_currency, move.id, False)
+                                    if self.payment_method_code == 'pdc':
+                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                            date=self.payment_date)._compute_amount_fields(-l.allocation,
+                                                                                           self.currency_id,
+                                                                                           self.company_id.currency_id)
+                                    else:
+                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                            date=self.payment_date)._compute_amount_fields(-l.allocation,
+                                                                                           self.currency_id,
+                                                                                           self.company_id.currency_id)
+
+                                    counterpart_aml_dict = self._get_shared_move_line_vals(debit, credit,
+                                                                                           amount_currency, move.id,
+                                                                                           False)
                                     counterpart_aml_dict.update(self._get_counterpart_move_line_vals(l.invoice))
                                     counterpart_aml_dict.update({'currency_id': currency_id})
                                     counterpart_aml = aml_obj.create(counterpart_aml_dict)
-                                    com = ino.search([('number','=',l.invoice)])
+                                    com = ino.search([('number', '=', l.invoice)])
                                     com.register_payment(counterpart_aml)
                                     # raise ValidationError(_(counterpart_aml_dict))
                                 else:
                                     # for l in self.invoice_lines:
                                     #     if l.allocation:
-                                            
-                                    if self.payment_method_code == 'pdc':
-                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id, self.company_id.currency_id)
-                                    else:
-                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(-l.allocation, self.currency_id, self.company_id.currency_id)
 
-                                    counterpart_aml_dict = self._get_shared_move_line_vals(credit,debit,  amount_currency, move.id, False)
+                                    if self.payment_method_code == 'pdc':
+                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                            date=self.payment_date)._compute_amount_fields(-l.allocation,
+                                                                                           self.currency_id,
+                                                                                           self.company_id.currency_id)
+                                    else:
+                                        debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                                            date=self.payment_date)._compute_amount_fields(-l.allocation,
+                                                                                           self.currency_id,
+                                                                                           self.company_id.currency_id)
+
+                                    counterpart_aml_dict = self._get_shared_move_line_vals(credit, debit,
+                                                                                           amount_currency, move.id,
+                                                                                           False)
                                     counterpart_aml_dict.update(self._get_counterpart_move_line_vals(l.invoice))
                                     counterpart_aml_dict.update({'currency_id': currency_id})
                                     counterpart_aml = aml_obj.create(counterpart_aml_dict)
-                                    com = ino.search([('number','=',l.invoice)])
+                                    com = ino.search([('number', '=', l.invoice)])
                                     com.register_payment(counterpart_aml)
                                     # raise ValidationError(_(counterpart_aml_dict))
             else:
                 if self.payment_method_code == 'pdc':
-                    debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amount, self.currency_id, self.company_id.currency_id)
+                    debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                        date=self.payment_date)._compute_amount_fields(amount, self.currency_id,
+                                                                       self.company_id.currency_id)
                 else:
-                    debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amount, self.currency_id, self.company_id.currency_id)
+                    debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                        date=self.payment_date)._compute_amount_fields(amount, self.currency_id,
+                                                                       self.company_id.currency_id)
                 if self.payment_method_code == 'pdc':
                     if self.partner_type == 'customer':
-                        counterpart_aml_dict = self._get_shared_move_line_vals(debit, credit, amount_currency, move.id, False)
+                        counterpart_aml_dict = self._get_shared_move_line_vals(debit, credit, amount_currency, move.id,
+                                                                               False)
                         counterpart_aml_dict.update(self._get_counterpart_move_line_vals(self.communication))
                         counterpart_aml_dict.update({'currency_id': currency_id})
                         counterpart_aml_dict.update({'date_maturity': self.payment_date})
@@ -3708,7 +3928,8 @@ class AccountpaymentCust(models.Model):
                         # if self.invoice_ids:
                         #     self.invoice_ids.register_payment(counterpart_aml)
                     else:
-                        counterpart_aml_dict = self._get_shared_move_line_vals( debit,credit, amount_currency, move.id, False)
+                        counterpart_aml_dict = self._get_shared_move_line_vals(debit, credit, amount_currency, move.id,
+                                                                               False)
                         counterpart_aml_dict.update(self._get_counterpart_move_line_vals(self.communication))
                         counterpart_aml_dict.update({'currency_id': currency_id})
                         counterpart_aml_dict.update({'date_maturity': self.payment_date})
@@ -3719,7 +3940,8 @@ class AccountpaymentCust(models.Model):
 
                 else:
                     if self.partner_type == 'customer':
-                        counterpart_aml_dict = self._get_shared_move_line_vals(debit, credit, amount_currency, move.id, False)
+                        counterpart_aml_dict = self._get_shared_move_line_vals(debit, credit, amount_currency, move.id,
+                                                                               False)
                         counterpart_aml_dict.update(self._get_counterpart_move_line_vals(self.communication))
                         counterpart_aml_dict.update({'currency_id': currency_id})
                         counterpart_aml_dict.update({'date_maturity': self.payment_date})
@@ -3728,7 +3950,8 @@ class AccountpaymentCust(models.Model):
                         #     self.invoice_ids.register_payment(counterpart_aml)
                         # raise ValidationError(_(counterpart_aml_dict))
                     else:
-                        counterpart_aml_dict = self._get_shared_move_line_vals( debit,credit, amount_currency, move.id, False)
+                        counterpart_aml_dict = self._get_shared_move_line_vals(debit, credit, amount_currency, move.id,
+                                                                               False)
                         counterpart_aml_dict.update(self._get_counterpart_move_line_vals(self.communication))
                         counterpart_aml_dict.update({'currency_id': currency_id})
                         counterpart_aml_dict.update({'date_maturity': self.payment_date})
@@ -3738,17 +3961,20 @@ class AccountpaymentCust(models.Model):
                         #     self.invoice_ids.register_payment(counterpart_aml)
                         # raise ValidationError(_(counterpart_aml_dict))
 
-
         if self.payment_method_code == 'pdc':
-            debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amount, self.currency_id, self.company_id.currency_id)
+            debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                date=self.payment_date)._compute_amount_fields(amount, self.currency_id, self.company_id.currency_id)
         else:
-            debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amount, self.currency_id, self.company_id.currency_id)
+            debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                date=self.payment_date)._compute_amount_fields(amount, self.currency_id, self.company_id.currency_id)
 
-        #Reconcile with the invoices
+        # Reconcile with the invoices
         if self.payment_difference_handling == 'reconcile' and self.payment_difference:
             # raise ValidationError(_(self.payment_difference))
             writeoff_line = self._get_shared_move_line_vals(0, 0, 0, move.id, False)
-            debit_wo, credit_wo, amount_currency_wo, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(self.payment_difference, self.currency_id, self.company_id.currency_id)
+            debit_wo, credit_wo, amount_currency_wo, currency_id = aml_obj.with_context(
+                date=self.payment_date)._compute_amount_fields(self.payment_difference, self.currency_id,
+                                                               self.company_id.currency_id)
             writeoff_line['name'] = self.writeoff_label
             writeoff_line['account_id'] = self.writeoff_account_id.id
             writeoff_line['debit'] = debit_wo
@@ -3763,15 +3989,16 @@ class AccountpaymentCust(models.Model):
             counterpart_aml['amount_currency'] -= amount_currency_wo
             # raise ValidationError(_(counterpart_aml))
 
-        #Write counterpart lines
+        # Write counterpart lines
         if len(self.invoice_ids) != 1:
             if not self.currency_id.is_zero(self.amount):
-                
+
                 if self.payment_method_code == 'pdc':
                     if self.partner_type == 'customer':
                         if not self.currency_id != self.company_id.currency_id:
                             amount_currency = 0
-                        liquidity_aml_dict = self._get_shared_move_line_vals(credit,debit,  -amount_currency, move.id, False)
+                        liquidity_aml_dict = self._get_shared_move_line_vals(credit, debit, -amount_currency, move.id,
+                                                                             False)
                         liquidity_aml_dict.update(self._get_liquidity_move_line_vals(-amount))
                         liquidity_aml_dict.update({'account_id': self.pdc_account.id})
                         liquidity_aml_dict.update({'date_maturity': self.payment_date})
@@ -3780,7 +4007,8 @@ class AccountpaymentCust(models.Model):
                     else:
                         if not self.currency_id != self.company_id.currency_id:
                             amount_currency = 0
-                        liquidity_aml_dict = self._get_shared_move_line_vals(credit, debit, -amount_currency, move.id, False)
+                        liquidity_aml_dict = self._get_shared_move_line_vals(credit, debit, -amount_currency, move.id,
+                                                                             False)
                         liquidity_aml_dict.update(self._get_liquidity_move_line_vals(-amount))
                         liquidity_aml_dict.update({'account_id': self.pdc_account.id})
                         liquidity_aml_dict.update({'date_maturity': self.payment_date})
@@ -3790,7 +4018,8 @@ class AccountpaymentCust(models.Model):
                     if self.partner_type == 'customer':
                         if not self.currency_id != self.company_id.currency_id:
                             amount_currency = 0
-                        liquidity_aml_dict = self._get_shared_move_line_vals(credit,debit,  -amount_currency, move.id, False)
+                        liquidity_aml_dict = self._get_shared_move_line_vals(credit, debit, -amount_currency, move.id,
+                                                                             False)
                         liquidity_aml_dict.update(self._get_liquidity_move_line_vals(-amount))
                         liquidity_aml_dict.update({'date_maturity': self.payment_date})
                         aml_obj.create(liquidity_aml_dict)
@@ -3798,7 +4027,8 @@ class AccountpaymentCust(models.Model):
                     else:
                         if not self.currency_id != self.company_id.currency_id:
                             amount_currency = 0
-                        liquidity_aml_dict = self._get_shared_move_line_vals(credit, debit, -amount_currency, move.id, False)
+                        liquidity_aml_dict = self._get_shared_move_line_vals(credit, debit, -amount_currency, move.id,
+                                                                             False)
                         liquidity_aml_dict.update(self._get_liquidity_move_line_vals(-amount))
                         liquidity_aml_dict.update({'date_maturity': self.payment_date})
                         aml_obj.create(liquidity_aml_dict)
@@ -3809,14 +4039,16 @@ class AccountpaymentCust(models.Model):
                     amount_currency = 0
                 if self.payment_method_code == 'pdc':
                     if self.partner_type == 'customer':
-                        liquidity_aml_dict = self._get_shared_move_line_vals(credit, debit, -amount_currency, move.id, False)
+                        liquidity_aml_dict = self._get_shared_move_line_vals(credit, debit, -amount_currency, move.id,
+                                                                             False)
                         liquidity_aml_dict.update(self._get_liquidity_move_line_vals(-amount))
                         liquidity_aml_dict.update({'account_id': self.pdc_account.id})
                         liquidity_aml_dict.update({'date_maturity': self.payment_date})
                         aml_obj.create(liquidity_aml_dict)
                         # raise ValidationError(_(liquidity_aml_dict))
-                    else: 
-                        liquidity_aml_dict = self._get_shared_move_line_vals(credit, debit, -amount_currency, move.id, False)
+                    else:
+                        liquidity_aml_dict = self._get_shared_move_line_vals(credit, debit, -amount_currency, move.id,
+                                                                             False)
                         liquidity_aml_dict.update(self._get_liquidity_move_line_vals(-amount))
                         liquidity_aml_dict.update({'account_id': self.pdc_account.id})
                         liquidity_aml_dict.update({'date_maturity': self.payment_date})
@@ -3824,22 +4056,21 @@ class AccountpaymentCust(models.Model):
                         # raise ValidationError(_(liquidity_aml_dict))
                 else:
                     if self.partner_type == 'customer':
-                        liquidity_aml_dict = self._get_shared_move_line_vals(credit, debit, -amount_currency, move.id, False)
+                        liquidity_aml_dict = self._get_shared_move_line_vals(credit, debit, -amount_currency, move.id,
+                                                                             False)
                         liquidity_aml_dict.update(self._get_liquidity_move_line_vals(-amount))
                         liquidity_aml_dict.update({'date_maturity': self.payment_date})
                         aml_obj.create(liquidity_aml_dict)
                         # raise ValidationError(_(liquidity_aml_dict))
-                    else: 
-                        liquidity_aml_dict = self._get_shared_move_line_vals(credit, debit, -amount_currency, move.id, False)
+                    else:
+                        liquidity_aml_dict = self._get_shared_move_line_vals(credit, debit, -amount_currency, move.id,
+                                                                             False)
                         liquidity_aml_dict.update(self._get_liquidity_move_line_vals(-amount))
                         liquidity_aml_dict.update({'date_maturity': self.payment_date})
                         aml_obj.create(liquidity_aml_dict)
 
-        
-
-
-    # ####################################################################################################
-    # ####################################################################################################
+        # ####################################################################################################
+        # ####################################################################################################
 
         # if len(self.invoice_ids) != 1:
         if self.invoice_lines:
@@ -3851,32 +4082,36 @@ class AccountpaymentCust(models.Model):
 
                 for com in self.invoice_lines_outstand:
                     if com.allocation:
-                        debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(-com.allocation, self.currency_id, self.company_id.currency_id)
+                        debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                            date=self.payment_date)._compute_amount_fields(-com.allocation, self.currency_id,
+                                                                           self.company_id.currency_id)
                         if self.partner_type == 'customer':
-                            counterpart_aml_dict = self._get_shared_move_line_vals(credit,debit,  amount_currency, move.id, False)
+                            counterpart_aml_dict = self._get_shared_move_line_vals(credit, debit, amount_currency,
+                                                                                   move.id, False)
                             counterpart_aml_dict.update(self._get_counterpart_move_line_vals(self.communication))
                             counterpart_aml_dict.update({'currency_id': currency_id})
                             counterpart_aml_dict.update({'date_maturity': self.payment_date})
                             counterpart_amls = aml_obj.create(counterpart_aml_dict)
-                            
+
                             partial_rec = self.env['account.partial.reconcile']
                             aml_model = self.env['account.move.line']
 
                             created_lines = self.env['account.move.line']
                             com.move_id.amount_residual = com.allocation
-                            #reconcile all aml_to_fix
-                            value = {'id':counterpart_amls.id,'m_id':com.move_id.id}
+                            # reconcile all aml_to_fix
+                            value = {'id': counterpart_amls.id, 'm_id': com.move_id.id}
                             counter_array.append(value)
                             partial_rec |= partial_rec.create(
                                 partial_rec._prepare_exchange_diff_partial_reconcile(
-                                        aml=com.move_id,
-                                        line_to_reconcile=counterpart_amls,
-                                        currency=com.move_id.currency_id or False)
+                                    aml=com.move_id,
+                                    line_to_reconcile=counterpart_amls,
+                                    currency=com.move_id.currency_id or False)
                             )
                             created_lines |= counterpart_amls
-                            
-                        else: 
-                            counterpart_aml_dict = self._get_shared_move_line_vals( debit,credit, amount_currency, move.id, False)
+
+                        else:
+                            counterpart_aml_dict = self._get_shared_move_line_vals(debit, credit, amount_currency,
+                                                                                   move.id, False)
                             counterpart_aml_dict.update(self._get_counterpart_move_line_vals(self.communication))
                             counterpart_aml_dict.update({'currency_id': currency_id})
                             counterpart_aml_dict.update({'date_maturity': self.payment_date})
@@ -3888,14 +4123,14 @@ class AccountpaymentCust(models.Model):
 
                             created_lines = self.env['account.move.line']
                             com.move_id.amount_residual = com.allocation
-                            #reconcile all aml_to_fix
-                            value = {'id':counterpart_amls.id,'m_id':com.move_id.id}
+                            # reconcile all aml_to_fix
+                            value = {'id': counterpart_amls.id, 'm_id': com.move_id.id}
                             counter_array.append(value)
                             partial_rec |= partial_rec.create(
                                 partial_rec._prepare_exchange_diff_partial_reconcile(
-                                        aml=com.move_id,
-                                        line_to_reconcile=counterpart_amls,
-                                        currency=com.move_id.currency_id or False)
+                                    aml=com.move_id,
+                                    line_to_reconcile=counterpart_amls,
+                                    currency=com.move_id.currency_id or False)
                             )
                             created_lines |= counterpart_amls
         # #################################################################################################3
@@ -3903,7 +4138,7 @@ class AccountpaymentCust(models.Model):
 
         # ######################################################################################################
         # #####################################################################################################
-        if self.invoice_lines  or self.flag_acc == True or (self.var_amount and flag_accc):
+        if self.invoice_lines or self.flag_acc == True or (self.var_amount and flag_accc):
             if self.var_account:
                 # rec.write({'state': 'draft'})
                 id_account = self.var_account.id
@@ -3916,20 +4151,23 @@ class AccountpaymentCust(models.Model):
                 #     amt = amt + x.invoice_amount
                 amounts = self.var_amount
                 for l in self.invoice_lines:
-                    if l.allocation :
+                    if l.allocation:
                         amt = amt + l.total_amount
                 total_amt = amt
                 # raise ValidationError(_('Testsss'))
                 invoice_la = 'Variance Amount'
                 if amounts != 0:
 
-                    debits, credits, amount_currencys, currency_ids = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amounts, self.currency_id, self.company_id.currency_id)
+                    debits, credits, amount_currencys, currency_ids = aml_obj.with_context(
+                        date=self.payment_date)._compute_amount_fields(amounts, self.currency_id,
+                                                                       self.company_id.currency_id)
 
                     if amounts > 0:
-                        #Write line corresponding to invoice payment
+                        # Write line corresponding to invoice payment
 
                         if self.partner_type == 'customer':
-                            counterpart_aml_dict = self._get_shared_move_line_vals(credits,debits,  amount_currencys, move.id, False)
+                            counterpart_aml_dict = self._get_shared_move_line_vals(credits, debits, amount_currencys,
+                                                                                   move.id, False)
                             counterpart_aml_dict.update(self._get_counterpart_move_line_vals(invoice_la))
                             counterpart_aml_dict.update({'currency_id': currency_ids})
                             counterpart_aml_dict.update({'account_id': id_account})
@@ -3940,7 +4178,8 @@ class AccountpaymentCust(models.Model):
                             counterpart_aml = aml_obj.create(counterpart_aml_dict)
                             # raise ValidationError(_(counterpart_aml_dict))
                         else:
-                            counterpart_aml_dict = self._get_shared_move_line_vals( debits,credits, amount_currencys, move.id, False)
+                            counterpart_aml_dict = self._get_shared_move_line_vals(debits, credits, amount_currencys,
+                                                                                   move.id, False)
                             counterpart_aml_dict.update(self._get_counterpart_move_line_vals(invoice_la))
                             counterpart_aml_dict.update({'currency_id': currency_ids})
                             counterpart_aml_dict.update({'account_id': id_account})
@@ -3952,7 +4191,8 @@ class AccountpaymentCust(models.Model):
                     else:
                         if self.payment_method_code == 'pdc':
                             if self.partner_type == 'customer':
-                                liquidity_aml_dict = self._get_shared_move_line_vals(credits,debits,  -amount_currencys, move.id, False)
+                                liquidity_aml_dict = self._get_shared_move_line_vals(credits, debits, -amount_currencys,
+                                                                                     move.id, False)
                                 liquidity_aml_dict.update(self._get_liquidity_move_line_vals(-amounts))
                                 liquidity_aml_dict.update({'account_id': id_account})
                                 if self.payment_method_code == 'pdc':
@@ -3962,7 +4202,8 @@ class AccountpaymentCust(models.Model):
                                 aml_obj.create(liquidity_aml_dict)
                             # raise ValidationError(_(liquidity_aml_dict))
                             else:
-                                liquidity_aml_dict = self._get_shared_move_line_vals( debits,credits, -amount_currencys, move.id, False)
+                                liquidity_aml_dict = self._get_shared_move_line_vals(debits, credits, -amount_currencys,
+                                                                                     move.id, False)
                                 liquidity_aml_dict.update(self._get_liquidity_move_line_vals(-amounts))
                                 liquidity_aml_dict.update({'account_id': id_account})
                                 if self.payment_method_code == 'pdc':
@@ -3973,7 +4214,8 @@ class AccountpaymentCust(models.Model):
                                 # raise ValidationError(_(liquidity_aml_dict))
                         else:
                             if self.partner_type == 'customer':
-                                liquidity_aml_dict = self._get_shared_move_line_vals(credits, debits, -amount_currencys, move.id, False)
+                                liquidity_aml_dict = self._get_shared_move_line_vals(credits, debits, -amount_currencys,
+                                                                                     move.id, False)
                                 liquidity_aml_dict.update(self._get_liquidity_move_line_vals(-amounts))
                                 liquidity_aml_dict.update({'account_id': id_account})
                                 if self.payment_method_code == 'pdc':
@@ -3982,7 +4224,8 @@ class AccountpaymentCust(models.Model):
                                     liquidity_aml_dict.update({'date': self.payment_date})
                                 aml_obj.create(liquidity_aml_dict)
                             else:
-                                liquidity_aml_dict = self._get_shared_move_line_vals(debits,credits,  -amount_currencys, move.id, False)
+                                liquidity_aml_dict = self._get_shared_move_line_vals(debits, credits, -amount_currencys,
+                                                                                     move.id, False)
                                 liquidity_aml_dict.update(self._get_liquidity_move_line_vals(-amounts))
                                 liquidity_aml_dict.update({'account_id': id_account})
                                 if self.payment_method_code == 'pdc':
@@ -3991,7 +4234,7 @@ class AccountpaymentCust(models.Model):
                                     liquidity_aml_dict.update({'date': self.payment_date})
                                 aml_obj.create(liquidity_aml_dict)
                                 # raise ValidationError(_(liquidity_aml_dict))
-                    
+
                     # self.add_variance_count = 1
             else:
                 invoice_la = 'Variance Amount'
@@ -4005,20 +4248,23 @@ class AccountpaymentCust(models.Model):
                 #     amt = amt + x.invoice_amount
                 amounts = self.var_amount
                 for l in self.invoice_lines:
-                    if l.allocation :
+                    if l.allocation:
                         amt = amt + l.total_amount
                 total_amt = amt
-                
+
                 if amounts != 0:
-                    debits, credits, amount_currencys, currency_ids = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amounts, self.currency_id, self.company_id.currency_id)
-                    
+                    debits, credits, amount_currencys, currency_ids = aml_obj.with_context(
+                        date=self.payment_date)._compute_amount_fields(amounts, self.currency_id,
+                                                                       self.company_id.currency_id)
+
                     if amounts > 0:
-                        #Write line corresponding to invoice payment
+                        # Write line corresponding to invoice payment
                         if self.partner_type == 'customer':
-                            counterpart_aml_dict = self._get_shared_move_line_vals(credits,debits,  amount_currencys, move.id, False)
-                            
+                            counterpart_aml_dict = self._get_shared_move_line_vals(credits, debits, amount_currencys,
+                                                                                   move.id, False)
+
                             counterpart_aml_dict.update(self._get_counterpart_move_line_vals(invoice_la))
-                            
+
                             counterpart_aml_dict.update({'currency_id': currency_ids})
                             if self.payment_method_code == 'pdc':
                                 counterpart_aml_dict.update({'date': self.payment_date})
@@ -4029,7 +4275,8 @@ class AccountpaymentCust(models.Model):
                             # raise ValidationError(_('test'))
                             # raise ValidationError(_(counterpart_aml_dict))
                         else:
-                            counterpart_aml_dict = self._get_shared_move_line_vals( debits,credits, amount_currencys, move.id, False)
+                            counterpart_aml_dict = self._get_shared_move_line_vals(debits, credits, amount_currencys,
+                                                                                   move.id, False)
                             counterpart_aml_dict.update(self._get_counterpart_move_line_vals(invoice_la))
                             counterpart_aml_dict.update({'currency_id': currency_ids})
                             # counterpart_aml_dict.update({'account_id': id_account})
@@ -4042,7 +4289,8 @@ class AccountpaymentCust(models.Model):
                     else:
                         if self.payment_method_code == 'pdc':
                             if self.partner_type == 'customer':
-                                liquidity_aml_dict = self._get_shared_move_line_vals(credits,debits,  -amount_currencys, move.id, False)
+                                liquidity_aml_dict = self._get_shared_move_line_vals(credits, debits, -amount_currencys,
+                                                                                     move.id, False)
                                 liquidity_aml_dict.update(self._get_liquidity_move_line_vals(-amounts))
                                 liquidity_aml_dict.update({'account_id': self.pdc_account.id})
                                 if self.payment_method_code == 'pdc':
@@ -4052,7 +4300,8 @@ class AccountpaymentCust(models.Model):
                                 aml_obj.create(liquidity_aml_dict)
                                 # raise ValidationError(_(liquidity_aml_dict))
                             else:
-                                liquidity_aml_dict = self._get_shared_move_line_vals( debits,credits, -amount_currencys, move.id, False)
+                                liquidity_aml_dict = self._get_shared_move_line_vals(debits, credits, -amount_currencys,
+                                                                                     move.id, False)
                                 liquidity_aml_dict.update(self._get_liquidity_move_line_vals(-amounts))
                                 liquidity_aml_dict.update({'account_id': self.pdc_account.id})
                                 if self.payment_method_code == 'pdc':
@@ -4063,7 +4312,8 @@ class AccountpaymentCust(models.Model):
                                 # raise ValidationError(_(liquidity_aml_dict))
                         else:
                             if self.partner_type == 'customer':
-                                liquidity_aml_dict = self._get_shared_move_line_vals(credits, debits, -amount_currencys, move.id, False)
+                                liquidity_aml_dict = self._get_shared_move_line_vals(credits, debits, -amount_currencys,
+                                                                                     move.id, False)
                                 liquidity_aml_dict.update(self._get_liquidity_move_line_vals(-amounts))
                                 if self.payment_method_code == 'pdc':
                                     liquidity_aml_dict.update({'date': self.payment_date})
@@ -4072,7 +4322,8 @@ class AccountpaymentCust(models.Model):
                                 aml_obj.create(liquidity_aml_dict)
                                 # raise ValidationError(_(liquidity_aml_dict))
                             else:
-                                liquidity_aml_dict = self._get_shared_move_line_vals(debits,credits,  -amount_currencys, move.id, False)
+                                liquidity_aml_dict = self._get_shared_move_line_vals(debits, credits, -amount_currencys,
+                                                                                     move.id, False)
                                 liquidity_aml_dict.update(self._get_liquidity_move_line_vals(-amounts))
                                 if self.payment_method_code == 'pdc':
                                     liquidity_aml_dict.update({'date': self.payment_date})
@@ -4082,20 +4333,18 @@ class AccountpaymentCust(models.Model):
 
         # #######################################################################################################3
         # ########################################################################################################3
-        #validate the payment
+        # validate the payment
         # raise ValidationError(_('test'))
         # if not self.journal_id.post_at_bank_rec:
         move.post()
-        
 
         if not len(self.invoice_ids) != 1:
             if not self.invoice_lines:
                 # raise ValidationError(_('test'))
                 if self.invoice_ids:
                     self.invoice_ids.register_payment(counterpart_aml)
-        # 
+        #
         return move
-
 
     def _get_counterpart_move_line_vals(self, invoice=False):
         if self.payment_type == 'transfer':
@@ -4113,7 +4362,7 @@ class AccountpaymentCust(models.Model):
                 elif self.payment_type == 'outbound':
                     name += _("Vendor Payment ")
             if invoice:
-                name +=  invoice
+                name += invoice
                 # for inv in invoice:
                 #     if inv.move_id:
                 #         name += inv.number + ', '
@@ -4142,7 +4391,8 @@ class AccountpaymentCust(models.Model):
         """ Returns values common to both move lines (except for debit, credit and amount_currency which are reversed)
         """
         return {
-            'partner_id': self.payment_type in ('inbound', 'outbound') and self.env['res.partner']._find_accounting_partner(self.partner_id).id or False,
+            'partner_id': self.payment_type in ('inbound', 'outbound') and self.env[
+                'res.partner']._find_accounting_partner(self.partner_id).id or False,
             'invoice_id': invoice_id and invoice_id.id or False,
             'move_id': move_id,
             'debit': debit,
@@ -4150,7 +4400,7 @@ class AccountpaymentCust(models.Model):
             'amount_currency': amount_currency or False,
             'payment_id': self.id,
             'journal_id': self.journal_id.id,
-            'date':self.effective_date,
+            'date': self.effective_date,
         }
 
     def _get_move_vals(self, journal=None):
@@ -4173,7 +4423,8 @@ class AccountpaymentCust(models.Model):
         Return the journal entry.
     """
         aml_obj = self.env['account.move.line'].with_context(check_move_validity=False)
-        debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.effective_date)._compute_amount_fields(amount, self.currency_id, self.company_id.currency_id)
+        debit, credit, amount_currency, currency_id = aml_obj.with_context(
+            date=self.effective_date)._compute_amount_fields(amount, self.currency_id, self.company_id.currency_id)
         # raise ValidationError(_("Test"))
         move_vals = {
             'date': self.effective_date,
@@ -4188,29 +4439,32 @@ class AccountpaymentCust(models.Model):
         if self.var_amount < 0:
             amt = 0.0
             for l in self.invoice_lines:
-                if l.allocation :
+                if l.allocation:
                     amt = amt + l.allocation
             amount = -amt
-            debit, credit, amount_currency, currency_id = aml_obj.with_context(date=self.effective_date)._compute_amount_fields(amount, self.currency_id, self.company_id.currency_id)
+            debit, credit, amount_currency, currency_id = aml_obj.with_context(
+                date=self.effective_date)._compute_amount_fields(amount, self.currency_id, self.company_id.currency_id)
             invoice_la = 'Receivables Relase Amount'
             invoice_pa = 'Payables Relase Amount'
             if self.partner_type == 'customer':
-                counterpart_aml_dict = self._get_shared_move_line_valss(credit,debit,  amount_currency, move.id, False)
+                counterpart_aml_dict = self._get_shared_move_line_valss(credit, debit, amount_currency, move.id, False)
                 counterpart_aml_dict.update(self._get_counterpart_move_line_vals(invoice_la))
                 counterpart_aml_dict.update({'currency_id': currency_id})
                 counterpart_aml_dict.update({'account_id': self.journal_id.default_debit_account_id.id})
                 counterpart_aml = aml_obj.create(counterpart_aml_dict)
             else:
-                counterpart_aml_dict = self._get_shared_move_line_valss(debit,credit, amount_currency, move.id, False)
+                counterpart_aml_dict = self._get_shared_move_line_valss(debit, credit, amount_currency, move.id, False)
                 counterpart_aml_dict.update(self._get_counterpart_move_line_vals(invoice_pa))
                 counterpart_aml_dict.update({'currency_id': currency_id})
                 counterpart_aml_dict.update({'account_id': self.journal_id.default_credit_account_id.id})
                 counterpart_aml = aml_obj.create(counterpart_aml_dict)
-            
-            #Reconcile with the invoices
+
+            # Reconcile with the invoices
             if self.payment_difference_handling == 'reconcile' and self.payment_difference:
                 writeoff_line = self._get_shared_move_line_vals(0, 0, 0, move.id, False)
-                debit_wo, credit_wo, amount_currency_wo, currency_id = aml_obj.with_context(date=self.effective_date)._compute_amount_fields(self.payment_difference, self.currency_id, self.company_id.currency_id)
+                debit_wo, credit_wo, amount_currency_wo, currency_id = aml_obj.with_context(
+                    date=self.effective_date)._compute_amount_fields(self.payment_difference, self.currency_id,
+                                                                     self.company_id.currency_id)
                 writeoff_line['name'] = self.writeoff_label
                 writeoff_line['account_id'] = self.writeoff_account_id.id
                 writeoff_line['debit'] = debit_wo
@@ -4224,20 +4478,22 @@ class AccountpaymentCust(models.Model):
                     counterpart_aml['credit'] += debit_wo - credit_wo
                 counterpart_aml['amount_currency'] -= amount_currency_wo
 
-            #Write counterpart lines
+            # Write counterpart lines
             if not self.currency_id.is_zero(self.amount):
                 if self.payment_method_code == 'pdc':
                     if self.partner_type == 'customer':
                         if not self.currency_id != self.company_id.currency_id:
                             amount_currency = 0
-                        liquidity_aml_dict = self._get_shared_move_line_valss( debit,credit, -amount_currency, move.id, False)
+                        liquidity_aml_dict = self._get_shared_move_line_valss(debit, credit, -amount_currency, move.id,
+                                                                              False)
                         liquidity_aml_dict.update(self._get_liquidity_move_line_vals(-amount))
                         liquidity_aml_dict.update({'account_id': self.pdc_account.id})
                         aml_obj.create(liquidity_aml_dict)
                     else:
                         if not self.currency_id != self.company_id.currency_id:
                             amount_currency = 0
-                        liquidity_aml_dict = self._get_shared_move_line_valss( debit,credit, -amount_currency, move.id, False)
+                        liquidity_aml_dict = self._get_shared_move_line_valss(debit, credit, -amount_currency, move.id,
+                                                                              False)
                         liquidity_aml_dict.update(self._get_liquidity_move_line_vals(-amount))
                         liquidity_aml_dict.update({'account_id': self.pdc_account.id})
                         aml_obj.create(liquidity_aml_dict)
@@ -4245,36 +4501,40 @@ class AccountpaymentCust(models.Model):
                     if self.partner_type == 'customer':
                         if not self.currency_id != self.company_id.currency_id:
                             amount_currency = 0
-                        liquidity_aml_dict = self._get_shared_move_line_valss( debit,credit, -amount_currency, move.id, False)
+                        liquidity_aml_dict = self._get_shared_move_line_valss(debit, credit, -amount_currency, move.id,
+                                                                              False)
                         liquidity_aml_dict.update(self._get_liquidity_move_line_vals(-amount))
                         aml_obj.create(liquidity_aml_dict)
                     else:
                         if not self.currency_id != self.company_id.currency_id:
                             amount_currency = 0
-                        liquidity_aml_dict = self._get_shared_move_line_valss(credit, debit, -amount_currency, move.id, False)
+                        liquidity_aml_dict = self._get_shared_move_line_valss(credit, debit, -amount_currency, move.id,
+                                                                              False)
                         liquidity_aml_dict.update(self._get_liquidity_move_line_vals(-amount))
                         aml_obj.create(liquidity_aml_dict)
         else:
             invoice_la = 'Receivables Relase Amount'
             invoice_pa = 'Payables Relase Amount'
-            #Write line corresponding to invoice payment
+            # Write line corresponding to invoice payment
             if self.partner_type == 'customer':
-                counterpart_aml_dict = self._get_shared_move_line_valss(credit,debit,  amount_currency, move.id, False)
+                counterpart_aml_dict = self._get_shared_move_line_valss(credit, debit, amount_currency, move.id, False)
                 counterpart_aml_dict.update(self._get_counterpart_move_line_vals(invoice_la))
                 counterpart_aml_dict.update({'currency_id': currency_id})
                 counterpart_aml_dict.update({'account_id': self.journal_id.default_debit_account_id.id})
                 counterpart_aml = aml_obj.create(counterpart_aml_dict)
             else:
-                counterpart_aml_dict = self._get_shared_move_line_valss(credit,debit, amount_currency, move.id, False)
+                counterpart_aml_dict = self._get_shared_move_line_valss(credit, debit, amount_currency, move.id, False)
                 counterpart_aml_dict.update(self._get_counterpart_move_line_vals(invoice_pa))
                 counterpart_aml_dict.update({'currency_id': currency_id})
                 counterpart_aml_dict.update({'account_id': self.journal_id.default_credit_account_id.id})
                 counterpart_aml = aml_obj.create(counterpart_aml_dict)
-            
-            #Reconcile with the invoices
+
+            # Reconcile with the invoices
             if self.payment_difference_handling == 'reconcile' and self.payment_difference:
                 writeoff_line = self._get_shared_move_line_vals(0, 0, 0, move.id, False)
-                debit_wo, credit_wo, amount_currency_wo, currency_id = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(self.payment_difference, self.currency_id, self.company_id.currency_id)
+                debit_wo, credit_wo, amount_currency_wo, currency_id = aml_obj.with_context(
+                    date=self.payment_date)._compute_amount_fields(self.payment_difference, self.currency_id,
+                                                                   self.company_id.currency_id)
                 writeoff_line['name'] = self.writeoff_label
                 writeoff_line['account_id'] = self.writeoff_account_id.id
                 writeoff_line['debit'] = debit_wo
@@ -4288,20 +4548,22 @@ class AccountpaymentCust(models.Model):
                     counterpart_aml['credit'] += debit_wo - credit_wo
                 counterpart_aml['amount_currency'] -= amount_currency_wo
 
-            #Write counterpart lines
+            # Write counterpart lines
             if not self.currency_id.is_zero(self.amount):
                 if self.payment_method_code == 'pdc':
                     if self.partner_type == 'customer':
                         if not self.currency_id != self.company_id.currency_id:
                             amount_currency = 0
-                        liquidity_aml_dict = self._get_shared_move_line_valss( debit,credit, -amount_currency, move.id, False)
+                        liquidity_aml_dict = self._get_shared_move_line_valss(debit, credit, -amount_currency, move.id,
+                                                                              False)
                         liquidity_aml_dict.update(self._get_liquidity_move_line_vals(-amount))
                         liquidity_aml_dict.update({'account_id': self.pdc_account.id})
                         aml_obj.create(liquidity_aml_dict)
                     else:
                         if not self.currency_id != self.company_id.currency_id:
                             amount_currency = 0
-                        liquidity_aml_dict = self._get_shared_move_line_valss( debit,credit, -amount_currency, move.id, False)
+                        liquidity_aml_dict = self._get_shared_move_line_valss(debit, credit, -amount_currency, move.id,
+                                                                              False)
                         liquidity_aml_dict.update(self._get_liquidity_move_line_vals(-amount))
                         liquidity_aml_dict.update({'account_id': self.pdc_account.id})
                         aml_obj.create(liquidity_aml_dict)
@@ -4309,27 +4571,28 @@ class AccountpaymentCust(models.Model):
                     if self.partner_type == 'customer':
                         if not self.currency_id != self.company_id.currency_id:
                             amount_currency = 0
-                        liquidity_aml_dict = self._get_shared_move_line_valss( debit,credit, -amount_currency, move.id, False)
+                        liquidity_aml_dict = self._get_shared_move_line_valss(debit, credit, -amount_currency, move.id,
+                                                                              False)
                         liquidity_aml_dict.update(self._get_liquidity_move_line_vals(-amount))
                         aml_obj.create(liquidity_aml_dict)
                     else:
                         if not self.currency_id != self.company_id.currency_id:
                             amount_currency = 0
-                        liquidity_aml_dict = self._get_shared_move_line_valss(debit,credit,  -amount_currency, move.id, False)
+                        liquidity_aml_dict = self._get_shared_move_line_valss(debit, credit, -amount_currency, move.id,
+                                                                              False)
                         liquidity_aml_dict.update(self._get_liquidity_move_line_vals(-amount))
                         aml_obj.create(liquidity_aml_dict)
 
-        #validate the payment
+        # validate the payment
         # if not self.journal_id.post_at_bank_rec:
         #     move.action_release()
 
-        #reconcile the invoice receivable/payable line(s) with the payment
+        # reconcile the invoice receivable/payable line(s) with the payment
         # if self.invoice_ids:
         #     self.invoice_ids.register_payment(counterpart_aml)
         self.release_count = 1
         self.release_check = True
         return move
-
 
     @api.multi
     def action_release(self):
@@ -4354,7 +4617,8 @@ class AccountpaymentCust(models.Model):
                             sequence_code = 'account.payment.supplier.refund'
                         if rec.payment_type == 'outbound':
                             sequence_code = 'account.payment.supplier.invoice'
-                rec.name = self.env['ir.sequence'].with_context(ir_sequence_date=rec.payment_date).next_by_code(sequence_code)
+                rec.name = self.env['ir.sequence'].with_context(ir_sequence_date=rec.payment_date).next_by_code(
+                    sequence_code)
                 if not rec.name and rec.payment_type != 'transfer':
                     raise UserError(_("You have to define a sequence for %s in your company.") % (sequence_code,))
 
@@ -4365,13 +4629,13 @@ class AccountpaymentCust(models.Model):
             # In case of a transfer, the first journal entry created debited the source liquidity account and credited
             # the transfer account. Now we debit the transfer account and credit the destination liquidity account.
             if rec.payment_type == 'transfer':
-                transfer_credit_aml = move.line_ids.filtered(lambda r: r.account_id == rec.company_id.transfer_account_id)
+                transfer_credit_aml = move.line_ids.filtered(
+                    lambda r: r.account_id == rec.company_id.transfer_account_id)
                 transfer_debit_aml = rec._create_transfer_entry(amount)
                 (transfer_credit_aml + transfer_debit_aml).reconcile()
 
             # rec.write({'state': 'posted', 'move_name': move.name})
         return True
-
 
     @api.multi
     def button_journal_entries_release(self):
@@ -4399,8 +4663,8 @@ class AccountpaymentCust(models.Model):
             #     cov.remove_move_reconcile()
             #     cos.remove_move_reconcile()
 
-            if self.release_count != 0 :
-                com = self.env['account.move'].search([('id','=',self.move_relase_id)])
+            if self.release_count != 0:
+                com = self.env['account.move'].search([('id', '=', self.move_relase_id)])
                 for mov in com:
                     if rec.invoice_ids:
                         mov.line_ids.remove_move_reconcile()
@@ -4410,9 +4674,9 @@ class AccountpaymentCust(models.Model):
                 self.release_check = False
             rec.add_variance_count = 0
             rec.state = 'cancelled'
-            outstan = self.env['payment.invoice.line.outstand'].search([('amount','=',0)])
+            outstan = self.env['payment.invoice.line.outstand'].search([('amount', '=', 0)])
             for stan in outstan:
-                if stan.amount == 0 :
+                if stan.amount == 0:
                     stan.unlink()
 
     @api.multi
@@ -4423,37 +4687,39 @@ class AccountpaymentCust(models.Model):
                 amt = 0.0
                 amounts = rec.var_amount
                 for l in rec.invoice_lines:
-                    if l.allocation :
+                    if l.allocation:
                         amt = amt + l.total_amount
                 total_amt = amt
 
                 if amounts != 0:
-                    debits, credits, amount_currencys, currency_ids = aml_obj.with_context(date=self.payment_date)._compute_amount_fields(amounts, self.currency_id, self.company_id.currency_id)
+                    debits, credits, amount_currencys, currency_ids = aml_obj.with_context(
+                        date=self.payment_date)._compute_amount_fields(amounts, self.currency_id,
+                                                                       self.company_id.currency_id)
 
-                    #Write line corresponding to invoice payment
+                    # Write line corresponding to invoice payment
                     if self.partner_type == 'customer':
-                        counterpart_aml_dict = self._get_shared_move_line_valss(credist,debits,  amount_currencys, move.id, False)
+                        counterpart_aml_dict = self._get_shared_move_line_valss(credist, debits, amount_currencys,
+                                                                                move.id, False)
                         counterpart_aml_dict.update(self._get_counterpart_move_line_vals(self.invoice_ids))
                         counterpart_aml_dict.update({'currency_id': currency_id})
                         counterpart_aml_dict.update({'account_id': id_account})
                         counterpart_aml = aml_obj.create(counterpart_aml_dict)
                     else:
-                        counterpart_aml_dict = self._get_shared_move_line_valss(debits,credits, amount_currencys, move.id, False)
+                        counterpart_aml_dict = self._get_shared_move_line_valss(debits, credits, amount_currencys,
+                                                                                move.id, False)
                         counterpart_aml_dict.update(self._get_counterpart_move_line_vals(self.invoice_ids))
                         counterpart_aml_dict.update({'currency_id': currency_id})
                         counterpart_aml_dict.update({'account_id': id_account})
                         counterpart_aml = aml_obj.create(counterpart_aml_dict)
-                
+
                     rec.add_variance_count = 1
             else:
                 raise ValidationError(_("Please add the variance account"))
 
-    
-    
     @api.multi
     def get_outstanding_info(self):
         # self.outstanding_credits_debits_widget = json.dumps(False)
-        
+
         com = self.env['payment.invoice.line.outstand']
         # if self.state == 'open':
         if self.invoice_lines:
@@ -4464,7 +4730,11 @@ class AccountpaymentCust(models.Model):
                 accountname = self.partner_id.property_account_receivable_id.id
             else:
                 accountname = self.partner_id.property_account_payable_id.id
-        domain = [('account_id', '=', accountname),('partner_id', '=', self.env['res.partner']._find_accounting_partner(self.partner_id).id),('reconciled', '=', False),'|','&', ('amount_residual_currency', '!=', 0.0), ('currency_id','!=', None),'&', ('amount_residual_currency', '=', 0.0), '&', ('currency_id','=', None), ('amount_residual', '!=', 0.0)]
+        domain = [('account_id', '=', accountname),
+                  ('partner_id', '=', self.env['res.partner']._find_accounting_partner(self.partner_id).id),
+                  ('reconciled', '=', False), '|', '&', ('amount_residual_currency', '!=', 0.0),
+                  ('currency_id', '!=', None), '&', ('amount_residual_currency', '=', 0.0), '&',
+                  ('currency_id', '=', None), ('amount_residual', '!=', 0.0)]
         # if self.type in ('out_invoice', 'in_refund'):
         #     domain.extend([('credit', '>', 0), ('debit', '=', 0)])
         #     type_payment = _('Outstanding credits')
@@ -4472,11 +4742,11 @@ class AccountpaymentCust(models.Model):
         #     domain.extend([('credit', '=', 0), ('debit', '>', 0)])
         #     type_payment = _('Outstanding debits')
         info = {'title': '', 'outstanding': True, 'content': [], 'invoice_id': self.id}
-        
+
         lines = self.env['account.move.line'].search(domain)
-        
+
         currency_id = self.currency_id
-        
+
         if len(lines) != 0:
             for line in lines:
                 # raise ValidationError(_(line))
@@ -4485,10 +4755,11 @@ class AccountpaymentCust(models.Model):
                     amount_to_show = abs(line.amount_residual_currency)
                 else:
                     currency = line.company_id.currency_id
-                    amount_to_show = currency._convert(abs(line.amount_residual), self.currency_id, self.company_id, line.date or fields.Date.today())
+                    amount_to_show = currency._convert(abs(line.amount_residual), self.currency_id, self.company_id,
+                                                       line.date or fields.Date.today())
                 if float_is_zero(amount_to_show, precision_rounding=self.currency_id.rounding):
                     continue
-                if line.ref :
+                if line.ref:
                     title = '%s' % (line.move_id.name)
                 else:
                     title = line.move_id.name
@@ -4502,9 +4773,9 @@ class AccountpaymentCust(models.Model):
                 #     'digits': [69, self.currency_id.decimal_places],
                 # })
                 # if line.payment_id:
-                cov = com.search([('payment_id','=',self.id),('move_id','=',line.id)])
+                cov = com.search([('payment_id', '=', self.id), ('move_id', '=', line.id)])
                 if cov:
-                    cov.write({'open_amount':amount_to_show,'allocation':amount_to_show})
+                    cov.write({'open_amount': amount_to_show, 'allocation': amount_to_show})
 
                 else:
                     if line.partner_id.id == self.partner_id.id:
@@ -4512,38 +4783,39 @@ class AccountpaymentCust(models.Model):
 
                             if line.credit:
                                 vals = {
-                                    'payment_id':self.id,
-                                    'title':title,
-                                    'open_amount':amount_to_show,
-                                    'allocation':amount_to_show,
-                                    'move_id':line.id,
+                                    'payment_id': self.id,
+                                    'title': title,
+                                    'open_amount': amount_to_show,
+                                    'allocation': amount_to_show,
+                                    'move_id': line.id,
                                 }
-                        
+
                                 cos = com.create(vals)
                         else:
                             if line.debit:
                                 vals = {
-                                    'payment_id':self.id,
-                                    'title':title,
-                                    'open_amount':amount_to_show,
-                                    'allocation':amount_to_show,
-                                    'move_id':line.id,
+                                    'payment_id': self.id,
+                                    'title': title,
+                                    'open_amount': amount_to_show,
+                                    'allocation': amount_to_show,
+                                    'move_id': line.id,
                                 }
-                        
+
                                 cos = com.create(vals)
-            
+
             self.add_variance_count = 1
 
     @api.multi
     def update_invoice_lines(self):
         for inv in self.invoice_lines:
-            inv.open_amount = inv.invoice_id.residual 
+            inv.open_amount = inv.invoice_id.residual
         self.onchange_partner_id()
         self.get_outstanding_info()
-                # raise ValidationError(_(cos.id))
-                # info['title'] = type_payment
-                # self.outstanding_credits_debits_widget = json.dumps(info)
-                # self.has_outstanding = True
+        # raise ValidationError(_(cos.id))
+        # info['title'] = type_payment
+        # self.outstanding_credits_debits_widget = json.dumps(info)
+        # self.has_outstanding = True
+
 
 # class PaymentInvoiceLineCus(models.Model):
 #     _inherit = 'payment.invoice.line'
@@ -4554,7 +4826,7 @@ class AccountpaymentCust(models.Model):
 
 class PaymentInvoiceLineOutstand(models.Model):
     _name = 'payment.invoice.line.outstand'
-    
+
     payment_id = fields.Many2one('account.payment', string="Payment")
     # invoice_id = fields.Many2one('account.invoice', string="Invoice")
     move_id = fields.Many2one('account.move.line', string="Move Line")
@@ -4565,13 +4837,12 @@ class PaymentInvoiceLineOutstand(models.Model):
     amount = fields.Float('Total Amount', compute='_get_invoice_data')
     open_amount = fields.Float(string='Due Amount')
     allocation = fields.Float(string='Allocation ')
-    
+
     # @api.multi
     # @api.onchange('open_amount')
     # def _get_invoice_data(self):
     #     for data in self:
     #         data.allocation = data.open_amount
-
 
     @api.multi
     @api.depends('move_id')
@@ -4581,13 +4852,11 @@ class PaymentInvoiceLineOutstand(models.Model):
             data.due_date = move_id.date_maturity
             # data.open_amount = move_id.amount_residual
             # data.title = move_id.ref
-            if move_id.debit :
-                data.amount = move_id.debit 
+            if move_id.debit:
+                data.amount = move_id.debit
             else:
                 data.amount = move_id.credit
             # data.allocation = data.open_amount
-
-
 
     # @api.multi
     # def action_add(self):
@@ -4606,9 +4875,10 @@ class PaymentInvoiceLineOutstand(models.Model):
     #             # mid = rec.move_id.id
     #             # cos.assign_outstanding_credit(mid)
     #             rec.unlink()
-                
+
     #         else:
     #             raise ValidationError(_("Please add the invoice Number"))
+
 
 class AccountJournalcus(models.Model):
     _inherit = 'account.journal'
@@ -4622,18 +4892,19 @@ class AccountJournalcus(models.Model):
             res += [(journal.id, name)]
         return res
 
+
 class BankDetails(models.Model):
     _name = 'bank.details'
     _inherit = 'mail.thread'
 
-    name = fields.Many2one('account.journal',string='Bank Name',required=True,track_visibility="onchange")
-    bank_name = fields.Char(string='Bank Name',required=True,track_visibility="onchange")
-    branch = fields.Char('Branch',required=True,track_visibility="onchange")
-    currency = fields.Many2one('res.currency',string='Currency Type')
-    acc_no = fields.Char(string='Account No',required=True)
-    ban = fields.Many2one('res.bank',related='name.bank_id',store=True,string='Account No')
-    swift_code = fields.Char('Swift Code',required=True,track_visibility="onchange")
-    iban = fields.Char('IBAN',required=True,track_visibility="onchange")
+    name = fields.Many2one('account.journal', string='Bank Name', required=True, track_visibility="onchange")
+    bank_name = fields.Char(string='Bank Name', required=True, track_visibility="onchange")
+    branch = fields.Char('Branch', required=True, track_visibility="onchange")
+    currency = fields.Many2one('res.currency', string='Currency Type')
+    acc_no = fields.Char(string='Account No', required=True)
+    ban = fields.Many2one('res.bank', related='name.bank_id', store=True, string='Account No')
+    swift_code = fields.Char('Swift Code', required=True, track_visibility="onchange")
+    iban = fields.Char('IBAN', required=True, track_visibility="onchange")
 
     @api.onchange('name')
     def _get_accdata(self):
@@ -4649,9 +4920,9 @@ class BankDetails(models.Model):
             else:
                 continue
 
+
 class AccountMoveCustomize(models.Model):
     _inherit = 'account.move'
-
 
     prepare = fields.Char('Prepared by')
     checked = fields.Char('Checked by')
@@ -4661,10 +4932,8 @@ class AccountMoveCustomize(models.Model):
     check_amount = fields.Float('Amount')
     partner = fields.Char(string="Partner Name")
     AC_print = fields.Boolean('Print A/c Payee')
-    check_amount_in_words = fields.Char('amount in word',compute="_onchange_amount")
+    check_amount_in_words = fields.Char('amount in word', compute="_onchange_amount")
     document_count = fields.Integer(compute='_document_count', string='# Documents')
-
-    
 
     @api.multi
     def _document_count(self):
@@ -4691,13 +4960,14 @@ class AccountMoveCustomize(models.Model):
             'context': "{'default_pay_ref': '%s'}" % self.id
         }
 
-
-    @api.depends('check_amount','currency_id')
-    @api.onchange('check_amount','currency_id')
+    @api.depends('check_amount', 'currency_id')
+    @api.onchange('check_amount', 'currency_id')
     def _onchange_amount(self):
         # res = super(AccountMoveCustomize, self)._onchange_amount()
         self.check_amount_in_words = self.currency_id.amount_to_text(self.check_amount) if self.currency_id else ''
-        self.check_amount_in_words = self.check_amount_in_words.replace(' Dirham ', ' ').replace(' Dirham',' ').replace(' And ',' ')
+        self.check_amount_in_words = self.check_amount_in_words.replace(' Dirham ', ' ').replace(' Dirham',
+                                                                                                 ' ').replace(' And ',
+                                                                                                              ' ')
 
         # return res
 
@@ -4709,7 +4979,8 @@ class AccountMoveCustomize(models.Model):
     @api.model
     def create(self, vals):
         vals['prepare'] = self.env.user.name
-        move = super(AccountMoveCustomize, self.with_context(check_move_validity=False, partner_id=vals.get('partner_id'))).create(vals)
+        move = super(AccountMoveCustomize,
+                     self.with_context(check_move_validity=False, partner_id=vals.get('partner_id'))).create(vals)
         move.assert_balanced()
         return move
 
@@ -4723,16 +4994,16 @@ class AccountMoveCustomize(models.Model):
         else:
             res = super(AccountMoveCustomize, self).write(vals)
         return res
-            # raise ValidationError(_("You cannot modify a journal entry linked to a posted payment."))
-
+        # raise ValidationError(_("You cannot modify a journal entry linked to a posted payment."))
 
 
 class AccountMoveLineCus(models.Model):
     _inherit = 'account.move.line'
 
-    emp_branch_name = fields.Many2one('employee.category.type',string='Branch')
+    emp_branch_name = fields.Many2one('employee.category.type', string='Branch')
+
     def _check_reconcile_validity(self):
-        #Perform all checks on lines
+        # Perform all checks on lines
         company_ids = set()
         all_accounts = []
         for line in self:
@@ -4745,7 +5016,9 @@ class AccountMoveLineCus(models.Model):
         # if len(set(all_accounts)) > 1:
         #     raise UserError(_('Entries are not from the same account.'))
         if not (all_accounts[0].reconcile or all_accounts[0].internal_type == 'liquidity'):
-            raise UserError(_('Account %s (%s) does not allow reconciliation. First change the configuration of this account to allow it.') % (all_accounts[0].name, all_accounts[0].code))
+            raise UserError(_(
+                'Account %s (%s) does not allow reconciliation. First change the configuration of this account to allow it.') % (
+                            all_accounts[0].name, all_accounts[0].code))
 
 
 # Accounts Customization Part
@@ -4756,23 +5029,23 @@ class MaterialRequisitionFromsales(models.Model):
     _inherit = 'mail.thread'
     _rec_name = 'sequence'
 
-
-    sequence = fields.Char(string='Sequence', readonly=True,copy =False,track_visibility="onchange")
-    sales_id = fields.Many2one('sale.order',string="SO Ref",track_visibility="onchange")
-    oppor_id = fields.Many2one('crm.lead',string="Opportunity Ref",track_visibility="onchange")
-    partner_id = fields.Many2one('res.partner',string="Customer",track_visibility="onchange")
-    show_name = fields.Char('Show Name',track_visibility="onchange")
-    requisition_date = fields.Date(string="Requisition Date",default=date.today(),track_visibility="onchange")
-    requisition_dead = fields.Date(string="Requisition Deadline",track_visibility="onchange")
+    sequence = fields.Char(string='Sequence', readonly=True, copy=False, track_visibility="onchange")
+    sales_id = fields.Many2one('sale.order', string="SO Ref", track_visibility="onchange")
+    oppor_id = fields.Many2one('crm.lead', string="Opportunity Ref", track_visibility="onchange")
+    partner_id = fields.Many2one('res.partner', string="Customer", track_visibility="onchange")
+    show_name = fields.Char('Show Name', track_visibility="onchange")
+    requisition_date = fields.Date(string="Requisition Date", default=date.today(), track_visibility="onchange")
+    requisition_dead = fields.Date(string="Requisition Deadline", track_visibility="onchange")
     state = fields.Selection([
-                                ('new','New'),
-                                ('po_created','Purchase Department'),
-                                ('back','Responded'),
-                                ('cancel','Cancel')],string='Stage',default="new",track_visibility="onchange")
-    requisition_line_ids = fields.One2many('material.requisition.sales.line','requisition_id',string="Requisition Line ID")    
+        ('new', 'New'),
+        ('po_created', 'Purchase Department'),
+        ('back', 'Responded'),
+        ('cancel', 'Cancel')], string='Stage', default="new", track_visibility="onchange")
+    requisition_line_ids = fields.One2many('material.requisition.sales.line', 'requisition_id',
+                                           string="Requisition Line ID")
     reason_for_requisition = fields.Text(string="Reason For Requisition")
-    total_price = fields.Float(string="Total",compute="_get_total")
-    flag = fields.Boolean(string="flag",default=False)
+    total_price = fields.Float(string="Total", compute="_get_total")
+    flag = fields.Boolean(string="flag", default=False)
 
     @api.multi
     @api.depends('requisition_line_ids')
@@ -4780,7 +5053,7 @@ class MaterialRequisitionFromsales(models.Model):
         for rec in self:
             x = 0.0
             for l in rec.requisition_line_ids:
-                x = x + l.total_price 
+                x = x + l.total_price
             rec.total_price = x
 
     @api.constrains('requisition_line_ids')
@@ -4792,22 +5065,21 @@ class MaterialRequisitionFromsales(models.Model):
                         if l.price:
                             continue
                         else:
-                            raise ValidationError(_("add a price for product %s")% (l.product_id.name))
+                            raise ValidationError(_("add a price for product %s") % (l.product_id.name))
             else:
                 raise ValidationError(_("Add some products"))
-            
 
     @api.model
-    def create(self , vals):
+    def create(self, vals):
         vals['sequence'] = self.env['ir.sequence'].next_by_code('material.requisition.sales') or '/'
         return super(MaterialRequisitionFromsales, self).create(vals)
 
     @api.multi
     def action_cancel(self):
         res = self.write({
-                            'state':'cancel',
-                        })
-        return res  
+            'state': 'cancel',
+        })
+        return res
 
     @api.multi
     def action_to_po(self):
@@ -4821,12 +5093,14 @@ class MaterialRequisitionFromsales(models.Model):
             # raise ValidationError(_('%s %s ') % (body_html,subject))
             ids = channel_all_employees['id']
             channel_id = self.env['mail.channel'].search([('id', '=', ids)])
-            channel_id.message_post(body='Hello, there is New Price inguiry Created for you Please Check the Price Inquiry NO '+str(self.sequence), subject='New Price inquiry',subtype='mail.mt_comment')
-            
+            channel_id.message_post(
+                body='Hello, there is New Price inguiry Created for you Please Check the Price Inquiry NO ' + str(
+                    self.sequence), subject='New Price inquiry', subtype='mail.mt_comment')
+
         res = self.write({
-                            'state':'po_created',
-                        })
-        return res  
+            'state': 'po_created',
+        })
+        return res
 
     @api.multi
     def action_pricing(self):
@@ -4835,9 +5109,10 @@ class MaterialRequisitionFromsales(models.Model):
                 if l.price:
                     continue
                 else:
-                    raise ValidationError(_("add a price for product %s")% (l.product_id.name))
+                    raise ValidationError(_("add a price for product %s") % (l.product_id.name))
             channel_all_employees = self.env.ref('marcoms_updates.channel_all_Price_inquiries').read()[0]
-            template_new_employee = self.env.ref('marcoms_updates.email_template_data_Price_inquiries_Response').read()[0]
+            template_new_employee = self.env.ref('marcoms_updates.email_template_data_Price_inquiries_Response').read()[
+                0]
             # raise ValidationError(_(template_new_employee))
             if template_new_employee:
                 # MailTemplate = self.env['mail.template']
@@ -4846,12 +5121,14 @@ class MaterialRequisitionFromsales(models.Model):
                 # raise ValidationError(_('%s %s ') % (body_html,subject))
                 ids = channel_all_employees['id']
                 channel_id = self.env['mail.channel'].search([('id', '=', ids)])
-                channel_id.message_post(body='Hello, the Purchase team response to the Price Inquiry NO '+str(self.sequence), subject='Price inquiry Response',subtype='mail.mt_comment')
-                
+                channel_id.message_post(
+                    body='Hello, the Purchase team response to the Price Inquiry NO ' + str(self.sequence),
+                    subject='Price inquiry Response', subtype='mail.mt_comment')
+
             res = self.write({
-                                'state':'back',
-                            })
-            return res  
+                'state': 'back',
+            })
+            return res
 
     @api.multi
     def create_purchase_requisition(self):
@@ -4860,20 +5137,21 @@ class MaterialRequisitionFromsales(models.Model):
         purchase_req_line_obj = self.env['purchase.requisition.line']
         for res in self:
             req_vals = purchase_req_obj.create({
-                                            'requisition_so_id':res.id,
-                                            'state':'draft',
-                                            'origin':res.sequence,
-                                            })
-        for line in self.requisition_line_ids:  
+                'requisition_so_id': res.id,
+                'state': 'draft',
+                'origin': res.sequence,
+            })
+        for line in self.requisition_line_ids:
             req_line_vals = purchase_req_line_obj.create({
-                'product_id':line.product_id.id,
-                'product_qty':line.qty,
-                'product_uom_id':line.uom_id.id,
-                'requisition_id':req_vals.id,
-                })
+                'product_id': line.product_id.id,
+                'product_qty': line.qty,
+                'product_uom_id': line.uom_id.id,
+                'requisition_id': req_vals.id,
+            })
         self.write({
-                            'flag':True,
-                        })
+            'flag': True,
+        })
+
 
 class RequisitionSalesLine(models.Model):
     _name = "material.requisition.sales.line"
@@ -4888,28 +5166,28 @@ class RequisitionSalesLine(models.Model):
         self.uom_id = self.product_id.uom_id.id
         self.description = self.product_id.name
 
-
-    product_id = fields.Many2one('product.product',string="Product",required=True)
+    product_id = fields.Many2one('product.product', string="Product", required=True)
     description = fields.Text(string="Description")
-    qty = fields.Float(string="Quantity",default=1.0)
-    uom_id = fields.Many2one('uom.uom',string="Unit Of Measure")
-    requisition_id = fields.Many2one('material.requisition.sales',string="Requisition Line")
+    qty = fields.Float(string="Quantity", default=1.0)
+    uom_id = fields.Many2one('uom.uom', string="Unit Of Measure")
+    requisition_id = fields.Many2one('material.requisition.sales', string="Requisition Line")
     available_qty = fields.Float(string="Available Qty")
     price = fields.Float(string="Unit price")
-    total_price = fields.Float(string="Total",compute="_get_total")
+    total_price = fields.Float(string="Total", compute="_get_total")
     remarks = fields.Text(string="Remarks")
 
     @api.multi
     @api.depends('price')
-    @api.onchange('price','qty')
+    @api.onchange('price', 'qty')
     def _get_total(self):
         for rec in self:
             rec.total_price = rec.price * rec.qty
 
+
 # class MaterialRequisitionUpdate(models.Model):
 #     _inherit = "material.requisition"
 
-    
+
 #     @api.multi
 #     def create_purchase_requisition(self):
 #         task_id = []
@@ -4922,7 +5200,7 @@ class RequisitionSalesLine(models.Model):
 #                                             'requisition_mat_po_id':res.id,
 #                                             'origin':res.sequence,
 #                                             })
-#         for line in self.requisition_line_ids:  
+#         for line in self.requisition_line_ids:
 #             req_line_vals = purchase_req_line_obj.create({
 #                 'product_id':line.product_id.id,
 #                 'product_qty':line.qty,
@@ -4933,7 +5211,7 @@ class RequisitionSalesLine(models.Model):
 #         res = self.write({
 #                             'state':'po_created',
 #                         })
-#         return res 
+#         return res
 # Requisition Screen in Sales Module
 
 class mailactivityUpdate(models.Model):
@@ -4945,10 +5223,21 @@ class mailactivityUpdate(models.Model):
             if rec.date_deadline:
                 if date.today() > rec.date_deadline:
                     raise ValidationError(_("Due Date should be equal or bigger than today date"))
-            
+
 
 class hrleaveUpdate(models.Model):
     _inherit = "hr.leave"
+
+
+    top_approve = fields.Boolean('Test Approve', compute='_compute_test_approve')
+
+    def _compute_test_approve(self):
+        current_employee = self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1)
+        is_top_manager = self.env.user.has_group('marcoms_updates.group_hr_top_manager')
+        if is_top_manager:
+            self.top_approve = True
+        else:
+            self.top_approve = False
 
     @api.multi
     def action_approve(self):
@@ -4958,7 +5247,8 @@ class hrleaveUpdate(models.Model):
             raise UserError(_('Leave request must be confirmed ("To Approve") in order to approve it.'))
 
         current_employee = self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1)
-        self.filtered(lambda hol: hol.validation_type == 'both').write({'state': 'validate1', 'first_approver_id': current_employee.id})
+        self.filtered(lambda hol: hol.validation_type == 'both').write(
+            {'state': 'validate1', 'first_approver_id': current_employee.id})
         self.filtered(lambda hol: not hol.validation_type == 'both').action_validate()
         if not self.env.context.get('leave_fast_create'):
             self.activity_update()
@@ -4974,15 +5264,16 @@ class hrleaveUpdate(models.Model):
             ids = channel_all_employees['id']
             channel_id = self.env['mail.channel'].search([('id', '=', ids)])
             message = """Leave with type %s come From %s in %s department between dates  %s to %s 
-            get Approved by %s """  % (self.holiday_status_id.name, self.employee_id.name, self.department_id.name,self.request_date_from,self.request_date_to,self.env.user.name)
-            channel_id.message_post(body=message, subject=subject,subtype='mail.mt_comment')
-            
-        return True
+            get Approved by %s """ % (
+            self.holiday_status_id.name, self.employee_id.name, self.department_id.name, self.request_date_from,
+            self.request_date_to, self.env.user.name)
+            channel_id.message_post(body=message, subject=subject, subtype='mail.mt_comment')
 
+        return True
 
     @api.multi
     def action_refuse(self):
-        
+
         current_employee = self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1)
         for holiday in self:
             if holiday.state not in ['confirm', 'validate', 'validate1']:
@@ -5001,9 +5292,11 @@ class hrleaveUpdate(models.Model):
                     ids = channel_all_employees['id']
                     channel_id = self.env['mail.channel'].search([('id', '=', ids)])
                     message = """Leave with type %s come From %s in %s department between dates  %s to %s 
-                    get Refused by %s """  % (self.holiday_status_id.name, self.employee_id.name, self.department_id.name,self.request_date_from,self.request_date_to,self.env.user.name)
-                    channel_id.message_post(body=message, subject=subject,subtype='mail.mt_comment')
-                    
+                    get Refused by %s """ % (
+                    self.holiday_status_id.name, self.employee_id.name, self.department_id.name, self.request_date_from,
+                    self.request_date_to, self.env.user.name)
+                    channel_id.message_post(body=message, subject=subject, subtype='mail.mt_comment')
+
             else:
                 holiday.write({'state': 'refuse', 'second_approver_id': current_employee.id})
                 channel_all_employees = self.env.ref('marcoms_updates.channel_all_leave_status').read()[0]
@@ -5017,9 +5310,11 @@ class hrleaveUpdate(models.Model):
                     ids = channel_all_employees['id']
                     channel_id = self.env['mail.channel'].search([('id', '=', ids)])
                     message = """Leave with type %s come From %s in %s department between dates  %s to %s 
-                    get Refused by %s """  % (self.holiday_status_id.name, self.employee_id.name, self.department_id.name,self.request_date_from,self.request_date_to,self.env.user.name)
-                    channel_id.message_post(body=message, subject=subject,subtype='mail.mt_comment')
-                    
+                    get Refused by %s """ % (
+                    self.holiday_status_id.name, self.employee_id.name, self.department_id.name, self.request_date_from,
+                    self.request_date_to, self.env.user.name)
+                    channel_id.message_post(body=message, subject=subject, subtype='mail.mt_comment')
+
             # Delete the meeting
             if holiday.meeting_id:
                 holiday.meeting_id.unlink()
@@ -5027,15 +5322,15 @@ class hrleaveUpdate(models.Model):
             holiday.linked_request_ids.action_refuse()
         self._remove_resource_leave()
         self.activity_update()
-        
+
         return True
 
 
 class stockwarehouseorderpointUpdate(models.Model):
     _inherit = "stock.warehouse.orderpoint"
 
-    onhand_qty = fields.Float('Onhand',compute="_get_diff_data")
-    deff_qty = fields.Float('Variance',compute="_get_diff_data")
+    onhand_qty = fields.Float('Onhand', compute="_get_diff_data")
+    deff_qty = fields.Float('Variance', compute="_get_diff_data")
 
     @api.multi
     @api.depends('product_id')
@@ -5047,13 +5342,13 @@ class stockwarehouseorderpointUpdate(models.Model):
 
 class respartnerUpdate(models.Model):
     _inherit = "res.partner"
-    
-    sequence_no = fields.Char('Partner No', required=True, copy=False, readonly=True, index=True, default=lambda self: _('New'),track_visibility="onchange")
-    
+
+    sequence_no = fields.Char('Partner No', required=True, copy=False, readonly=True, index=True,
+                              default=lambda self: _('New'), track_visibility="onchange")
 
     @api.model_create_multi
     def create(self, vals_list):
-           
+
         if self.env.context.get('import_file'):
             self._check_import_consistency(vals_list)
         for vals in vals_list:
@@ -5080,9 +5375,9 @@ class respartnerUpdate(models.Model):
             # raise ValidationError(_('%s %s ') % (body_html,subject))
             ids = channel_all_employees['id']
             channel_id = self.env['mail.channel'].search([('id', '=', ids)])
-            body = """Hello, there are New Customer Added to customer lists with name %s and code %s"""% (vals['name'],vals['sequence_no'])
-            channel_id.message_post(body=body, subject='New Customer Added',subtype='mail.mt_comment')
-        
+            body = """Hello, there are New Customer Added to customer lists with name %s and code %s""" % (
+            vals['name'], vals['sequence_no'])
+            channel_id.message_post(body=body, subject='New Customer Added', subtype='mail.mt_comment')
 
         if self.env.context.get('_partners_skip_fields_sync'):
             return partners
@@ -5094,7 +5389,8 @@ class respartnerUpdate(models.Model):
 
     @api.depends('is_company', 'name', 'parent_id.name', 'type', 'company_name')
     def _compute_display_name(self):
-        diff = dict(show_address=None, show_address_only=None, show_email=None, html_format=None, show_vat=False, show_code=False)
+        diff = dict(show_address=None, show_address_only=None, show_email=None, html_format=None, show_vat=False,
+                    show_code=False)
         names = dict(self.with_context(**diff).name_get())
         for partner in self:
             partner.display_name = names.get(partner.id)
@@ -5108,8 +5404,8 @@ class respartnerUpdate(models.Model):
             if not name and partner.type in ['invoice', 'delivery', 'other']:
                 name = dict(self.fields_get(['type'])['type']['selection'])[partner.type]
             if not partner.is_company:
-                name = "%s ,%s" % (partner.commercial_company_name or partner.parent_id.name,name)
-            
+                name = "%s ,%s" % (partner.commercial_company_name or partner.parent_id.name, name)
+
         if self._context.get('show_address_only'):
             name = partner._display_address(without_company=True)
         if self._context.get('show_address'):
@@ -5127,6 +5423,7 @@ class respartnerUpdate(models.Model):
         if self._context.get('show_vat') and partner.vat:
             name = "%s ‒ %s" % (name, partner.vat)
         return name
+
 
 # Ledger Report Updates
 
@@ -5150,15 +5447,15 @@ class AccountReportcus(models.AbstractModel):
         templates = self._get_templates()
         report_manager = self._get_report_manager(options)
         report = {'name': self._get_report_name(),
-                'summary': report_manager.summary,
-                'company_name': self.env.user.company_id.name,
-                'yo_date': date.today(),
-                'company_zip': self.env.user.company_id.zip,
-                'company_street': self.env.user.company_id.street,
-                'company_currency': self.env.user.company_id.currency_id.name,
-                'company_currencylabel': self.env.user.company_id.currency_id.currency_unit_label,
-                'company_tel': self.env.user.company_id.phone,
-                }
+                  'summary': report_manager.summary,
+                  'company_name': self.env.user.company_id.name,
+                  'yo_date': date.today(),
+                  'company_zip': self.env.user.company_id.zip,
+                  'company_street': self.env.user.company_id.street,
+                  'company_currency': self.env.user.company_id.currency_id.name,
+                  'company_currencylabel': self.env.user.company_id.currency_id.currency_unit_label,
+                  'company_tel': self.env.user.company_id.phone,
+                  }
         lines = self._get_lines(options, line_id=line_id)
 
         if options.get('hierarchy'):
@@ -5182,7 +5479,7 @@ class AccountReportcus(models.AbstractModel):
                     'options': options,
                     'context': self.env.context,
                     'model': self,
-                }
+                    }
         if additional_context and type(additional_context) == dict:
             rcontext.update(additional_context)
         if self.env.context.get('analytic_account_ids'):
@@ -5198,13 +5495,13 @@ class AccountReportcus(models.AbstractModel):
             values=dict(rcontext),
         )
         if self.env.context.get('print_mode', False):
-            for k,v in self._replace_class().items():
+            for k, v in self._replace_class().items():
                 html = html.replace(k, v)
             # append footnote as well
-            html = html.replace(b'<div class="js_account_report_footnotes"></div>', self.get_html_footnotes(footnotes_to_render))
+            html = html.replace(b'<div class="js_account_report_footnotes"></div>',
+                                self.get_html_footnotes(footnotes_to_render))
         return html
 
-    
     def get_report_informations(self, options):
         '''
         return a dictionary of informations that will be needed by the js widget, manager_id, footnotes, html of report and searchview, ...
@@ -5216,18 +5513,31 @@ class AccountReportcus(models.AbstractModel):
         searchview_dict = {'options': options, 'context': self.env.context}
         # Check if report needs analytic
         if options.get('analytic_accounts') is not None:
-            searchview_dict['analytic_accounts'] = self.env.user.id in self.env.ref('analytic.group_analytic_accounting').users.ids and [(t.id, t.name) for t in self.env['account.analytic.account'].search([])] or False
-            options['selected_analytic_account_names'] = [self.env['account.analytic.account'].browse(int(account)).name for account in options['analytic_accounts']]
+            searchview_dict['analytic_accounts'] = self.env.user.id in self.env.ref(
+                'analytic.group_analytic_accounting').users.ids and [(t.id, t.name) for t in
+                                                                     self.env['account.analytic.account'].search(
+                                                                         [])] or False
+            options['selected_analytic_account_names'] = [self.env['account.analytic.account'].browse(int(account)).name
+                                                          for account in options['analytic_accounts']]
         if options.get('analytic_tags') is not None:
-            searchview_dict['analytic_tags'] = self.env.user.id in self.env.ref('analytic.group_analytic_tags').users.ids and [(t.id, t.name) for t in self.env['account.analytic.tag'].search([])] or False
-            options['selected_analytic_tag_names'] = [self.env['account.analytic.tag'].browse(int(tag)).name for tag in options['analytic_tags']]
+            searchview_dict['analytic_tags'] = self.env.user.id in self.env.ref(
+                'analytic.group_analytic_tags').users.ids and [(t.id, t.name) for t in
+                                                               self.env['account.analytic.tag'].search([])] or False
+            options['selected_analytic_tag_names'] = [self.env['account.analytic.tag'].browse(int(tag)).name for tag in
+                                                      options['analytic_tags']]
         if options.get('partner'):
-            options['selected_partner_ids'] = [str(self.env['res.partner'].browse(int(partner)).name) +' ,  '+ str(self.env['res.partner'].browse(int(partner)).sequence_no) for partner in options['partner_ids']]
-            options['partner_zip'] = [self.env['res.partner'].browse(int(partner)).zip for partner in options['partner_ids']]
-            options['partner_code'] = [self.env['res.partner'].browse(int(partner)).sequence_no for partner in options['partner_ids']]
-            options['selected_phone'] = [self.env['res.partner'].browse(int(partner)).phone for partner in options['partner_ids']]
-            options['selected_street'] = [self.env['res.partner'].browse(int(partner)).street for partner in options['partner_ids']]
-            options['selected_partner_categories'] = [self.env['res.partner.category'].browse(int(category)).name for category in options['partner_categories']]
+            options['selected_partner_ids'] = [str(self.env['res.partner'].browse(int(partner)).name) + ' ,  ' + str(
+                self.env['res.partner'].browse(int(partner)).sequence_no) for partner in options['partner_ids']]
+            options['partner_zip'] = [self.env['res.partner'].browse(int(partner)).zip for partner in
+                                      options['partner_ids']]
+            options['partner_code'] = [self.env['res.partner'].browse(int(partner)).sequence_no for partner in
+                                       options['partner_ids']]
+            options['selected_phone'] = [self.env['res.partner'].browse(int(partner)).phone for partner in
+                                         options['partner_ids']]
+            options['selected_street'] = [self.env['res.partner'].browse(int(partner)).street for partner in
+                                          options['partner_ids']]
+            options['selected_partner_categories'] = [self.env['res.partner.category'].browse(int(category)).name for
+                                                      category in options['partner_categories']]
 
         # Check whether there are unposted entries for the selected period or not (if the report allows it)
         if options.get('date') and options.get('all_entries') is not None:
@@ -5242,7 +5552,9 @@ class AccountReportcus(models.AbstractModel):
                 'footnotes': [{'id': f.id, 'line': f.line, 'text': f.text} for f in report_manager.footnotes_ids],
                 'buttons': self._get_reports_buttons(),
                 'main_html': self.get_html(options),
-                'searchview_html': self.env['ir.ui.view'].render_template(self._get_templates().get('search_template', 'account_report.search_template'), values=searchview_dict),
+                'searchview_html': self.env['ir.ui.view'].render_template(
+                    self._get_templates().get('search_template', 'account_report.search_template'),
+                    values=searchview_dict),
                 }
         return info
 
@@ -5253,7 +5565,6 @@ class AccountReportcus(models.AbstractModel):
 #     @api.model
 #     def _get_report_name(self):
 #         return _("STATEMENT OF ACCOUNTS")
-
 
 
 class ReportPartnerLedgercus(models.AbstractModel):
@@ -5281,10 +5592,8 @@ class ReportPartnerLedgercus(models.AbstractModel):
             columns.append({'name': _('Amount Currency'), 'class': 'number'})
 
         columns.append({'name': _('Balance'), 'class': 'number'})
-        
 
         return columns
-
 
     @api.model
     def _get_lines(self, options, line_id=None):
@@ -5295,7 +5604,7 @@ class ReportPartnerLedgercus(models.AbstractModel):
         if line_id:
             line_id = int(line_id.split('_')[1]) or None
         elif options.get('partner_ids') and len(options.get('partner_ids')) == 1:
-            #If a default partner is set, we only want to load the line referring to it.
+            # If a default partner is set, we only want to load the line referring to it.
             partner_id = options['partner_ids'][0]
             line_id = partner_id
         if line_id:
@@ -5320,7 +5629,7 @@ class ReportPartnerLedgercus(models.AbstractModel):
             if self.user_has_groups('base.group_multi_currency'):
                 columns.append('')
             columns.append(self.format_value(balance))
-            
+
             # don't add header for `load more`
             if offset == 0:
                 lines.append({
@@ -5362,29 +5671,32 @@ class ReportPartnerLedgercus(models.AbstractModel):
                     progress = progress + line_debit - line_credit
                     caret_type = 'account.move'
                     if line.invoice_id:
-                        caret_type = 'account.invoice.in' if line.invoice_id.type in ('in_refund', 'in_invoice') else 'account.invoice.out'
+                        caret_type = 'account.invoice.in' if line.invoice_id.type in (
+                        'in_refund', 'in_invoice') else 'account.invoice.out'
                     elif line.payment_id:
                         caret_type = 'account.payment'
 
                     if line.invoice_id:
                         if line.invoice_id.project:
-                            project_name = """[%s]%s""" % (line.invoice_id.project.code,line.invoice_id.project.name)
+                            project_name = """[%s]%s""" % (line.invoice_id.project.code, line.invoice_id.project.name)
                         else:
                             project_name = ''
                     else:
                         if line.analytic_account_id.code or line.analytic_account_id.name:
                             project_name = ''
-                            project_name = """[%s]%s""" % (line.analytic_account_id.code,line.analytic_account_id.name)
+                            project_name = """[%s]%s""" % (line.analytic_account_id.code, line.analytic_account_id.name)
                         else:
                             project_name = ''
-                    days =  (line.date_maturity - line.move_id.date).days
-                    domain_columns = [line.journal_id.code, line.account_id.code,self._format_aml_name(line),project_name, 
-                                      line.date_maturity and format_date(self.env, line.date_maturity) or '',days,
+                    days = (line.date_maturity - line.move_id.date).days
+                    domain_columns = [line.journal_id.code, line.account_id.code, self._format_aml_name(line),
+                                      project_name,
+                                      line.date_maturity and format_date(self.env, line.date_maturity) or '', days,
                                       line.full_reconcile_id.name or '', self.format_value(progress_before),
                                       line_debit != 0 and self.format_value(line_debit) or '',
                                       line_credit != 0 and self.format_value(line_credit) or '']
                     if self.user_has_groups('base.group_multi_currency'):
-                        domain_columns.append(self.with_context(no_format=False).format_value(line.amount_currency, currency=line.currency_id) if line.amount_currency != 0 else '')
+                        domain_columns.append(self.with_context(no_format=False).format_value(line.amount_currency,
+                                                                                              currency=line.currency_id) if line.amount_currency != 0 else '')
                     domain_columns.append(self.format_value(progress))
                     columns = [{'name': v} for v in domain_columns]
                     columns[3].update({'class': 'date'})
@@ -5413,7 +5725,8 @@ class ReportPartnerLedgercus(models.AbstractModel):
                 lines += domain_lines
 
         if not line_id:
-            total_columns = ['', '', '', '', '','', '', self.format_value(total_initial_balance), self.format_value(total_debit), self.format_value(total_credit)]
+            total_columns = ['', '', '', '', '', '', '', self.format_value(total_initial_balance),
+                             self.format_value(total_debit), self.format_value(total_credit)]
             if self.user_has_groups('base.group_multi_currency'):
                 total_columns.append('')
             total_columns.append(self.format_value(total_balance))
@@ -5427,7 +5740,6 @@ class ReportPartnerLedgercus(models.AbstractModel):
         return lines
 
 
-
 # expense changes
 class hrexpenseUpdate(models.Model):
     _inherit = "hr.expense"
@@ -5435,11 +5747,14 @@ class hrexpenseUpdate(models.Model):
     payment_mode = fields.Selection([
         ("own_account", "Employee (to reimburse)"),
         ("company_account", "Company")
-    ], default='own_account', states={'done': [('readonly', True)], 'post': [('readonly', True)], 'submitted': [('readonly', True)]}, string="Paid By")
-    is_vendor = fields.Boolean('Is Vendor Expense',default=False)
-    vendor_id = fields.Many2one('res.partner','Vendor')
+    ], default='own_account',
+        states={'done': [('readonly', True)], 'post': [('readonly', True)], 'submitted': [('readonly', True)]},
+        string="Paid By")
+    is_vendor = fields.Boolean('Is Vendor Expense', default=False)
+    vendor_id = fields.Many2one('res.partner', 'Vendor')
+
     # employee_id = fields.Many2one('hr.employee', string="Employee", readonly=True, states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'refused': [('readonly', False)]}, default=_default_employee_id, domain=lambda self: self._get_employee_id_domain())
-    
+
     @api.multi
     def action_submit_expenses(self):
         if any(expense.state != 'draft' or expense.sheet_id for expense in self):
@@ -5447,7 +5762,8 @@ class hrexpenseUpdate(models.Model):
         if len(self.mapped('employee_id')) != 1:
             raise UserError(_("You cannot report expenses for different employees in the same report."))
 
-        todo = self.filtered(lambda x: x.payment_mode=='own_account') or self.filtered(lambda x: x.payment_mode=='company_account')
+        todo = self.filtered(lambda x: x.payment_mode == 'own_account') or self.filtered(
+            lambda x: x.payment_mode == 'company_account')
         return {
             'name': _('New Expense Report'),
             'type': 'ir.actions.act_window',
@@ -5481,10 +5797,10 @@ class hrexpenseUpdate(models.Model):
             different_currency = expense.currency_id and expense.currency_id != company_currency
 
             move_line_values = []
-            taxes = expense.tax_ids.with_context(round=True).compute_all(expense.unit_amount, expense.currency_id, expense.quantity, expense.product_id)
+            taxes = expense.tax_ids.with_context(round=True).compute_all(expense.unit_amount, expense.currency_id,
+                                                                         expense.quantity, expense.product_id)
             total_amount = 0.0
             total_amount_currency = 0.0
-            
 
             # source move line
             amount = taxes['total_excluded']
@@ -5552,8 +5868,6 @@ class hrexpenseUpdate(models.Model):
             move_line_values_by_expense[expense.id] = move_line_values
         return move_line_values_by_expense
 
-
-
     @api.multi
     def action_move_create(self):
         '''
@@ -5579,7 +5893,8 @@ class hrexpenseUpdate(models.Model):
             # create one more move line, a counterline for the total on payable account
             if expense.payment_mode == 'company_account':
                 if not expense.sheet_id.bank_journal_id.default_credit_account_id:
-                    raise UserError(_("No credit account found for the %s journal, please configure one.") % (expense.sheet_id.bank_journal_id.name))
+                    raise UserError(_("No credit account found for the %s journal, please configure one.") % (
+                        expense.sheet_id.bank_journal_id.name))
                 journal = expense.sheet_id.bank_journal_id
                 # create payment
                 payment_methods = journal.outbound_payment_method_ids if total_amount < 0 else journal.inbound_payment_method_ids
@@ -5627,11 +5942,14 @@ class hrexpenseUpdate(models.Model):
 
         return move_group_by_sheet
 
+
 class hrexpenseSheetUpdate(models.Model):
     _inherit = "hr.expense.sheet"
 
-    is_vendor = fields.Boolean('Is Vendor Expense',default=False)
-    vendor_id = fields.Many2one('res.partner','Vendor')
+    is_vendor = fields.Boolean('Is Vendor Expense', default=False)
+    vendor_id = fields.Many2one('res.partner', 'Vendor')
+
+
 # expense changes
 
 # Accounts report changes
@@ -5642,7 +5960,8 @@ class report_account_aged_partner_cus(models.AbstractModel):
         columns = [{}]
         columns += [
             {'name': v, 'class': 'number', 'style': 'white-space:nowrap;'}
-            for v in [_("JRNL"), _("Account"),_("Project Name"), _("Reference"), _("Not due on: %s") % format_date(self.env, options['date']['date']),
+            for v in [_("JRNL"), _("Account"), _("Project Name"), _("Reference"),
+                      _("Not due on: %s") % format_date(self.env, options['date']['date']),
                       _("1 - 30"), _("31 - 60"), _("61 - 90"), _("91 - 120"), _("Older"), _("Total")]
         ]
         return columns
@@ -5652,7 +5971,9 @@ class report_account_aged_partner_cus(models.AbstractModel):
         sign = -1.0 if self.env.context.get('aged_balance') else 1.0
         lines = []
         account_types = [self.env.context.get('account_type')]
-        results, total, amls = self.env['report.account.report_agedpartnerbalance'].with_context(include_nullified_amount=True)._get_partner_move_lines(account_types, self._context['date_to'], 'posted', 30)
+        results, total, amls = self.env['report.account.report_agedpartnerbalance'].with_context(
+            include_nullified_amount=True)._get_partner_move_lines(account_types, self._context['date_to'], 'posted',
+                                                                   30)
         for values in results:
             if line_id and 'partner_%s' % (values['partner_id'],) != line_id:
                 continue
@@ -5660,9 +5981,10 @@ class report_account_aged_partner_cus(models.AbstractModel):
                 'id': 'partner_%s' % (values['partner_id'],),
                 'name': values['name'],
                 'level': 2,
-                'columns': [{'name': ''}] * 4 + [{'name': self.format_value(sign * v)} for v in [values['direction'], values['4'],
-                                                                                                 values['3'], values['2'],
-                                                                                                 values['1'], values['0'], values['total']]],
+                'columns': [{'name': ''}] * 4 + [{'name': self.format_value(sign * v)} for v in
+                                                 [values['direction'], values['4'],
+                                                  values['3'], values['2'],
+                                                  values['1'], values['0'], values['total']]],
                 'trust': values['trust'],
                 'unfoldable': True,
                 'unfolded': 'partner_%s' % (values['partner_id'],) in options.get('unfolded_lines'),
@@ -5673,18 +5995,19 @@ class report_account_aged_partner_cus(models.AbstractModel):
                     aml = line['line']
                     caret_type = 'account.move'
                     if aml.invoice_id:
-                        caret_type = 'account.invoice.in' if aml.invoice_id.type in ('in_refund', 'in_invoice') else 'account.invoice.out'
+                        caret_type = 'account.invoice.in' if aml.invoice_id.type in (
+                        'in_refund', 'in_invoice') else 'account.invoice.out'
                     elif aml.payment_id:
                         caret_type = 'account.payment'
                     if aml.invoice_id:
                         if aml.invoice_id.project:
-                            project_name = """[%s]%s""" % (aml.invoice_id.project.code,aml.invoice_id.project.name)
+                            project_name = """[%s]%s""" % (aml.invoice_id.project.code, aml.invoice_id.project.name)
                         else:
                             project_name = ''
                     else:
                         if aml.analytic_account_id.code or aml.analytic_account_id.name:
                             project_name = ''
-                            project_name = """[%s]%s""" % (aml.analytic_account_id.code,aml.analytic_account_id.name)
+                            project_name = """[%s]%s""" % (aml.analytic_account_id.code, aml.analytic_account_id.name)
                         else:
                             project_name = ''
                     vals = {
@@ -5694,8 +6017,11 @@ class report_account_aged_partner_cus(models.AbstractModel):
                         'caret_options': caret_type,
                         'level': 4,
                         'parent_id': 'partner_%s' % (values['partner_id'],),
-                        'columns': [{'name': v} for v in [aml.journal_id.code, aml.account_id.code,project_name , self._format_aml_name(aml)]] +\
-                                   [{'name': v} for v in [line['period'] == 6-i and self.format_value(sign * line['amount']) or '' for i in range(7)]],
+                        'columns': [{'name': v} for v in [aml.journal_id.code, aml.account_id.code, project_name,
+                                                          self._format_aml_name(aml)]] + \
+                                   [{'name': v} for v in
+                                    [line['period'] == 6 - i and self.format_value(sign * line['amount']) or '' for i in
+                                     range(7)]],
                         'action_context': aml.get_action_context(),
                     }
                     lines.append(vals)
@@ -5705,7 +6031,9 @@ class report_account_aged_partner_cus(models.AbstractModel):
                 'name': _('Total'),
                 'class': 'total',
                 'level': 2,
-                'columns': [{'name': ''}] * 4 + [{'name': self.format_value(sign * v)} for v in [total[6], total[4], total[3], total[2], total[1], total[0], total[5]]],
+                'columns': [{'name': ''}] * 4 + [{'name': self.format_value(sign * v)} for v in
+                                                 [total[6], total[4], total[3], total[2], total[1], total[0],
+                                                  total[5]]],
             }
             lines.append(total_line)
         return lines
@@ -5736,15 +6064,21 @@ class report_account_general_ledger_cus(models.AbstractModel):
         line_id = line_id and int(line_id.split('_')[1]) or None
         aml_lines = []
         # Aml go back to the beginning of the user chosen range but the amount on the account line should go back to either the beginning of the fy or the beginning of times depending on the account
-        grouped_accounts = self.with_context(date_from_aml=dt_from, date_from=dt_from and company_id.compute_fiscalyear_dates(fields.Date.from_string(dt_from))['date_from'] or None)._group_by_account_id(options, line_id)
+        grouped_accounts = self.with_context(date_from_aml=dt_from, date_from=dt_from and
+                                                                              company_id.compute_fiscalyear_dates(
+                                                                                  fields.Date.from_string(dt_from))[
+                                                                                  'date_from'] or None)._group_by_account_id(
+            options, line_id)
         sorted_accounts = sorted(grouped_accounts, key=lambda a: a.code)
         unfold_all = context.get('print_mode') and len(options.get('unfolded_lines')) == 0
         sum_debit = sum_credit = sum_balance = 0
         for account in sorted_accounts:
             display_name = account.code + " " + account.name
             if options.get('filter_accounts'):
-                #skip all accounts where both the code and the name don't start with the given filtering string
-                if not any([display_name_part.lower().startswith(options['filter_accounts'].lower()) for display_name_part in display_name.split(' ')]):
+                # skip all accounts where both the code and the name don't start with the given filtering string
+                if not any(
+                        [display_name_part.lower().startswith(options['filter_accounts'].lower()) for display_name_part
+                         in display_name.split(' ')]):
                     continue
             debit = grouped_accounts[account]['debit']
             credit = grouped_accounts[account]['credit']
@@ -5752,14 +6086,18 @@ class report_account_general_ledger_cus(models.AbstractModel):
             sum_debit += debit
             sum_credit += credit
             sum_balance += balance
-            amount_currency = '' if not account.currency_id else self.with_context(no_format=False).format_value(grouped_accounts[account]['amount_currency'], currency=account.currency_id)
+            amount_currency = '' if not account.currency_id else self.with_context(no_format=False).format_value(
+                grouped_accounts[account]['amount_currency'], currency=account.currency_id)
             # don't add header for `load more`
             if offset == 0:
                 lines.append({
                     'id': 'account_%s' % (account.id,),
-                    'name': len(display_name) > 40 and not context.get('print_mode') and display_name[:40]+'...' or display_name,
+                    'name': len(display_name) > 40 and not context.get('print_mode') and display_name[
+                                                                                         :40] + '...' or display_name,
                     'title_hover': display_name,
-                    'columns': [{'name': v} for v in [amount_currency, self.format_value(debit), self.format_value(credit), self.format_value(balance)]],
+                    'columns': [{'name': v} for v in
+                                [amount_currency, self.format_value(debit), self.format_value(credit),
+                                 self.format_value(balance)]],
                     'level': 2,
                     'unfoldable': True,
                     'unfolded': 'account_%s' % (account.id,) in options.get('unfolded_lines') or unfold_all,
@@ -5769,7 +6107,8 @@ class report_account_general_ledger_cus(models.AbstractModel):
                 initial_debit = grouped_accounts[account]['initial_bal']['debit']
                 initial_credit = grouped_accounts[account]['initial_bal']['credit']
                 initial_balance = grouped_accounts[account]['initial_bal']['balance']
-                initial_currency = '' if not account.currency_id else self.with_context(no_format=False).format_value(grouped_accounts[account]['initial_bal']['amount_currency'], currency=account.currency_id)
+                initial_currency = '' if not account.currency_id else self.with_context(no_format=False).format_value(
+                    grouped_accounts[account]['initial_bal']['amount_currency'], currency=account.currency_id)
 
                 domain_lines = []
                 if offset == 0:
@@ -5778,7 +6117,9 @@ class report_account_general_ledger_cus(models.AbstractModel):
                         'class': 'o_account_reports_initial_balance',
                         'name': _('Initial Balance'),
                         'parent_id': 'account_%s' % (account.id,),
-                        'columns': [{'name': v} for v in ['', '', '', initial_currency, self.format_value(initial_debit), self.format_value(initial_credit), self.format_value(initial_balance)]],
+                        'columns': [{'name': v} for v in
+                                    ['', '', '', initial_currency, self.format_value(initial_debit),
+                                     self.format_value(initial_credit), self.format_value(initial_balance)]],
                     })
                     progress = initial_balance
                 else:
@@ -5791,7 +6132,6 @@ class report_account_general_ledger_cus(models.AbstractModel):
                 if not context.get('print_mode'):
                     remaining_lines = grouped_accounts[account]['total_lines'] - offset - len(amls)
 
-
                 for line in amls:
                     if options.get('cash_basis'):
                         line_debit = line.debit_cash_basis
@@ -5803,39 +6143,44 @@ class report_account_general_ledger_cus(models.AbstractModel):
                     line_debit = line.company_id.currency_id._convert(line_debit, used_currency, company_id, date)
                     line_credit = line.company_id.currency_id._convert(line_credit, used_currency, company_id, date)
                     progress = progress + line_debit - line_credit
-                    currency = "" if not line.currency_id else self.with_context(no_format=False).format_value(line.amount_currency, currency=line.currency_id)
+                    currency = "" if not line.currency_id else self.with_context(no_format=False).format_value(
+                        line.amount_currency, currency=line.currency_id)
 
                     name = line.name and line.name or ''
                     if line.ref:
                         name = name and name + ' - ' + line.ref or line.ref
                     name_title = name
                     # Don't split the name when printing
-                    if len(name) > 35 and not self.env.context.get('no_format') and not self.env.context.get('print_mode'):
+                    if len(name) > 35 and not self.env.context.get('no_format') and not self.env.context.get(
+                            'print_mode'):
                         name = name[:32] + "..."
                     partner_name = line.partner_id.name
                     partner_name_title = partner_name
-                    if partner_name and len(partner_name) > 35  and not self.env.context.get('no_format') and not self.env.context.get('print_mode'):
+                    if partner_name and len(partner_name) > 35 and not self.env.context.get(
+                            'no_format') and not self.env.context.get('print_mode'):
                         partner_name = partner_name[:32] + "..."
                     caret_type = 'account.move'
                     if line.invoice_id:
-                        caret_type = 'account.invoice.in' if line.invoice_id.type in ('in_refund', 'in_invoice') else 'account.invoice.out'
+                        caret_type = 'account.invoice.in' if line.invoice_id.type in (
+                        'in_refund', 'in_invoice') else 'account.invoice.out'
                     elif line.payment_id:
                         caret_type = 'account.payment'
                     if line.invoice_id:
                         if line.invoice_id.project:
-                            project_name = """[%s]%s""" % (line.invoice_id.project.code,line.invoice_id.project.name)
+                            project_name = """[%s]%s""" % (line.invoice_id.project.code, line.invoice_id.project.name)
                         else:
                             project_name = ''
                     else:
                         if line.analytic_account_id.code or line.analytic_account_id.name:
                             project_name = ''
-                            project_name = """[%s]%s""" % (line.analytic_account_id.code,line.analytic_account_id.name)
+                            project_name = """[%s]%s""" % (line.analytic_account_id.code, line.analytic_account_id.name)
                         else:
                             project_name = ''
-                    columns = [{'name': v} for v in [format_date(self.env, line.date), name, partner_name,project_name, currency,
-                                    line_debit != 0 and self.format_value(line_debit) or '',
-                                    line_credit != 0 and self.format_value(line_credit) or '',
-                                    self.format_value(progress)]]
+                    columns = [{'name': v} for v in
+                               [format_date(self.env, line.date), name, partner_name, project_name, currency,
+                                line_debit != 0 and self.format_value(line_debit) or '',
+                                line_credit != 0 and self.format_value(line_credit) or '',
+                                self.format_value(progress)]]
                     columns[1]['class'] = 'whitespace_print'
                     columns[2]['class'] = 'whitespace_print'
                     columns[1]['title'] = name_title
@@ -5873,19 +6218,21 @@ class report_account_general_ledger_cus(models.AbstractModel):
                         'class': 'o_account_reports_domain_total',
                         'parent_id': 'account_%s' % (account.id,),
                         'name': _('Total '),
-                        'columns': [{'name': v} for v in ['', '', '','', amount_currency, self.format_value(debit), self.format_value(credit), self.format_value(balance)]],
+                        'columns': [{'name': v} for v in ['', '', '', '', amount_currency, self.format_value(debit),
+                                                          self.format_value(credit), self.format_value(balance)]],
                     })
 
                 lines += domain_lines
 
         if not line_id:
-
             lines.append({
                 'id': 'general_ledger_total_%s' % company_id.id,
                 'name': _('Total'),
                 'class': 'total',
                 'level': 1,
-                'columns': [{'name': v} for v in ['', '', '', '','', self.format_value(sum_debit), self.format_value(sum_credit), self.format_value(sum_balance)]],
+                'columns': [{'name': v} for v in
+                            ['', '', '', '', '', self.format_value(sum_debit), self.format_value(sum_credit),
+                             self.format_value(sum_balance)]],
             })
 
         journals = [j for j in options.get('journals') if j.get('selected')]
@@ -5908,14 +6255,17 @@ class report_account_general_ledger_cus(models.AbstractModel):
             })
             journal_currency = self.env['account.journal'].browse(journals[0]['id']).company_id.currency_id
             for tax, values in self._get_taxes(journals[0]).items():
-                base_amount = journal_currency._convert(values['base_amount'], used_currency, company_id, options['date']['date_to'])
-                tax_amount = journal_currency._convert(values['tax_amount'], used_currency, company_id, options['date']['date_to'])
+                base_amount = journal_currency._convert(values['base_amount'], used_currency, company_id,
+                                                        options['date']['date_to'])
+                tax_amount = journal_currency._convert(values['tax_amount'], used_currency, company_id,
+                                                       options['date']['date_to'])
                 lines.append({
                     'id': '%s_tax' % (tax.id,),
                     'name': tax.name + ' (' + str(tax.amount) + ')',
                     'caret_options': 'account.tax',
                     'unfoldable': False,
-                    'columns': [{'name': v} for v in [self.format_value(base_amount), self.format_value(tax_amount), '']],
+                    'columns': [{'name': v} for v in
+                                [self.format_value(base_amount), self.format_value(tax_amount), '']],
                     'colspan': 5,
                     'level': 4,
                 })
@@ -5935,7 +6285,7 @@ class account_abstract_payment_cus(models.AbstractModel):
         if self.journal_id:
             # Set default payment method (we consider the first to be the default one)
             if self.payment_type == 'inbound' and not self.payment_type == 'outbound':
-                payment_methods = self.payment_type == 'inbound' and self.journal_id.inbound_payment_method_ids 
+                payment_methods = self.payment_type == 'inbound' and self.journal_id.inbound_payment_method_ids
                 payment_methods_list = payment_methods.ids
             if self.payment_type == 'outbound' and not self.payment_type == 'inbound':
                 payment_methods = self.payment_type == 'outbound' and self.journal_id.outbound_payment_method_ids
@@ -5953,25 +6303,29 @@ class account_abstract_payment_cus(models.AbstractModel):
 
             # Set payment method domain (restrict to methods enabled for the journal and to selected payment type)
             payment_type = self.payment_type in ('outbound', 'transfer') and 'outbound' or 'inbound'
-            return {'domain': {'payment_method_id': [('payment_type', '=', payment_type), ('id', 'in', payment_methods_list)]}}
+            return {'domain': {
+                'payment_method_id': [('payment_type', '=', payment_type), ('id', 'in', payment_methods_list)]}}
         return {}
+
 
 class AssetsTracking(models.Model):
     _name = "asset.tracking"
     _inherit = 'mail.thread'
 
-    name = fields.Char('Sequence' ,required=True, copy=False, readonly=True, index=True, default=lambda self: _('New'),track_visibility="onchange")
-    asset_name = fields.Many2one('account.asset.asset',string='Asset Name',track_visibility="onchange")
-    asset_category = fields.Many2one('account.asset.category',string='Asset Category')
-    transfer_date = fields.Date('Transfer Date',default=date.today(),track_visibility="onchange")
-    asset_responsible = fields.Many2one('hr.employee',string='Asset Responsible',track_visibility="onchange")
-    from_project = fields.Many2one('account.analytic.account',string='From',track_visibility="onchange")
-    to_project = fields.Many2one('account.analytic.account',string='To',track_visibility="onchange")
+    name = fields.Char('Sequence', required=True, copy=False, readonly=True, index=True, default=lambda self: _('New'),
+                       track_visibility="onchange")
+    asset_name = fields.Many2one('account.asset.asset', string='Asset Name', track_visibility="onchange")
+    asset_category = fields.Many2one('account.asset.category', string='Asset Category')
+    transfer_date = fields.Date('Transfer Date', default=date.today(), track_visibility="onchange")
+    asset_responsible = fields.Many2one('hr.employee', string='Asset Responsible', track_visibility="onchange")
+    from_project = fields.Many2one('account.analytic.account', string='From', track_visibility="onchange")
+    to_project = fields.Many2one('account.analytic.account', string='To', track_visibility="onchange")
     Remarks = fields.Text('Remarks')
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirm', 'Confirmed'),
-        ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', track_sequence=3, default='draft')
+    ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', track_sequence=3,
+        default='draft')
 
     @api.onchange('asset_name')
     def get_category(self):
@@ -5981,40 +6335,43 @@ class AssetsTracking(models.Model):
     @api.multi
     def action_confirm(self):
         self.write({
-            'state':'confirm'
+            'state': 'confirm'
         })
 
     @api.model
     def create(self, vals):
         if vals.get('name', _('New')) == _('New'):
-            vals['name'] = self.env['ir.sequence'].next_by_code('asset.tracking') or 'New'   
+            vals['name'] = self.env['ir.sequence'].next_by_code('asset.tracking') or 'New'
         return super(AssetsTracking, self).create(vals)
 
 
 class AssetsCus(models.Model):
     _inherit = 'account.asset.asset'
 
-    tracking_id = fields.One2many('asset.tracking','asset_name',string="Tracking Line")
+    tracking_id = fields.One2many('asset.tracking', 'asset_name', string="Tracking Line")
+
 
 class EmployeeCategoryType(models.Model):
     _name = 'employee.category.type'
 
-    name =  fields.Char('Name')
-    #emp_category_code = fields.Integer('Code')
+    name = fields.Char('Name')
+    # emp_category_code = fields.Integer('Code')
+
 
 class PaymentRequest(models.Model):
     _name = 'payment.request'
     _inherit = 'mail.thread'
 
-    name = fields.Char('Sequence' ,required=True, copy=False, readonly=True, index=True, default=lambda self: _('New'),track_visibility="onchange")    
-    lpo_num = fields.Many2one('purchase.order',string="LPO")
-    company = fields.Many2one('res.partner',string="Company")
-    payment_term = fields.Many2one('account.payment.term',string="Payment Term")
+    name = fields.Char('Sequence', required=True, copy=False, readonly=True, index=True, default=lambda self: _('New'),
+                       track_visibility="onchange")
+    lpo_num = fields.Many2one('purchase.order', string="LPO")
+    company = fields.Many2one('res.partner', string="Company")
+    payment_term = fields.Many2one('account.payment.term', string="Payment Term")
     amount = fields.Float('Amount')
-    prepared = fields.Many2one('res.users',string="Prepared By")
-    approved = fields.Many2one('res.users',string="Approved By")
-    account_approve = fields.Many2one('res.users',string="Accounts Approved By")
-    project = fields.Many2one('account.analytic.account',string="Projects")
+    prepared = fields.Many2one('res.users', string="Prepared By")
+    approved = fields.Many2one('res.users', string="Approved By")
+    account_approve = fields.Many2one('res.users', string="Accounts Approved By")
+    project = fields.Many2one('account.analytic.account', string="Projects")
     department_manager_comment = fields.Text(string="Department Manager Comment")
     account_comment = fields.Text(string="Accounts Comment")
     state = fields.Selection([
@@ -6024,12 +6381,13 @@ class PaymentRequest(models.Model):
         ('Department Reject', 'Department Manager Rejected'),
         ('Accounts Reject', 'Accounts Rejected'),
         ('Approved', 'Approved'),
-        ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', track_sequence=3, default='Draft')
+    ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', track_sequence=3,
+        default='Draft')
 
     @api.model
     def create(self, vals):
         if vals.get('name', _('New')) == _('New'):
-            vals['name'] = self.env['ir.sequence'].next_by_code('payment.request') or 'New'   
+            vals['name'] = self.env['ir.sequence'].next_by_code('payment.request') or 'New'
         return super(PaymentRequest, self).create(vals)
 
     @api.onchange('lpo_num')
@@ -6042,7 +6400,7 @@ class PaymentRequest(models.Model):
 
     @api.multi
     def action_confirm(self):
-        self.write({'state':'Department Approval','prepared':self.env.user.id})
+        self.write({'state': 'Department Approval', 'prepared': self.env.user.id})
         channel_all_employees = self.env.ref('marcoms_updates.channel_all_payment_request').read()[0]
         template_new_employee = self.env.ref('marcoms_updates.email_template_data_payment_request').read()[0]
         # raise ValidationError(_(template_new_employee))
@@ -6053,12 +6411,12 @@ class PaymentRequest(models.Model):
             # raise ValidationError(_('%s %s ') % (body_html,subject))
             ids = channel_all_employees['id']
             channel_id = self.env['mail.channel'].search([('id', '=', ids)])
-            body = """Hello, Payment Request with number %s Sending to purchase department approval"""% (self.name)
-            channel_id.message_post(body=body, subject='Payment Request',subtype='mail.mt_comment')
+            body = """Hello, Payment Request with number %s Sending to purchase department approval""" % (self.name)
+            channel_id.message_post(body=body, subject='Payment Request', subtype='mail.mt_comment')
 
     @api.multi
     def action_department_approve(self):
-        self.write({'state':'Accounts Approval','approved':self.env.user.id})
+        self.write({'state': 'Accounts Approval', 'approved': self.env.user.id})
         channel_all_employees = self.env.ref('marcoms_updates.channel_all_to_approve_payment_request').read()[0]
         template_new_employee = self.env.ref('marcoms_updates.email_template_data_to_approve_payment_request').read()[0]
         # raise ValidationError(_(template_new_employee))
@@ -6069,12 +6427,12 @@ class PaymentRequest(models.Model):
             # raise ValidationError(_('%s %s ') % (body_html,subject))
             ids = channel_all_employees['id']
             channel_id = self.env['mail.channel'].search([('id', '=', ids)])
-            body = """This payment request %s waiting for accounts approval"""% (self.name)
-            channel_id.message_post(body=body, subject='Payment Request',subtype='mail.mt_comment')
+            body = """This payment request %s waiting for accounts approval""" % (self.name)
+            channel_id.message_post(body=body, subject='Payment Request', subtype='mail.mt_comment')
 
     @api.multi
     def action_department_reject(self):
-        self.write({'state':'Department Reject'})
+        self.write({'state': 'Department Reject'})
         channel_all_employees = self.env.ref('marcoms_updates.channel_all_payment_request').read()[0]
         template_new_employee = self.env.ref('marcoms_updates.email_template_data_payment_request').read()[0]
         # raise ValidationError(_(template_new_employee))
@@ -6085,12 +6443,12 @@ class PaymentRequest(models.Model):
             # raise ValidationError(_('%s %s ') % (body_html,subject))
             ids = channel_all_employees['id']
             channel_id = self.env['mail.channel'].search([('id', '=', ids)])
-            body = """This payment request %s get rejected by the purchase department manager"""% (self.name)
-            channel_id.message_post(body=body, subject='Payment Request',subtype='mail.mt_comment')
+            body = """This payment request %s get rejected by the purchase department manager""" % (self.name)
+            channel_id.message_post(body=body, subject='Payment Request', subtype='mail.mt_comment')
 
     @api.multi
     def action_accounts_approve(self):
-        self.write({'state':'Approved','account_approve':self.env.user.id})
+        self.write({'state': 'Approved', 'account_approve': self.env.user.id})
         channel_all_employees = self.env.ref('marcoms_updates.channel_all_payment_request').read()[0]
         template_new_employee = self.env.ref('marcoms_updates.email_template_data_payment_request').read()[0]
         # raise ValidationError(_(template_new_employee))
@@ -6101,12 +6459,12 @@ class PaymentRequest(models.Model):
             # raise ValidationError(_('%s %s ') % (body_html,subject))
             ids = channel_all_employees['id']
             channel_id = self.env['mail.channel'].search([('id', '=', ids)])
-            body = """This payment request %s is approved by the accounts team"""% (self.name)
-            channel_id.message_post(body=body, subject='Payment Request',subtype='mail.mt_comment')
+            body = """This payment request %s is approved by the accounts team""" % (self.name)
+            channel_id.message_post(body=body, subject='Payment Request', subtype='mail.mt_comment')
 
     @api.multi
     def action_accounts_reject(self):
-        self.write({'state':'Accounts Reject'})
+        self.write({'state': 'Accounts Reject'})
         channel_all_employees = self.env.ref('marcoms_updates.channel_all_payment_request').read()[0]
         template_new_employee = self.env.ref('marcoms_updates.email_template_data_payment_request').read()[0]
         # raise ValidationError(_(template_new_employee))
@@ -6117,8 +6475,8 @@ class PaymentRequest(models.Model):
             # raise ValidationError(_('%s %s ') % (body_html,subject))
             ids = channel_all_employees['id']
             channel_id = self.env['mail.channel'].search([('id', '=', ids)])
-            body = """This payment request %s is rejected by the accounts team"""% (self.name)
-            channel_id.message_post(body=body, subject='Payment Request',subtype='mail.mt_comment')
+            body = """This payment request %s is rejected by the accounts team""" % (self.name)
+            channel_id.message_post(body=body, subject='Payment Request', subtype='mail.mt_comment')
 
     @api.multi
     def set_to_draft(self):

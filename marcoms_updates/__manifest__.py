@@ -38,6 +38,7 @@
         'wizard/job_costing.xml',
         'data/mail_data.xml',
         'data/crm_data.xml',
+        'data/hr_data.xml'
     ],
     'css': ['static/src/css/crmm.css'],
     'installable': True,
