@@ -2184,7 +2184,9 @@ if record:
                 <attribute name="string">Ask for a Debit Note</attribute>
             </xpath>
             <xpath expr="//field[@name='reference']" position="after">
+
                 <field name="project_name"/>
+
                 <field name="project" invisible="0"/>
             </xpath>
             

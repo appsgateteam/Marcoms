@@ -2138,11 +2138,14 @@ class HRpayrolltranLine(models.Model):
     def _get_amount(self):
 
         for rec in self:
+          rec.timesheet_cost = rec.employee_id.contract_id.hr_total_wage
+          time_cost = ((rec.timesheet_cost / 30) / 8)
+          rec.allowance = rec.number_of_hours * time_cost
+
 
             rec.timesheet_cost = rec.employee_id.contract_id.hr_total_wage
             time_cost = ((rec.timesheet_cost / 30) / 8)
             rec.allowance = rec.number_of_hours * time_cost
-
 
 class HrSalaryRulecus(models.Model):
     _inherit = 'hr.salary.rule'
@@ -2919,6 +2922,7 @@ class PurchaseOrderCus(models.Model):
             self.picking_ids.write({'origin': order.interchanging_po_sequence})
             if self.picking_ids:
                 for pick in self.picking_ids:
+
                     pick.move_lines.write({'origin': order.interchanging_po_sequence})
             order.update_purchase_pricelist()
         return res
@@ -2931,7 +2935,6 @@ class PurchaseOrderCus(models.Model):
                 if pricelist:
                     for price in pricelist:
                         price.price = line.price_unit
-
 
     @api.multi
     def button_draft(self):
@@ -3238,7 +3241,18 @@ Official receipt should be obtained for cash payments."""
             invoice.compute_taxes()
 
         return invoice
-
+    
+    
+    @api.multi
+    def action_invoice_open(self):
+        res = super(AccountInvoiceCust, self).action_invoice_open()
+        for order in self:
+            account_analytic = self.env['account.invoice.line'].search([('invoice_id', '=', order.id)])
+            for acc in account_analytic:
+                order.project = acc.account_analytic_id.id
+        return res
+  
+    
     @api.multi
     def _document_count(self):
         for each in self:
