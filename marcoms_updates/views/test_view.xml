@@ -1265,7 +1265,7 @@ if record:
         <field name="arch" type="xml">
             <xpath expr="//field[@name='advantages']" position="before">
                 <br />
-                <field name="hr_allowance_line_ids" nolabel="1" colspan="2">
+                <field name="hr_allowance_line_ids" nolabel="1" colspan="2"  attrs="{'readonly': [('top_approve', '!=', True)]}">
 
                     <tree editable="top">
                     
@@ -1280,11 +1280,12 @@ if record:
                </field>
                <group>
                   <field name="hr_total_wage" string="Total Salary"/>
+                   <field name="top_approve" invisible="1"/>
                </group>
             </xpath>
             <div name="wage" position="replace">
                 <div class="o_row" name="wage">
-                    <field name="wage" nolabel="1"/>
+                    <field name="wage" nolabel="1"  attrs="{'readonly': [('top_approve', '!=', True)]}"/>
                     <span style="margin-left:47px;">/ month</span>
                 </div>
             </div>
@@ -2184,7 +2185,7 @@ if record:
             </xpath>
             <xpath expr="//field[@name='reference']" position="after">
                 <field name="project_name"/>
-                <field name="project" invisible="1"/>
+                <field name="project" invisible="0"/>
             </xpath>
             
             <xpath expr="//div[1]" position="replace">
@@ -3474,6 +3475,24 @@ if record:
                 </xpath>
             </field>
         </record>
+
+    <!-- Leave Modification Only for Top Managers-->
+    <record id="hr_leave_view_form_inherit" model="ir.ui.view">
+        <field name="name">hr.leave.view.form.inherit</field>
+        <field name="model">hr.leave</field>
+        <field name="inherit_id" ref="hr_holidays.hr_leave_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='can_approve']" position="after">
+                <field name="top_approve" invisible="1" />
+            </xpath>
+            <xpath expr="//button[@name='action_refuse']" position="replace">
+                <button string="Refuse" name="action_refuse"  type="object" attrs="{'invisible': ['|', ('top_approve', '=', False), ('state', 'not in', ('confirm','validate','validate1'))]}"/>
+            </xpath>
+             <xpath expr="//button[@name='action_validate']" position="replace">
+                <button string="Validate" name="action_validate" states="validate1" type="object" groups="marcoms_updates.group_hr_top_manager" class="oe_highlight"/>
+            </xpath>
+        </field>
+    </record>
 
 </odoo>
 
