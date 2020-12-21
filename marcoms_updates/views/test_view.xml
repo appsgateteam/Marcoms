@@ -2185,9 +2185,11 @@ if record:
             </xpath>
             <xpath expr="//field[@name='reference']" position="after">
 
+
                 <field name="project_name"/>
 
-                <field name="project" invisible="0"/>
+                <field name="project" invisible="1"/>
+
             </xpath>
             
             <xpath expr="//div[1]" position="replace">
