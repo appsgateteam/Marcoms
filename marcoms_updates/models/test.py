@@ -701,7 +701,11 @@ class SaleAdvancePaymentInv(models.TransientModel):
                              'project': order.analytic_account_id.id,
                              'LPO': order.lpo_number, })
         if self._context.get('open_invoices', False):
-            return sale_orders.action_view_invoice()
+            billo = sale_orders.action_view_invoice()
+            billo.write({
+                'project':order.analytic_id,
+            })
+            return billo
         return {'type': 'ir.actions.act_window_close'}
 
 
@@ -2026,6 +2030,16 @@ class Hrcontractscus(models.Model):
     hr_allowance_line_ids = fields.One2many('hr.allowance.line', 'contract_id', string='HR Allowance')
     hr_total_wage = fields.Float('Total Salary', compute="_total_wage")
     emp_branch_name = fields.Many2one('employee.category.type', 'Branch Name', store=True)
+    top_approve = fields.Boolean('Test Approve', compute='_compute_test_approve')
+
+    def _compute_test_approve(self):
+        current_employee = self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1)
+        is_top_manager = self.env.user.has_group('marcoms_updates.group_hr_contract_top_manager')
+        if is_top_manager:
+            self.top_approve = True
+        else:
+            self.top_approve = False
+
 
     @api.multi
     def _total_wage(self):
@@ -2906,7 +2920,18 @@ class PurchaseOrderCus(models.Model):
             if self.picking_ids:
                 for pick in self.picking_ids:
                     pick.move_lines.write({'origin': order.interchanging_po_sequence})
+            order.update_purchase_pricelist()
         return res
+
+    def update_purchase_pricelist(self):
+        for order in self:
+            for line in order.order_line:
+                pricelist = self.env['product.supplierinfo'].search(
+                    [('name', '=', order.partner_id.id), ('product_tmpl_id', '=', line.product_id.product_tmpl_id.id)])
+                if pricelist:
+                    for price in pricelist:
+                        price.price = line.price_unit
+
 
     @api.multi
     def button_draft(self):
@@ -3175,6 +3200,15 @@ class AccountInvoiceCust(models.Model):
     # Official receipt should be obtained for cash payments."""
     #         else:
     #             return " "
+
+    @api.multi
+    def action_invoice_open(self):
+        res = super(AccountInvoiceCust, self).action_invoice_open()
+        for order in self:
+            account_analytic = self.env['account.invoice.line'].search([('invoice_id', '=', order.id)])
+            for acc in account_analytic:
+                order.project = acc.account_analytic_id.id
+        return res
 
     @api.model
     def create(self, vals):
@@ -5181,6 +5215,17 @@ class mailactivityUpdate(models.Model):
 
 class hrleaveUpdate(models.Model):
     _inherit = "hr.leave"
+
+
+    top_approve = fields.Boolean('Test Approve', compute='_compute_test_approve')
+
+    def _compute_test_approve(self):
+        current_employee = self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1)
+        is_top_manager = self.env.user.has_group('marcoms_updates.group_hr_top_manager')
+        if is_top_manager:
+            self.top_approve = True
+        else:
+            self.top_approve = False
 
     @api.multi
     def action_approve(self):
