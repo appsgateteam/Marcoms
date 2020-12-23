@@ -701,11 +701,8 @@ class SaleAdvancePaymentInv(models.TransientModel):
                              'project': order.analytic_account_id.id,
                              'LPO': order.lpo_number, })
         if self._context.get('open_invoices', False):
-            billo = sale_orders.action_view_invoice()
-            billo.write({
-                'project':order.analytic_id,
-            })
-            return billo
+            return sale_orders.action_view_invoice()
+
         return {'type': 'ir.actions.act_window_close'}
 
 

@@ -579,8 +579,7 @@ if record:
                 <field name="reason_for_lost"/>
                 <label for="reason_for_cancel"/>
                 <field name="reason_for_cancel"/>
-                <label for="reason_for_cancel"/>
-                <field name="reason_for_cancel"/>
+
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="replace">
                 <field name="partner_id" widget="res_partner_many2one" string="Customer" domain="[('customer','=',True),('parent_id','=',False)]" context="{'search_default_customer': 1,                                         'default_name': partner_name, 'default_street': street,                                         'default_street2': street2, 'default_city': city,                                         'default_state_id': state_id, 'default_zip': zip,                                         'default_country_id': country_id, 'default_function': function,                                         'default_phone': phone, 'default_mobile': mobile,                                         'default_email': email_from,                                         'default_user_id': user_id, 'default_team_id': team_id, 'default_website': website,                                         'show_vat': True,                                     }"/>
