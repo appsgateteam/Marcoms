@@ -519,6 +519,7 @@ class productRequisitionFromsales(models.Model):
 
     @api.multi
     def create_purchase_requisition(self):
+
         task_ids = []
         purchase_req_obj = self.env['purchase.requisition']
         # purchase_req_line_obj = self.env['purchase.requisition.line']
@@ -541,8 +542,8 @@ class productRequisitionFromsales(models.Model):
                                                 'analytic_id':res.oppor_id.id,
                                                 'task_id':res.task_id.id,
                                                 'pro_requi':res.pro_requi,
-                                                'default_ordering_date': res.requisition_date,
-                                                'default_date_end': res.requisition_dead,
+                                                'ordering_date': res.requisition_date,
+                                                'date_end': res.requisition_dead,
                                                 'pr_sequence':res.id,
                                                 'creator_name':res.creator_name.id,
                                                 'reason_for_requisition':res.reason_for_requisition,
@@ -551,6 +552,7 @@ class productRequisitionFromsales(models.Model):
                                                 'user_id':res.req_name.user_id.id,
                                                 'project_manager':True,
                                                 })
+
             else:
                 for line in res.requisition_line_ids:  
                     data = {
@@ -569,8 +571,8 @@ class productRequisitionFromsales(models.Model):
                                                 'analytic_id':res.oppor_id.id,
                                                 'task_id':res.task_id.id,
                                                 'pro_requi':res.pro_requi,
-                                                'default_ordering_date': res.requisition_date,
-                                                'default_date_end': res.requisition_dead,
+                                                'ordering_date': res.requisition_date,
+                                                'date_end': res.requisition_dead,
                                                 'pr_sequence':res.id,
                                                 'creator_name':res.creator_name.id,
                                                 'reason_for_requisition':res.reason_for_requisition,
@@ -589,6 +591,7 @@ class productRequisitionFromsales(models.Model):
         self.write({
                             'flag':True,
                         })
+        return res
 
     @api.multi
     def req_view(self):
