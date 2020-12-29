@@ -3042,7 +3042,8 @@ class PurchaseRequisitionCus(models.Model):
 
     # @api.multi
     # def action_rfq_review_project_manager(self):
-    #     for order in self:
+    #     for order in se
+    #     lf:
     #         com = self.env['product.requisition'].search([('id', '=', order.pr_sequence.id)])
     #         com.write({'state': 'pm_app'})
     #         # comm = self.env['purchase.order'].search([('id', '=', order.po_sequence.id)])
@@ -4919,6 +4920,25 @@ class AccountMoveCustomize(models.Model):
     AC_print = fields.Boolean('Print A/c Payee')
     check_amount_in_words = fields.Char('amount in word', compute="_onchange_amount")
     document_count = fields.Integer(compute='_document_count', string='# Documents')
+    analytic_count = fields.Char("Analytic Account", compute="_compute_analytic_total")
+
+
+    @api.multi
+    @api.depends('line_ids.analytic_account_id')
+    def _compute_analytic_total(self):
+        for record in self:
+            analytic = self.env['account.move.line'].search([('move_id', '=', record.id)])
+            analytic_acc = 0
+            for rec in analytic:
+                analytic_acc = rec.analytic_account_id.name
+
+            record.analytic_count = analytic_acc
+
+            # for line in record.line_ids:
+            #     analytic_acc = line.analytic_account_id
+            # record.analytic_count = analytic_acc
+
+
 
     @api.multi
     def _document_count(self):
