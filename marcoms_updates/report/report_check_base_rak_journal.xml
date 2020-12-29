@@ -32,7 +32,7 @@
                                   </div>
                                 </t>
                                 <t t-else="">
-                                  <div style="margin-top:-3.5%;">
+                                  <div style="margin-top:10px;">
                                   <b><span style="margin-left:80%;">**<span t-field="o.check_amount" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></span></b>
                                   </div>
                                 </t>
