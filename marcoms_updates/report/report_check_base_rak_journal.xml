@@ -17,28 +17,22 @@
                         </div>
                         <div style="padding-top: 10mm;">
                             
-                            <div class="">
-                              <!--<br/>-->
-                                <b><span t-field="o.partner" style="margin-left:20%;"/></b>
+                            <table width="100%">
+                              <tr>
+                                <td><b><span t-field="o.partner" style="margin-left:20%;"/></b></td>
+                              </tr>
+                              <tr>
+                                <td style="width:55%;margin-left:20%;line-height:250%;padding:15px 10px 0px 60px;">
+                                   <b><span t-esc="o.check_amount_in_words"/>   Only</b>
+                                </td>
 
-                                <t t-set="num" t-value="len(o.check_amount_in_words)"/> 
-                                <br/>
-                                <div style="width:55%;margin-left:12%;line-height:250%;margin-top:15px;"><b><span t-esc="o.check_amount_in_words"/>   Only</b></div>
-                                <!--<br/>-->
-                                <t t-if="num &lt;= 46">
-                                  <!--<br />-->
-                                  <div style="margin-top:10px;">
-                                  <b><span style="margin-left:80%;">**<span t-field="o.check_amount" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></span></b>
-                                  </div>
-                                </t>
-                                <t t-else="">
-                                  <div style="margin-top:10px;">
-                                  <b><span style="margin-left:80%;">**<span t-field="o.check_amount" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></span></b>
-                                  </div>
-                                </t>
-                                <!-- <br/>
-                                <span><span t-esc="o.currency_id.currency_subunit_label" style="margin-left:20%;"/> Only</span> -->
-                            </div>
+                              </tr>
+                              <tr>
+                                <td style="float:right;padding:5px 80px 0px 0px;">
+                                  <b>**<span t-field="o.check_amount" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></b>
+                                </td>
+                              </tr>
+                            </table>
                         </div>
                         <br/>
                         <br/>

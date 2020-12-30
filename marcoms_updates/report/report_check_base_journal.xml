@@ -21,29 +21,29 @@
                         </div>
                         <div style="padding-top: 10mm;">
                             
-                            <div class="">
-                                <!--<span t-field="o.partner" style="margin-left:20%;"/>-->
+                            <!--<div class="">
+                                &lt;!&ndash;<span t-field="o.partner" style="margin-left:20%;"/>&ndash;&gt;
                                 <b><span t-field="o.partner" style="margin-left:20%;"/></b>
 
-                                <!--<t t-set="num" t-value="len(o.check_amount_in_words)"/> -->
-                                <!--<br/><br/>-->
-                                <!--<div style="width:65%;margin-left:12%;line-height:250%;"><span t-esc="o.check_amount_in_words"/>   Only</div>-->
+                                &lt;!&ndash;<t t-set="num" t-value="len(o.check_amount_in_words)"/> &ndash;&gt;
+                                &lt;!&ndash;<br/><br/>&ndash;&gt;
+                                &lt;!&ndash;<div style="width:65%;margin-left:12%;line-height:250%;"><span t-esc="o.check_amount_in_words"/>   Only</div>&ndash;&gt;
                                 <t t-set="num" t-value="len(o.check_amount_in_words)"/> 
                                 <br/>
                                 <div style="width:55%;margin-left:12%;line-height:250%;margin-top:15px;"><b><span t-esc="o.check_amount_in_words"/>   Only</b></div>
-                                <!--<br/>-->
-                                <!--<t t-if="num &lt;= 54">-->
-                                <!--  <div>-->
-                                <!--  <span style="margin-left:75%;">**<span t-field="o.check_amount" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></span>-->
-                                <!--  </div>-->
-                                <!--</t>-->
-                                <!--<t t-else="">-->
-                                <!--  <div style="margin-top:-4%;">-->
-                                <!--  <span style="margin-left:75%;">**<span t-field="o.check_amount" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></span>-->
-                                <!--  </div>-->
-                                <!--</t>-->
+                                &lt;!&ndash;<br/>&ndash;&gt;
+                                &lt;!&ndash;<t t-if="num &lt;= 54">&ndash;&gt;
+                                &lt;!&ndash;  <div>&ndash;&gt;
+                                &lt;!&ndash;  <span style="margin-left:75%;">**<span t-field="o.check_amount" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></span>&ndash;&gt;
+                                &lt;!&ndash;  </div>&ndash;&gt;
+                                &lt;!&ndash;</t>&ndash;&gt;
+                                &lt;!&ndash;<t t-else="">&ndash;&gt;
+                                &lt;!&ndash;  <div style="margin-top:-4%;">&ndash;&gt;
+                                &lt;!&ndash;  <span style="margin-left:75%;">**<span t-field="o.check_amount" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></span>&ndash;&gt;
+                                &lt;!&ndash;  </div>&ndash;&gt;
+                                &lt;!&ndash;</t>&ndash;&gt;
                                 <t t-if="num &lt;= 46">
-                                  <!--<br />-->
+                                  &lt;!&ndash;<br />&ndash;&gt;
                                   <div style="margin-top:10px;">
                                   <b><span style="margin-left:75%;">**<span t-field="o.check_amount" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></span></b>
                                   </div>
@@ -53,9 +53,25 @@
                                   <b><span style="margin-left:75%;">**<span t-field="o.check_amount" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></span></b>
                                   </div>
                                 </t>
-                                <!--<br/>-->
-                                <!--<span><span t-esc="o.currency_id.currency_subunit_label" style="margin-left:20%;"/> Only</span>-->
-                            </div>
+                                &lt;!&ndash;<br/>&ndash;&gt;
+                                &lt;!&ndash;<span><span t-esc="o.currency_id.currency_subunit_label" style="margin-left:20%;"/> Only</span>&ndash;&gt;
+                            </div>-->
+                            <table width="100%">
+                              <tr>
+                                <td><b><span t-field="o.partner" style="margin-left:20%;"/></b></td>
+                              </tr>
+                              <tr>
+                                <td style="width:55%;margin-left:20%;line-height:250%;padding:15px 10px 0px 60px;">
+                                   <b><span t-esc="o.check_amount_in_words"/>   Only</b>
+                                </td>
+
+                              </tr>
+                              <tr>
+                                <td style="float:right;padding:5px 80px 0px 0px;">
+                                  <b>**<span t-field="o.check_amount" t-options="{&quot;widget&quot;:&quot;float&quot;,&quot;precision&quot;:2}"/></b>
+                                </td>
+                              </tr>
+                            </table>
                         </div>
                         <br/>
                         <br/>
