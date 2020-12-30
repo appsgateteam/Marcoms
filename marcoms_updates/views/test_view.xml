@@ -629,7 +629,7 @@ if record:
         <field name="inherit_id" ref="crm.crm_case_form_view_leads"/>
         <field name="arch" type="xml">
             <xpath expr="//button[@name='action_set_lost']" position="replace">
-                <button name="%(crm.crm_lead_lost_action)d" string="Mark as Dropped" groups="sales_team.group_sale_manager,marcoms_updates.group_sale_top_manager" context="{'default_lead_id': active_id}" type="action" attrs="{'invisible': ['|',('submit_leadd', '=', False),'&amp;', ('probability', '=', 0), ('active', '=', False)]}"/>
+                <button name="%(crm.crm_lead_lost_action)d" string="Mark as Dropped" groups="sales_team.group_sale_manager,marcoms_updates.group_creative_coordinator,marcoms_updates.group_sale_top_manager" context="{'default_lead_id': active_id}" type="action" attrs="{'invisible': ['|',('submit_leadd', '=', False),'&amp;', ('probability', '=', 0), ('active', '=', False)]}"/>
                 <button name="submit_lead" string="Submit" type="object" attrs="{'invisible': ['|',('type', '=', 'opportunity'),('submit_leadd', '=', True)]}"/>
                 <!-- <button name="lead_form_print_report" string="Print Lead Form" type="object" /> -->
             </xpath>
