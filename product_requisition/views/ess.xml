@@ -247,7 +247,7 @@
             <xpath expr="//button[@name='%(purchase_requisition.action_purchase_requisition_list)d']" position="replace">
                 <button name="%(purchase_requisition.action_purchase_requisition_list)d" type="action" class="oe_stat_button" icon="fa-list-alt"
                         attrs="{'invisible': [('state', '=', 'draft')]}"
-                        context="{'default_pro_requi': pro_requi,'default_pr_sequence_id': pr_sequence_id,'default_pr_sequence': pr_sequence,'default_creator_name_id':creator_name_id,'default_req_name':req_name,'default_co_box':co_box,'default_project_manager':project_manager}">
+                        context="{'default_pro_requi': pro_requi,'default_pr_sequence_id': pr_sequence_id,'default_pr_sequence': pr_sequence,'default_creator_name_id':creator_name_id,'default_req_name':req_name,'default_co_box':co_box,'default_project_manager':project_manager,'default_analytic_id':analytic_id,'default_task_id':task_id}">
                         <field name="order_count" widget="statinfo" string="RFQs/Orders"/>
                 </button>
             </xpath>
