@@ -159,17 +159,17 @@
         <field ref="model_crm_lead" name="model_id"/>
         <field name="domain_force">[('stage_id','=',4),('assign_to_designer','=',False)]</field>
         <field name="groups" eval="[(4, ref('group_creative_coordinator'))]"/>
-        <field name='perm_create' eval='False'/>
+        <field name='perm_create' eval='True'/>
         <field name='perm_read' eval='True'/>
         <field name='perm_unlink' eval='False'/>
-        <field name='perm_write' eval='False'/>
+        <field name='perm_write' eval='True'/>
     </record>
     <record id="crm_creative_designer_coordinator44" model="ir.rule">
         <field name="name">Design Manager Access 4</field>
         <field ref="model_crm_lead" name="model_id"/>
         <field name="domain_force">[('stage_id','=',4),('assign_to_designer','!=',False)]</field>
         <field name="groups" eval="[(4, ref('group_creative_coordinator'))]"/>
-        <field name='perm_create' eval='False'/>
+        <field name='perm_create' eval='True'/>
         <field name='perm_read' eval='True'/>
         <field name='perm_unlink' eval='False'/>
         <field name='perm_write' eval='True'/>
