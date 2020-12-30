@@ -3043,8 +3043,7 @@ class PurchaseRequisitionCus(models.Model):
 
     # @api.multi
     # def action_rfq_review_project_manager(self):
-    #     for order in se
-    #     lf:
+    #     for order in self:
     #         com = self.env['product.requisition'].search([('id', '=', order.pr_sequence.id)])
     #         com.write({'state': 'pm_app'})
     #         # comm = self.env['purchase.order'].search([('id', '=', order.po_sequence.id)])
@@ -4943,12 +4942,12 @@ class AccountMoveCustomize(models.Model):
             analytic_acc = 0
             for rec in analytic:
                 analytic_acc = rec.analytic_account_id.name
-
             record.analytic_count = analytic_acc
 
             # for line in record.line_ids:
             #     analytic_acc = line.analytic_account_id
             # record.analytic_count = analytic_acc
+           # print('---ana----', record.analytic_count)
 
 
 

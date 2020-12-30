@@ -25,6 +25,10 @@ class PurchaseRequisitionCus2(models.Model):
     co_box = fields.Boolean(string="Actionable by Coordinator",default=False)
     req_name = fields.Many2one('hr.employee',string='Requester Name')
     project_manager = fields.Boolean('Created by project manager',default=False)
+    analytic_id = fields.Many2one('account.analytic.account',string="Project",track_visibility="onchange")
+    task_id = fields.Many2one('project.task',string="Task",track_visibility="onchange")
+
+
     
 
     @api.multi
