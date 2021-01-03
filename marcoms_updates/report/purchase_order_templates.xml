@@ -141,7 +141,7 @@
             <!-- <div id="total" class="row justify-content-end"> -->
                 <div class="clearfix">
                     <div id="total" class="row justify-content-end" style="float:right;margin-right:5px;">
-                <div class="">
+                <div class="" >
                     <table class="table table-sm">
                         <tr class="border-black">
                             <td><strong>Subtotal</strong></td>
@@ -172,10 +172,22 @@
         </div>
             <!-- <span>Amount in Words :-</span><br/><br/>
             <pre><span t-field="o.text" style="font-family: Calibri;text-transform:uppercase;"/> ONLY</pre><br/> -->
+            <p style="page-break-after:always;padding-top:20px;"/>
             <b><span style="margin-left:40px;">General Conditions and Special Instructions</span></b><br/>
-            <p t-field="o.notes" style="margin-left:40px;"/><br/> <br/> <br/> <br/>
+            <p style="margin-left:40px;">In case vendor is reponsible for delivery , vendor assumes risk of loss for commodities in transit.
+                All Commodities are subject to inspection upon delivery.
+                Rejected commodities will be returned at the vendor's Expenses.</p><br/>
+
+           <p style="margin-left:40px;"> Payment will be processed after presentation of following documents:<br/>
+
+            1- Tax invoice under Marcoms LLC , address and TRN number mentioned above<br/>
+            2- Delivery Note / completion certificate duly certified by our representative<br/></p>
+
+            <p t-if="o.notes" t-field="o.notes" style="margin-left:40px;"/><br/>
+
+            <p style="margin-left:40px;"> Please Note:- Cheque collection is from Sunday-Thursday, between 2:00 pm to 4:00 pm</p><br/> <br/>
             <div>
-                <div style="float:left;margin-left:40px;">
+                <div style="float:left; margin-left:40px;">
                     <span>Prepared By</span><br/>
                     <span t-field="o.user_id.name"/>
                 </div>
