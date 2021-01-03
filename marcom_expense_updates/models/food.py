@@ -4052,7 +4052,7 @@ class AccountMoveInherit(models.Model):
 #         # have taxes on it
 #         record = super(ProductTemplate,self).create(vals)
 #         if vals.get('can_be_expensed', True):
-#             print('--------entered if stmt------')
-#             vals.update({'supplier_taxes_id': True})
-#         print('------yes working-----')
+#             print('---supplier---')
+#             vals.update({'supplier_taxes_id': False})
+#
 #         return record
