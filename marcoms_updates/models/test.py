@@ -2139,7 +2139,7 @@ class HRpayrolltranLine(models.Model):
 
 
             rec.timesheet_cost = rec.employee_id.contract_id.hr_total_wage
-            time_cost = ((rec.timesheet_cost / 30) / 8)
+            time_cost = ((rec.timesheet_cost / 31) / 8)
             rec.allowance = rec.number_of_hours * time_cost
 
 class HrSalaryRulecus(models.Model):
