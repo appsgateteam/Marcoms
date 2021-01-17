@@ -1257,7 +1257,7 @@ if record:
                     <field name="is_discount"/>
                     <button string="Duplicate" icon="fa-pencil-square-o" name="action_duplicate" aria-label="Sort" type="object"/>
                     <button string="Add Space" icon="fa-long-arrow-right" name="add_space" aria-label="Sort" type="object"/>
-                    <field name="is_downpayment_line" />
+<!--                    <field name="is_downpayment_line" />-->
 <!--                    <field name="untaxed_amt_invoiced_line" />-->
 
                 </tree>

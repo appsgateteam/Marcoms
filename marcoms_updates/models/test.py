@@ -4,7 +4,7 @@ import odoo.addons.decimal_precision as dp
 from datetime import datetime, timedelta, date
 import math
 import time
-from odoo.osv import expression
+#from odoo.osv import expression
 
 from num2words import num2words
 from odoo.exceptions import Warning
@@ -809,76 +809,76 @@ class SaleOrder_customize(models.Model):
 
     untaxed_amt_to_invoice = fields.Float('To Invoice', compute='_compute_amt_invoice')
     untaxed_amt_invoiced = fields.Float('Invoiced', compute='_compute_amt_invoice')
-    invoice_status = fields.Selection([
-        ('upselling', 'Upselling Opportunity'),
-        ('invoiced', 'Invoiced'),
-        ('to invoice', 'To Invoice'),
-        ('no', 'Nothing to Invoice')
-    ], string='Invoice Status', compute='_get_invoiced', store=True, readonly=True)
-
-    @api.depends('state', 'order_line.invoice_status', 'order_line.invoice_lines')
-    def _get_invoiced(self):
-        """
-        Compute the invoice status of a SO. Possible statuses:
-        - no: if the SO is not in status 'sale' or 'done', we consider that there is nothing to
-          invoice. This is also the default value if the conditions of no other status is met.
-        - to invoice: if any SO line is 'to invoice', the whole SO is 'to invoice'
-        - invoiced: if all SO lines are invoiced, the SO is invoiced.
-        - upselling: if all SO lines are invoiced or upselling, the status is upselling.
-
-        The invoice_ids are obtained thanks to the invoice lines of the SO lines, and we also search
-        for possible refunds created directly from existing invoices. This is necessary since such a
-        refund is not directly linked to the SO.
-        """
-        # Ignore the status of the deposit product
-        deposit_product_id = self.env['sale.advance.payment.inv']._default_product_id()
-        line_invoice_status_all = [(d['order_id'][0], d['invoice_status'])
-            for d in self.env['sale.order.line'].read_group([
-                ('order_id', 'in', self.ids), ('product_id', '!=', deposit_product_id.id)],
-                ['order_id', 'invoice_status'], ['order_id', 'invoice_status'],
-                lazy=False)]
-        for order in self:
-            invoice_ids = order.order_line.mapped('invoice_lines').mapped('invoice_id').filtered(lambda r: r.type in ['out_invoice', 'out_refund'])
-            # Search for invoices which have been 'cancelled' (filter_refund = 'modify' in
-            # 'account.invoice.refund')
-            # use like as origin may contains multiple references (e.g. 'SO01, SO02')
-            refunds = invoice_ids.search([('origin', 'like', order.name), ('company_id', '=', order.company_id.id), ('type', 'in', ('out_invoice', 'out_refund'))])
-            invoice_ids |= refunds.filtered(lambda r: order.name in [origin.strip() for origin in r.origin.split(',')])
-
-            # Search for refunds as well
-            domain_inv = expression.OR([
-                ['&', ('origin', '=', inv.number), ('journal_id', '=', inv.journal_id.id)]
-                for inv in invoice_ids if inv.number
-            ])
-            if domain_inv:
-                refund_ids = self.env['account.invoice'].search(expression.AND([
-                    ['&', ('type', '=', 'out_refund'), ('origin', '!=', False)],
-                    domain_inv
-                ]))
-            else:
-                refund_ids = self.env['account.invoice'].browse()
-
-            line_invoice_status = [d[1] for d in line_invoice_status_all if d[0] == order.id]
-
-            if order.state not in ('sale', 'done'):
-                invoice_status = 'no'
-
-            elif any(invoice_status == 'invoiced' for invoice_status in line_invoice_status):
-                print('---so invoiced--')
-                invoice_status = 'invoiced'
-            elif line_invoice_status and all(invoice_status == 'to invoice' for invoice_status in line_invoice_status):
-                print('---so to be ince--')
-                invoice_status = 'to invoice'
-            elif line_invoice_status and all(invoice_status in ['invoiced', 'upselling'] for invoice_status in line_invoice_status):
-                invoice_status = 'upselling'
-            else:
-                invoice_status = 'no'
-
-            order.update({
-                'invoice_count': len(set(invoice_ids.ids + refund_ids.ids)),
-                'invoice_ids': invoice_ids.ids + refund_ids.ids,
-                'invoice_status': invoice_status
-            })
+    # invoice_status = fields.Selection([
+    #     ('upselling', 'Upselling Opportunity'),
+    #     ('invoiced', 'Invoiced'),
+    #     ('to invoice', 'To Invoice'),
+    #     ('no', 'Nothing to Invoice')
+    # ], string='Invoice Status', compute='_get_invoiced', store=True, readonly=True)
+    #
+    # @api.depends('state', 'order_line.invoice_status', 'order_line.invoice_lines')
+    # def _get_invoiced(self):
+    #     """
+    #     Compute the invoice status of a SO. Possible statuses:
+    #     - no: if the SO is not in status 'sale' or 'done', we consider that there is nothing to
+    #       invoice. This is also the default value if the conditions of no other status is met.
+    #     - to invoice: if any SO line is 'to invoice', the whole SO is 'to invoice'
+    #     - invoiced: if all SO lines are invoiced, the SO is invoiced.
+    #     - upselling: if all SO lines are invoiced or upselling, the status is upselling.
+    #
+    #     The invoice_ids are obtained thanks to the invoice lines of the SO lines, and we also search
+    #     for possible refunds created directly from existing invoices. This is necessary since such a
+    #     refund is not directly linked to the SO.
+    #     """
+    #     # Ignore the status of the deposit product
+    #     deposit_product_id = self.env['sale.advance.payment.inv']._default_product_id()
+    #     line_invoice_status_all = [(d['order_id'][0], d['invoice_status'])
+    #         for d in self.env['sale.order.line'].read_group([
+    #             ('order_id', 'in', self.ids), ('product_id', '!=', deposit_product_id.id)],
+    #             ['order_id', 'invoice_status'], ['order_id', 'invoice_status'],
+    #             lazy=False)]
+    #     for order in self:
+    #         invoice_ids = order.order_line.mapped('invoice_lines').mapped('invoice_id').filtered(lambda r: r.type in ['out_invoice', 'out_refund'])
+    #         # Search for invoices which have been 'cancelled' (filter_refund = 'modify' in
+    #         # 'account.invoice.refund')
+    #         # use like as origin may contains multiple references (e.g. 'SO01, SO02')
+    #         refunds = invoice_ids.search([('origin', 'like', order.name), ('company_id', '=', order.company_id.id), ('type', 'in', ('out_invoice', 'out_refund'))])
+    #         invoice_ids |= refunds.filtered(lambda r: order.name in [origin.strip() for origin in r.origin.split(',')])
+    #
+    #         # Search for refunds as well
+    #         domain_inv = expression.OR([
+    #             ['&', ('origin', '=', inv.number), ('journal_id', '=', inv.journal_id.id)]
+    #             for inv in invoice_ids if inv.number
+    #         ])
+    #         if domain_inv:
+    #             refund_ids = self.env['account.invoice'].search(expression.AND([
+    #                 ['&', ('type', '=', 'out_refund'), ('origin', '!=', False)],
+    #                 domain_inv
+    #             ]))
+    #         else:
+    #             refund_ids = self.env['account.invoice'].browse()
+    #
+    #         line_invoice_status = [d[1] for d in line_invoice_status_all if d[0] == order.id]
+    #
+    #         if order.state not in ('sale', 'done'):
+    #             invoice_status = 'no'
+    #
+    #         elif any(invoice_status == 'invoiced' for invoice_status in line_invoice_status):
+    #             print('---so invoiced--')
+    #             invoice_status = 'invoiced'
+    #         elif line_invoice_status and all(invoice_status == 'to invoice' for invoice_status in line_invoice_status):
+    #             print('---so to be ince--')
+    #             invoice_status = 'to invoice'
+    #         elif line_invoice_status and all(invoice_status in ['invoiced', 'upselling'] for invoice_status in line_invoice_status):
+    #             invoice_status = 'upselling'
+    #         else:
+    #             invoice_status = 'no'
+    #
+    #         order.update({
+    #             'invoice_count': len(set(invoice_ids.ids + refund_ids.ids)),
+    #             'invoice_ids': invoice_ids.ids + refund_ids.ids,
+    #             'invoice_status': invoice_status
+    #         })
 
     #@api.depends('order_line')  # change to be done in demo
     def _compute_amt_invoice(self):
@@ -1996,62 +1996,62 @@ class SaleOrderLinecus(models.Model):
     is_discount = fields.Boolean(string='Is Discount')
     # select = fields.Boolean('Select',default=False)
     sale_order_venue_ids = fields.One2many('sale.order.venue', 'line_id', 'Venue Lines')
-    invoice_status = fields.Selection([
-        ('upselling', 'Upselling Opportunity'),
-        ('invoiced', 'Invoiced'),
-        ('to invoice', 'To Invoice'),
-        ('no', 'Nothing to Invoice')
-    ], string='Invoice Status', compute='_compute_invoice_status', store=True, readonly=True, default='no')
-    is_downpayment_line = fields.Boolean(
-        string="Is a down payment", help="Down payments are made when creating invoices from a sales order."
-                                         " They are not copied when duplicating a sales order.")
+    # invoice_status = fields.Selection([
+    #     ('upselling', 'Upselling Opportunity'),
+    #     ('invoiced', 'Invoiced'),
+    #     ('to invoice', 'To Invoice'),
+    #     ('no', 'Nothing to Invoice')
+    # ], string='Invoice Status', compute='_compute_invoice_status', store=True, readonly=True, default='no')
+    # is_downpayment_line = fields.Boolean(
+    #     string="Is a down payment", help="Down payments are made when creating invoices from a sales order."
+    #                                      " They are not copied when duplicating a sales order.")
 
     # price_subtotal = fields.Monetary(compute='_compute_amount', string='Subtotal',readonly=False,  store=True)
    # untaxed_amt_to_invoice_line = fields.Float('To Invoice')#, compute='_compute_amt_invoice')
     #untaxed_amt_invoiced_line = fields.Float('Invoiced')#, compute='_compute_amt_invoice')
 
-    @api.depends('state', 'qty_delivered', 'qty_to_invoice', 'qty_invoiced','order_id')
-    def _compute_invoice_status(self):
-        """
-        Compute the invoice status of a SO line. Possible statuses:
-        - no: if the SO is not in status 'sale' or 'done', we consider that there is nothing to
-          invoice. This is also hte default value if the conditions of no other status is met.
-        - to invoice: we refer to the quantity to invoice of the line. Refer to method
-          `_get_to_invoice_qty()` for more information on how this quantity is calculated.
-        - upselling: this is possible only for a product invoiced on ordered quantities for which
-          we delivered more than expected. The could arise if, for example, a project took more
-          time than expected but we decided not to invoice the extra cost to the client. This
-          occurs onyl in state 'sale', so that when a SO is set to done, the upselling opportunity
-          is removed from the list.
-        - invoiced: the quantity invoiced is larger or equal to the quantity ordered.
-
-        ***Additional Customization***
-            Overriden base function to change the dependency of the the  product quantity to actual quantity
-        """
-        precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
-        for line in self:
-
-
-            if line.state not in ('sale', 'done'):
-                line.invoice_status = 'no'
-            elif not float_is_zero(line.qty_to_invoice, precision_digits=precision) and line.is_downpayment == False:
-                print('---to invoice---')
-                line.invoice_status = 'to invoice'
-            elif line.state == 'sale' and line.product_id.invoice_policy == 'order' and \
-                    float_compare(line.qty_delivered, line.product_uom_qty, precision_digits=precision) == 1:
-                line.invoice_status = 'upselling'
-
-            # elif float_compare(line.qty_invoiced, line.product_uom_qty,precision_digits=precision) >= 0 :
-            #     line.invoice_status = 'invoiced'
-            elif float_compare(line.product_uom_qty,line.qty_invoiced, precision_digits=precision) <= 0 :
-                print('---invoiced---')
-                line.invoice_status = 'invoiced'
-            # elif not float_is_zero(line.qty_invoiced, precision_digits=precision):
-            #     print('---invoiced---')
-            #     line.invoice_status = 'invoiced'
-            else:
-
-                line.invoice_status = 'no'
+    # @api.depends('state', 'qty_delivered', 'qty_to_invoice', 'qty_invoiced','order_id')
+    # def _compute_invoice_status(self):
+    #     """
+    #     Compute the invoice status of a SO line. Possible statuses:
+    #     - no: if the SO is not in status 'sale' or 'done', we consider that there is nothing to
+    #       invoice. This is also hte default value if the conditions of no other status is met.
+    #     - to invoice: we refer to the quantity to invoice of the line. Refer to method
+    #       `_get_to_invoice_qty()` for more information on how this quantity is calculated.
+    #     - upselling: this is possible only for a product invoiced on ordered quantities for which
+    #       we delivered more than expected. The could arise if, for example, a project took more
+    #       time than expected but we decided not to invoice the extra cost to the client. This
+    #       occurs onyl in state 'sale', so that when a SO is set to done, the upselling opportunity
+    #       is removed from the list.
+    #     - invoiced: the quantity invoiced is larger or equal to the quantity ordered.
+    #
+    #     ***Additional Customization***
+    #         Overriden base function to change the dependency of the the  product quantity to actual quantity
+    #     """
+    #     precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+    #     for line in self:
+    #
+    #
+    #         if line.state not in ('sale', 'done'):
+    #             line.invoice_status = 'no'
+    #         elif not float_is_zero(line.qty_to_invoice, precision_digits=precision) and line.is_downpayment == False:
+    #             print('---to invoice---')
+    #             line.invoice_status = 'to invoice'
+    #         elif line.state == 'sale' and line.product_id.invoice_policy == 'order' and \
+    #                 float_compare(line.qty_delivered, line.product_uom_qty, precision_digits=precision) == 1:
+    #             line.invoice_status = 'upselling'
+    #
+    #         # elif float_compare(line.qty_invoiced, line.product_uom_qty,precision_digits=precision) >= 0 :
+    #         #     line.invoice_status = 'invoiced'
+    #         elif float_compare(line.product_uom_qty,line.qty_invoiced, precision_digits=precision) <= 0 :
+    #             print('---invoiced---')
+    #             line.invoice_status = 'invoiced'
+    #         # elif not float_is_zero(line.qty_invoiced, precision_digits=precision):
+    #         #     print('---invoiced---')
+    #         #     line.invoice_status = 'invoiced'
+    #         else:
+    #
+    #             line.invoice_status = 'no'
 
 
     @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id')
