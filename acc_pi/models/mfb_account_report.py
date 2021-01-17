@@ -881,14 +881,24 @@ class AccountReport(models.AbstractModel):
         return res
 
     def _format_aml_name(self, aml):
-        name = '-'.join(
-            (aml.move_id.name not in ['', '/'] and [aml.move_id.name] or []) +
-            (aml.ref not in ['', '/', False] and [aml.ref] or []) +
-            ([aml.name] if aml.name and aml.name not in ['', '/'] else [])
-        )
-        if len(name) > 35 and not self.env.context.get('no_format'):
-            name = name[:32] + "..."
-        return name
+        #aml._name == 'account.invoice'
+        if aml.invoice_id.type == 'out_invoice':
+            name = '-'.join(
+
+                (aml.move_id.name not in ['', '/'] and [aml.move_id.name] or [])
+            )
+            if len(name) > 35 and not self.env.context.get('no_format'):
+                name = name[:32] + "..."
+            return name
+        else:
+            name = '-'.join(
+                (aml.move_id.name not in ['', '/'] and [aml.move_id.name] or []) +
+                (aml.ref not in ['', '/', False] and [aml.ref] or []) +
+                ([aml.name] if aml.name and aml.name not in ['', '/'] else [])
+            )
+            if len(name) > 35 and not self.env.context.get('no_format'):
+                name = name[:32] + "..."
+            return name
 
     def format_date(self, options, dt_filter='date'):
         # previously get_full_date_names

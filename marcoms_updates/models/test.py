@@ -5746,11 +5746,14 @@ class ReportPartnerLedgercus(models.AbstractModel):
     def _get_report_name(self):
         return _('STATEMENT OF ACCOUNTS')
 
+
+
     def _get_columns_name(self, options):
         columns = [
             {},
             {'name': _('JRNL')},
             {'name': _('Account')},
+            {'name': _('LPO')},
             {'name': _('Ref')},
             {'name': _('Project Name')},
             {'name': _('Due Date'), 'class': 'date'},
@@ -5842,11 +5845,20 @@ class ReportPartnerLedgercus(models.AbstractModel):
                     progress_before = progress
                     progress = progress + line_debit - line_credit
                     caret_type = 'account.move'
+                    origin = False
                     if line.invoice_id:
                         caret_type = 'account.invoice.in' if line.invoice_id.type in (
                         'in_refund', 'in_invoice') else 'account.invoice.out'
                     elif line.payment_id:
                         caret_type = 'account.payment'
+
+                    if line.invoice_id:
+                        if line.invoice_id.type in ('in_refund', 'in_invoice'):
+                            origin = line.invoice_id.origin
+                        else :
+                            origin = line.invoice_id.LPO
+                    else:
+                        False
 
                     if line.invoice_id:
                         if line.invoice_id.project:
@@ -5860,7 +5872,7 @@ class ReportPartnerLedgercus(models.AbstractModel):
                         else:
                             project_name = ''
                     days = (line.date_maturity - line.move_id.date).days
-                    domain_columns = [line.journal_id.code, line.account_id.code, self._format_aml_name(line),
+                    domain_columns = [line.journal_id.code, line.account_id.code, origin,self._format_aml_name(line),
                                       project_name,
                                       line.date_maturity and format_date(self.env, line.date_maturity) or '', days,
                                       line.full_reconcile_id.name or '', self.format_value(progress_before),
@@ -6137,6 +6149,9 @@ class report_account_aged_partner_cus(models.AbstractModel):
                       _("1 - 30"), _("31 - 60"), _("61 - 90"), _("91 - 120"), _("Older"), _("Total")]
         ]
         return columns
+
+
+
 
     @api.model
     def _get_lines(self, options, line_id=None):
