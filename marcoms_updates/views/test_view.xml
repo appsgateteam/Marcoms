@@ -870,6 +870,14 @@ if record:
             <xpath expr="//field[@name='state']" position="attributes">
                 <attribute name="invisible">0</attribute>
             </xpath>
+            <xpath expr="//field[@name='amount_total']" position="replace">
+                 <field name="amount_all_sales_total_with_vat"  string="Total Sales Amount VAT Inclusive"/>
+            </xpath>
+              <xpath expr="//field[@name='amount_all_sales_total_with_vat']" position="after">
+                 <field name="amount_all_sales_total_without_vat"  string="Total Sales Amount VAT Excluded"/>
+                  <field name="untaxed_amt_to_invoice"/>
+                  <field name="untaxed_amt_invoiced"/>
+            </xpath>
         </field>
     </record>
 
@@ -881,6 +889,14 @@ if record:
             <xpath expr="//field[@name='partner_id']" position="after">
                  <field name="project_name" />
                 <field name="opportunity_id"/>
+            </xpath>
+            <xpath expr="//field[@name='amount_total']" position="replace">
+                 <field name="amount_all_sales_total_with_vat"  string="Total Sales Amount VAT Inclusive"/>
+            </xpath>
+              <xpath expr="//field[@name='amount_all_sales_total_with_vat']" position="after">
+                 <field name="amount_all_sales_total_without_vat"  string="Total Sales Amount VAT Excluded"/>
+                  <field name="untaxed_amt_to_invoice"/>
+                  <field name="untaxed_amt_invoiced"/>
             </xpath>
         </field>
     </record>
@@ -899,7 +915,10 @@ if record:
                 <filter string="Sales Orders" name="sales" domain="[('state','in',('sale','done'))]"/>
                 <separator/>
                 <filter string="Order Date" name="filter_order_date" date="date_order"/>
+                <field name="untaxed_amt_to_invoice"/>
+<!--                <filter  string="Invoice to be Invoice" name="untaxed_amt_to_invoice" domain="[('untaxed_amt_to_invoice', , '&gt;',  0)]" />-->
             </xpath>
+
         </field>
     </record>
 
@@ -922,6 +941,7 @@ if record:
             <xpath expr="//field[@name='price_subtotal']" position="after">
                 <field name="image_pro" />
             </xpath>
+
         </field>
     </record>
     <record id="sale_order_cuss_form" model="ir.ui.view">
@@ -1047,6 +1067,10 @@ if record:
             </xpath> -->
             <xpath expr="//field[@name='amount_total']" position="attributes">
                 <attribute name="string">Total with VAT</attribute>
+            </xpath>
+            <xpath expr="//field[@name='amount_total']" position="after">
+                <field name="amount_all_sales_total_without_vat"/>
+                <field name="amount_all_sales_total_with_vat"/>
             </xpath>
             <xpath expr="//field[@name='amount_tax']" position="after">
                 <!-- <field name="ks_amount_discount" /> -->
@@ -1233,6 +1257,9 @@ if record:
                     <field name="is_discount"/>
                     <button string="Duplicate" icon="fa-pencil-square-o" name="action_duplicate" aria-label="Sort" type="object"/>
                     <button string="Add Space" icon="fa-long-arrow-right" name="add_space" aria-label="Sort" type="object"/>
+<!--                    <field name="is_downpayment_line" />-->
+<!--                    <field name="untaxed_amt_invoiced_line" />-->
+
                 </tree>
             </xpath>
             <xpath expr="//page[@name='order_lines']//field[@name='order_line']/form//field[@name='price_subtotal']" position="after">
